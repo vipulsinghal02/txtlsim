@@ -78,6 +78,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         'TXTL_pGlnA_RNAPbound_R',paramObj.RNAPbound_Reverse};
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
+    
     p = cellfun(@(x) regexp(x,'^protein NRI-p(-lva)?$', 'match'), listOfSpecies, 'UniformOutput', false);
     listOfProtein = vertcat(p{:});
     
@@ -91,21 +92,21 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
             'MassAction',{'TXTL_DNA_NRI-p_RNAPbound_F',paramObj.RNAPbound_Forward_actv;'TXTL_DNA_NRI-p_RNAPbound_R',paramObj.RNAPbound_Reverse_actv});
         
         
-        if mode.utr_attenuator_flag
-            mode.add_dna_driver = 'Setup Species';
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' listOfProtein{k} ],prom_spec, rbs_spec, gene_spec,{listOfProtein{k} } );
-            mode.add_dna_driver = 'Setup Reactions';
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' listOfProtein{k} ],prom_spec, rbs_spec, gene_spec,{listOfProtein{k}} );
-        else
+%         if mode.utr_attenuator_flag
+%             mode.add_dna_driver = 'Setup Species';
+%             txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+%             txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' listOfProtein{k} ],prom_spec, rbs_spec, gene_spec,{listOfProtein{k} } );
+%             mode.add_dna_driver = 'Setup Reactions';
+%             txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+%             txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' listOfProtein{k} ],prom_spec, rbs_spec, gene_spec,{listOfProtein{k}} );
+%         else
             mode.add_dna_driver = 'Setup Species';
             txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
             txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' listOfProtein{k} ],{listOfProtein{k}});
             mode.add_dna_driver = 'Setup Reactions';
             txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
             txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' listOfProtein{k} ],{listOfProtein{k}});
-        end
+%         end
     end
  
     

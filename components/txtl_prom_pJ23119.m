@@ -35,8 +35,8 @@ function varargout = txtl_prom_pJ23119(mode, tube, dna, rna, varargin)
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
+    RNAP = 'RNAP';			% RNA polymerase name for reactions
+    RNAPbound = ['RNAP:' dna.Name];	% Name of bound complex
     
     % importing the corresponding parameters
     paramObj = txtl_component_config('pJ23119');
@@ -66,11 +66,11 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     % 
-    if mode.utr_attenuator_flag % dont need antisense flag because antisense in itself doesnt need the special transcription. 
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
+%     if mode.utr_attenuator_flag % dont need antisense flag because antisense in itself doesnt need the special transcription. 
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+%     else
         txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    end
+%     end
     
         
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
@@ -92,11 +92,11 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     % 
-    if mode.utr_attenuator_flag 
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
+%     if mode.utr_attenuator_flag 
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+%     else
         txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    end
+%     end
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else 
     error('txtltoolbox:txtl_prom_pJ23119:undefinedmode', ...

@@ -16,9 +16,9 @@ tube2 = txtl_buffer('E30VNPRL');
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 dna_deGFP = txtl_add_dna(tube3, ...
-  'plac(50)', 'rbs(20)', 'betaGal(1000)', 15, 'linear');
+  'plac(50)', 'utr1(20)', 'betaGal(1000)', 15, 'linear');
 dna_gamS = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'gamS(1000)', 10, 'plasmid');
+  'p70(50)', 'utr1(20)', 'gamS(1000)', 10, 'plasmid');
 
 
 % Mix the contents of the individual tubes and add some inducer

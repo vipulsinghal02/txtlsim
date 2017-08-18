@@ -74,9 +74,9 @@ for k = 1:size(listOfProtein,1)
                        'TXTL_INDUCER_ARAC_ARABINOSE_R',paramObj.Protein_Inducer_Reverse});
 end
 
-    % degrade the arabinose inducer
-     txtl_addreaction(tube,'arabinose -> null',...
-      'MassAction',{'TXTL_INDUCER_DEGRADATION_ARABINOSE',0.0000267});%paramObj.Inducer_Degradation
+%     % degrade the arabinose inducer
+%      txtl_addreaction(tube,'arabinose -> null',...
+%       'MassAction',{'TXTL_INDUCER_DEGRADATION_ARABINOSE',0.0000267});%paramObj.Inducer_Degradation
 
 %     % set up a reaction for protein dimerization
 %     txtl_dimerize(mode, tube,protein, ...

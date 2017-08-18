@@ -16,10 +16,10 @@ tube2 = txtl_buffer('E30VNPRL');
 
 tube3 = txtl_newtube('circuit_closed_loop_withClpX');
 
-txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'AraC(600)',0.5*4.5, 'plasmid');
-txtl_add_dna(tube3, 'pBAD(50)', 'rbs(20)', 'tetR(600)', 2*4.5, 'plasmid');
-txtl_add_dna(tube3,'pBAD_ptetIFFL(150)', 'rbs(20)', 'deGFP(1000)-lva(20)',4*4.5, 'plasmid');
-txtl_add_dna(tube3,'p70(50)', 'rbs(20)', 'ClpX(600)',0.1*4.5, 'plasmid');
+txtl_add_dna(tube3, 'p70(50)', 'utr1(20)', 'AraC(600)',0.5*4.5, 'plasmid');
+txtl_add_dna(tube3, 'pBAD(50)', 'utr1(20)', 'tetR(600)', 2*4.5, 'plasmid');
+txtl_add_dna(tube3,'pBAD_ptet(150)', 'utr1(20)', 'deGFP(1000)-lva(20)',4*4.5, 'plasmid');
+txtl_add_dna(tube3,'p70(50)', 'utr1(20)', 'ClpX(600)',0.1*4.5, 'plasmid');
 
 txtl_addspecies(tube3, 'arabinose', 10000);
 txtl_addspecies(tube3, 'aTc', 1000);
@@ -52,10 +52,10 @@ txtl_plot(t_ode,x_ode,Mobj,defaultGroups);
 %%
 % % % % 
 % % % % 
-% % % % cellOfSpecies = {'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer', 'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
-% % % %                  'NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer','NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
-% % % %                  'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:arabinose:protein AraC', 'RNAP70:DNA pBAD--rbs--tetR:arabinose:protein AraC'
-% % % %                  'NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:arabinose:protein AraC', 'NTP:RNAP70:DNA pBAD--rbs--tetR:arabinose:protein AraC'};
+% % % % cellOfSpecies = {'RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:protein tetRdimer', 'RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
+% % % %                  'NTP:RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:protein tetRdimer','NTP:RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
+% % % %                  'RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:arabinose:protein AraC', 'RNAP70:DNA pBAD--utr1--tetR:arabinose:protein AraC'
+% % % %                  'NTP:RNAP70:DNA pBAD_ptet--utr1--deGFP-lva:arabinose:protein AraC', 'NTP:RNAP70:DNA pBAD--utr1--tetR:arabinose:protein AraC'};
 % % % % plotCustomSpecies2({Mobj}, {x_ode}, {t_ode}, cellOfSpecies)
 % % % % 
 % % % % cellOfSpecies = {'protein deGFP-lva*', 'protein tetR','protein ClpX*'
@@ -96,10 +96,10 @@ tube2 = txtl_buffer('E30VNPRL');
 
 for i = 1:nParam
 tube3 = txtl_newtube('circuit_closed_loop_withClpX');
-txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'AraC(600)',0.5*4.5, 'plasmid');
-txtl_add_dna(tube3, 'pBAD(50)', 'rbs(20)', 'tetR(600)', vParam(i)*4.5, 'plasmid');
-txtl_add_dna(tube3,'pBAD_ptetIFFL(150)', 'rbs(20)', 'deGFP(1000)-lva(20)',4*4.5, 'plasmid');
-txtl_add_dna(tube3,'p70(50)', 'rbs(20)', 'ClpX(600)',0.1*4.5, 'plasmid');
+txtl_add_dna(tube3, 'p70(50)', 'utr1(20)', 'AraC(600)',0.5*4.5, 'plasmid');
+txtl_add_dna(tube3, 'pBAD(50)', 'utr1(20)', 'tetR(600)', vParam(i)*4.5, 'plasmid');
+txtl_add_dna(tube3,'pBAD_ptet(150)', 'utr1(20)', 'deGFP(1000)-lva(20)',4*4.5, 'plasmid');
+txtl_add_dna(tube3,'p70(50)', 'utr1(20)', 'ClpX(600)',0.1*4.5, 'plasmid');
 
 txtl_addspecies(tube3, 'arabinose', 10000);
 txtl_addspecies(tube3, 'aTc', 1000);

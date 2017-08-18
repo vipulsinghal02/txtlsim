@@ -41,8 +41,8 @@ function varargout = txtl_prom_ptet(mode, tube, dna, rna,varargin)
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
 RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-RNAP = 'RNAP70';			% RNA polymerase name for reactions
-RNAPbound = ['RNAP70:' dna.Name];
+RNAP = 'RNAP';			% RNA polymerase name for reactions
+RNAPbound = ['RNAP:' dna.Name];
 % importing the corresponding parameters
 paramObj = txtl_component_config('ptet');
 
@@ -68,11 +68,9 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
+
         txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    end
+
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
@@ -91,13 +89,8 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
    
-    if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    end
-    
-    
+    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once');
     listOftetRdimer = vertcat(matchStr{:});
     

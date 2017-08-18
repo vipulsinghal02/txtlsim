@@ -43,13 +43,8 @@ function varargout= txtl_prom_plas(mode, tube, dna, rna, varargin)
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
 RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-RNAP = 'RNAP70';			% RNA polymerase name for reactions
-RNAPbound = ['RNAP70:' dna.Name];
-P1 = 'protein sigma70';
-
-%P3 = 'OC12HSL:protein lasR'; %wont yet know if the lva version of this
-%was added or not.
-
+RNAP = 'RNAP';			% RNA polymerase name for reactions
+RNAPbound = ['RNAP:' dna.Name];
 
 % importing the corresponding parameters
 paramObj = txtl_component_config('plas');
@@ -71,26 +66,21 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1};
+    coreSpecies = {RNAP,RNAPbound};
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     %{
     % !TODO: VS Aug 2014: dont yet know what form of P3 exists: is lasR lva/ssrA bound or not?
-    % (and in the future more variations could exist) So we cannot actually
-    % do txtl_transcription just yet! Functionally this is not a problem
-    % because: Lets say we do not introduce the activated RNAPbound at this
-    % (Setup Species) stage. because P3, which is the protein bound to the
-    % inducer, *will* get set up in the 'setup species' of the protein file
-    % (if the file is present and the protein SHOULD be set up), and so
-    % will be available for the setup reactions stage to search and call in
-    % the transcription step. If there is no protein file, then the search
-    % returns no results, and so the transcription is not set up, or only
-    % leaky transcription is set up. One thing to note is that, to set up
-    % the species (the AGTP:CUTP:RNAPbound species), might need to call 'setup species' mode of
-    % txtl_transcription in the Setup Reactions mode of this promoter file!
-    % But maybe if we dont set up that species no error will be trown.
-    % We'll see.
+    % !TODO: SOLUTION VS Aug 2017: have a multipass method for generating
+    the toolbox equations. basically keep generating species and equations
+    until no more changes occur. 
     
-    % VS Aug 2014: Comment txtl_transcription for now.
+    % VS Aug 2014: Comment txtl_transcription out for now. the species and
+    reactions all get set up in the setup reactions phase, when we have
+    sufficient information about which versionof the protein will be
+    present. later we will generalize the toolbox to be a multipass method
+    which never has any of these probelms. 
+    
+    
     %     if mode.utr_attenuator_flag
     % %         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
     %         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );
@@ -111,11 +101,12 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
     
-    %   Parameters that describe this promoter. No leaky expression for now.
-    %     parameters = {'TXTL_PLAS_RNAPbound_F',paramObj.RNAPbound_Forward;...
-    %                   'TXTL_PLAS_RNAPbound_R',paramObj.RNAPbound_Reverse};
-    %     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-    %             'MassAction',parameters);
+    %   leaky expression (remove and make conditional on the leaky
+    %   expression mode?)
+        parameters = {'TXTL_PLAS_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                      'TXTL_PLAS_RNAPbound_R',paramObj.RNAPbound_Reverse};
+        txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+                'MassAction',parameters);
     
     p = regexp(listOfSpecies,'^OC12HSL:protein lasR(-lva)?$', 'match');
     TF = vertcat(p{:});
@@ -131,7 +122,6 @@ else
 end
 end
 
-
 function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
     prom_spec, rbs_spec, gene_spec, TF, paramObj)
 
@@ -145,18 +135,25 @@ txtl_addreaction(tube, ...
     'MassAction',{'TXTL_PLAS_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
     'TXTL_PLAS_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
 
+txtl_addreaction(tube, ...
+    [RNAPbound ' + ' TF ' <-> [' RNAPbound ':' TF ']' ],...
+    'MassAction',{'TXTL_PLAS_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLAS_TFBIND_R',paramObj.activation_R});
 
-if mode.utr_attenuator_flag
+% 
+% if mode.utr_attenuator_flag
+%     mode.add_dna_driver = 'Setup Species';
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+%     mode.add_dna_driver = 'Setup Reactions';
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+% else
     mode.add_dna_driver = 'Setup Species';
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
-    mode.add_dna_driver = 'Setup Reactions';
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
-else
-    mode.add_dna_driver = 'Setup Species';
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
     mode.add_dna_driver = 'Setup Reactions';
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
-end
+% end
 
 end
 

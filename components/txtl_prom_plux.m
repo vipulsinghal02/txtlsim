@@ -43,12 +43,8 @@ function varargout= txtl_prom_plux(mode, tube, dna, rna, varargin)
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];
-    P1 = 'protein sigma70';
-    
-%     P3 = 'protein LuxR';
-%     LuxRbound = ['AHL:' P3 ];
+    RNAP = 'RNAP';			% RNA polymerase name for reactions
+    RNAPbound = ['RNAP:' dna.Name];
     
     % importing the corresponding parameters
     paramObj = txtl_component_config('plux');
@@ -70,7 +66,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1};
+    coreSpecies = {RNAP,RNAPbound};
     
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
@@ -101,7 +97,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
     
-p = regexp(listOfSpecies,'^AHL:protein LuxR(-lva)?$', 'match');
+p = regexp(listOfSpecies,'^OC6HSL:protein luxR(-lva)?$', 'match');
     TF = vertcat(p{:});
     for k = 1:size(TF,1)
         setup_promoter_reactions(mode, tube, dna, rna, RNAP,RNAPbound,...
@@ -136,22 +132,22 @@ txtl_addreaction(tube, ...
     'TXTL_PLUX_TFBIND_R',paramObj.activation_R});
 
 
-if mode.utr_attenuator_flag
-    mode.add_dna_driver = 'Setup Species';
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec);
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
-    mode.add_dna_driver = 'Setup Reactions';
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ], prom_spec, rbs_spec, gene_spec,{TF} );  
-        
-else
+% if mode.utr_attenuator_flag
+%     mode.add_dna_driver = 'Setup Species';
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec);
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+%     mode.add_dna_driver = 'Setup Reactions';
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+%     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ], prom_spec, rbs_spec, gene_spec,{TF} );  
+%         
+% else
     mode.add_dna_driver = 'Setup Species';
     txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
     mode.add_dna_driver = 'Setup Reactions';
     txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF],{TF});  
-end
+% end
 end
 
 

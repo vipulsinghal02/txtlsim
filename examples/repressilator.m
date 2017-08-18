@@ -19,11 +19,11 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-plac(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_lacI = txtl_add_dna(tube3, 'thio-junk(500)-plambda(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_lambda = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'lambda(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-plac(50)', 'utr1(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_lacI = txtl_add_dna(tube3, 'thio-junk(500)-plambda(50)', 'utr1(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_lambda = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'utr1(20)', 'lambda(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'utr1(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'utr1(20)', 'gamS(1000)', 1, 'plasmid');
 
 
 %

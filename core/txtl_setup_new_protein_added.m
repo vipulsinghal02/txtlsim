@@ -20,7 +20,7 @@ DNAparts = vertcat(DNAparts{:});
 proteinsAlreadySetUp = DNAparts(:,3);
 
 % Step2: Make a list of protein in the model (based on the species list):
-matchStr = regexp(speciesNames,'(^protein.*)','tokens','once');
+matchStr = regexp(speciesNames,'(^protein.*)','tokens','once'); 
 listOfprotein = vertcat(matchStr{:});
 
 % Step3: Compare the list of proteins and the list of genes from the DNA

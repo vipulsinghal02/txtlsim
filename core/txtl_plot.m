@@ -170,8 +170,8 @@ for k = 1:numOfGroups
             
             hold(currentHandler,'on');
             for l=1:size(dataDNAs,2)
-                hl2 = line(t_ode/60,dataRNAs(:,l),'Parent',currentHandler,'Color',ColorMtx(l,:),'LineWidth',1);
-                hl1 = line(t_ode/60,dataDNAs(:,l),'Parent',ax2,'Color',ColorMtx(l,:),'LineStyle','--');
+                hl2 = line(t_ode/3600,dataRNAs(:,l),'Parent',currentHandler,'Color',ColorMtx(l,:),'LineWidth',1);
+                hl1 = line(t_ode/3600,dataDNAs(:,l),'Parent',ax2,'Color',ColorMtx(l,:),'LineStyle','--');
             end
             
             hold(currentHandler,'off');
@@ -188,7 +188,7 @@ for k = 1:numOfGroups
         
         ylabel(currentHandler,'mRNA amounts [nM]');
         ylabel(ax2,'DNA amounts [nM]');
-        xlabel(currentHandler,'Time [min]');
+        xlabel(currentHandler,'Time [h]');
         title(currentHandler,dataGroups(k).plotName);
         
         % add the processed data to the output structure
@@ -276,10 +276,10 @@ for k = 1:numOfGroups
                 else
                     colorCode = dataGroups(k).colorCodes{mod(l,size(dataGroups(k).colorCodes,2))+1};
                 end
-                plot(currentHandler,t_ode/60,dataX(:,l),colorCode);
+                plot(currentHandler,t_ode/3600,dataX(:,l),colorCode);
             end
         else
-            plot(currentHandler,t_ode/60,dataX);
+            plot(currentHandler,t_ode/3600,dataX);
         end
         
         
@@ -290,7 +290,7 @@ for k = 1:numOfGroups
             lgh.Box = 'off';
         end
         ylabel(currentHandler,'Species amounts [nM]');
-        xlabel(currentHandler,'Time [min]');
+        xlabel(currentHandler,'Time [h]');
         title(currentHandler,dataGroups(k).plotName);
         
         % add the processed data to the output structure
@@ -312,11 +312,11 @@ for k = 1:numOfGroups
         
         mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
         plot(currentHandler,...
-            t_ode/60, dataX(:, 1)/dataX(1, 1), 'b-', ...
-            t_ode/60, dataX(:, 2)/dataX(1, 2), 'r-', ...
-            t_ode/60, dataX(:, 3)/dataX(1, 3), 'b--', ...
-            t_ode/60, dataX(:, 4)/dataX(1, 4), 'r--', ...
-            t_ode/60, dataX(:, 5)/dataX(1, 5), 'g--');
+            t_ode/3600, dataX(:, 1)/dataX(1, 1), 'b-', ...
+            t_ode/3600, dataX(:, 2)/dataX(1, 2), 'r-', ...
+            t_ode/3600, dataX(:, 3)/dataX(1, 3), 'b--', ...
+            t_ode/3600, dataX(:, 4)/dataX(1, 4), 'r--', ...
+            t_ode/3600, dataX(:, 5)/dataX(1, 5), 'g--');
         
         title(currentHandler,'Resource usage');
         lgh = legend(currentHandler,...
@@ -328,7 +328,7 @@ for k = 1:numOfGroups
             lgh.Box = 'off';
         end
         ylabel(currentHandler,'Species amounts [normalized]');
-        xlabel(currentHandler,'Time [min]');
+        xlabel(currentHandler,'Time [h]');
         
         % add the processed data to the output structure
         processedData{3} = {['Time' listOfResources],[t_ode dataX]};

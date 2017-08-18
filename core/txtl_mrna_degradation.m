@@ -25,7 +25,6 @@ function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
 % end
 % end
 
-includeRNase = true;
 
     complexF = tube.UserData.ReactionConfig.RNase_F;
     complexR = tube.UserData.ReactionConfig.RNase_R;
@@ -34,74 +33,42 @@ includeRNase = true;
         complexF = degRate/10;
         complexR = degRate/40;
     end
-    txtl_addreaction(tube,[rna.Name ' + RNase <-> ' rna.Name ':RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',complexF;...
-        'TXTL_RNAdeg_R',complexR});
-    txtl_addreaction(tube,[rna.Name ':RNase -> RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',degRate});
     
+    % Setup RNA degradation reactions, by searching for strings with rna in
+    % them, and then degrading those strings. 
+    listOfSpecies = get(tube.species, 'name');
+    rnastr = ['(' rna.Name '(?=:))|(' rna.Name ')'] ; 
+    % only need the second one actually, dont need the lookahead for the colon
     
-    if mode.utr_attenuator_flag
-        % this needs to handle all the cases. So SIM, double antisense and
-        % nominal. And later generalized string parsing. 
-        [utrData, utrStr] = txtl_parsespec(rbs_spec);
-        att = utrData{1,1};
+    rnalist = regexp(listOfSpecies, rnastr, 'match');
+    rna_species_ix = ~cellfun(@isempty,rnalist);
+    RNAcomplexes = listOfSpecies(rna_species_ix);
+    [splset] = regexp(RNAcomplexes,  '\:', 'split');
+    
+    for i = 1:length(splset)
+        fullsplit = splset{i}';
+        rnasplit = regexp(fullsplit, rnastr, 'match');
+        nonRNA_ix = cellfun(@isempty,rnasplit);
+        RNA_ix = ~cellfun(@isempty,rnasplit);
+        txtl_addreaction(tube,[RNAcomplexes{i} ' + RNase <-> ' RNAcomplexes{i} ':RNase'],...
+            'MassAction',{'TXTL_RNAdeg_F',complexF;...
+            'TXTL_RNAdeg_R',complexR});
+        nonRNAlist = fullsplit(nonRNA_ix);
         
-        if mode.double_antisense
-            %double antisense can only be anti1, no support for anti2 being
-            %double yet. 
-        txtl_addreaction(tube,['RNA ' att ' + RNase <-> RNA ' att ':RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA ' att ':RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
-        
-        txtl_addreaction(tube,['RNA ' att '-anti1 + RNase <-> RNA ' att '-anti1:RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA ' att '-anti1:RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
-        txtl_addreaction(tube,['RNA ' att '-anti1-anti1 + RNase <-> RNA ' att '-anti1-anti1:RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA ' att '-anti1-anti1:RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
-        elseif mode.sim_module_exception
-        txtl_addreaction(tube,['RNA att1_SIM + RNase <-> RNA att1_SIM:RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA att1_SIM:RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});    
-        txtl_addreaction(tube,['RNA att1-att1 + RNase <-> RNA att1-att1:RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA att1-att1:RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});     
-        else
+        productspecies = [];
+        for j = 1:length(nonRNAlist)
+            if strcmp(nonRNAlist{j}, '2AGTP')
+                nonRNAlist{j} = '2 AGTP';
+            elseif strcmp(nonRNAlist{j}, 'term_Ribo')
+                nonRNAlist{j} = 'Ribo';
+            end
             
-        txtl_addreaction(tube,['RNA ' att ' + RNase <-> RNA ' att ':RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['RNA ' att ':RNase -> RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
+            productspecies = [productspecies ' + ' nonRNAlist{j}];
         end
-    end
-    
-    
-    if mode.utr_rbs_flag
-        txtl_addreaction(tube,['AA:AGTP:Ribo:' rna.Name ' + RNase <-> AA:AGTP:Ribo:' rna.Name ':RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['AA:AGTP:Ribo:' rna.Name ':RNase -> AGTP + AA + Ribo + RNase'],...
+        txtl_addreaction(tube,[RNAcomplexes{i} ':RNase -> RNase' productspecies],...
             'MassAction',{'TXTL_RNAdeg_F',degRate});
         
-        txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase <-> Ribo:' rna.Name ':RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',complexF;...
-            'TXTL_RNAdeg_R',complexR});
-        txtl_addreaction(tube,['Ribo:' rna.Name ':RNase -> Ribo + RNase'],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
     end
-
 end
 
 function [binVariable,indexes] = checkForStringInACellList(cellList,matchStr)

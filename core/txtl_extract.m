@@ -40,26 +40,17 @@ stockMulti = 10/(10/3);
 
 %% building configuration object for the current experiment
 
-TXTLconfig = txtl_reaction_config(name);
+TXTLconfig = txtl_reaction_config(name); 
 tube.UserData.ReactionConfig = TXTLconfig;
 
 
 %% setting up species and concentrations in the extract 
 
-% Add in ribosomes, RNAP, sigma70 and sigma 28
-addspecies(tube, 'RNAP', stockMulti*100);	% 100 nM based on VN's paper
-sigma70 = addspecies(tube, 'protein sigma70', stockMulti*35); % 35 nM based on VN's paper
-sigma28 = addspecies(tube, 'protein sigma28', stockMulti*20); % <20 nM based on VN's paper
-addspecies(tube, 'Ribo', stockMulti*50);	% 
-
-% Add RNAP+Sigma70 <-> RNAP70 reaction
-% Set up the reaction
- txtl_addreaction(tube,['RNAP + ' sigma70.Name ' <-> RNAP70'],...
-     'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.ReactionConfig.RNAP_S70_F;
-                   'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});               
-
-% % Add in RNA degradation
-addspecies(tube, 'RNase', stockMulti*100);	% 100 nM
+% Add in ribosomes, RNAP, RecBCD, RNase
+addspecies(tube, 'RNAP', stockMulti*TXTLconfig.RNAP_ic);	
+addspecies(tube, 'Ribo', stockMulti*TXTLconfig.Ribo_ic);	
+addspecies(tube, 'RecBCD', stockMulti*TXTLconfig.RecBCD_ic);               
+addspecies(tube, 'RNase', stockMulti*TXTLconfig.RNase_ic);	% 100 nM
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

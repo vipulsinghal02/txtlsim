@@ -1,12 +1,11 @@
-% txtl_prom_p70pr1.m - promoter information for p70pr promoter
-% This promoter is a modified version of the p70 promoter. The strength of
-% this promoter is 20% of the p70.
+% txtl_5UTR_utr1.m - UTR1 ribosome binding site file
+% VS, Aug 2017
 %
-% This file contains a description of the standard p70pr1 promoter.
-% Calling the function txtl_prom_p70pr1() will set up the reactions for
-% transcription with the measured binding rates and transription rates.
+% This file contains a description of the UTR1 ribosome binding site.
+% Calling the function txtl_5UTR_UTR1() will set up the reactions for
+% translation with the measured binding rates and translation rates.
 
-
+% Written by Vipul Singhal 2017
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -37,68 +36,49 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_p70pr1(mode, tube, dna, rna, varargin)
+function varargout = txtl_5UTR_utr1(mode, tube, rna, protein, varargin)
 
     % Create strings for reactants and products
-    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP:' dna.Name];	% Name of bound complex
+    Ribobound = ['Ribo:' rna.Name];	% Name of bound complex
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('p70pr1');
+    paramObj = txtl_component_config('utr1');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
     
-    promoterData = varargin{1};
-    if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
-    elseif nargin~=5
-        error('the number of argument should be 5 or 8, not %d',nargin);
-    end
-    defaultBasePairs = {'p70pr1','junk','thio';...
-        paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
-    promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
-        defaultBasePairs);
-    
-    varargout{1} = promoterData;
-    
-    coreSpecies = {RNAP,RNAPbound};
+    utrRbsData = varargin{1};
+    defaultBasePairs = {'rbs','spacer';paramObj.RBS_Length,paramObj.spacer_Length};
+    utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
+    RiboBound = ['Ribo:' rna.Name];
+    coreSpecies = {'Ribo',RiboBound};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
-
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    varargout{1} = sbioselect(tube, 'Name', RiboBound);
+    varargout{2} = utrRbsData;
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-    if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
-    elseif nargin~=5
-        error('the number of argument should be 5 or 8, not %d',nargin);
-    end
-    % Parameters that describe this promoter
-    parameters = {'TXTL_P70pr1_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_P70pr1_RNAPbound_R',paramObj.RNAPbound_Reverse};
-    % Set up binding reaction
-    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-        'MassAction',parameters);
-
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    
+    % Set up the binding reaction
+    txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+        'MassAction',{'TXTL_UTR_UTR1_F',paramObj.Ribosome_Binding_F;
+        'TXTL_UTR_UTR1_R',paramObj.Ribosome_Binding_R});
+    
+    
+    
+    
+    
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
-else 
-    error('txtltoolbox:txtl_prom_p70pr1:undefinedmode', ...
+else
+    error('txtltoolbox:txtl_5UTR_utr1:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end 
+end    
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab
 % End:
+

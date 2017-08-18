@@ -1,12 +1,10 @@
-% txtl_prom_pBAD_ptet.m - promoter information for pBAD and ptet combinatorial promoter
-% Zoltan Tuza, Oct 2012
-% Vipul Singhal Jun 2014, Aug 2017
-% 
+% txtl_prom_plas_ptet.m - promoter information for plasR and ptet combinatorial promoter
+% Vipul Singhal Dec 2013
 %
-% This file contains a description of the pBAD and ptet combinatorial promoter.
-% Calling the function txtl_prom_pBAD_ptet() will set up the reactions for
+% This file contains a description of the plasR and ptet combinatorial promoter.
+% Calling the function txtl_prom_plasR_ptet() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
-% This file is based on the file txtl_prom_plas_ptet.m
+% 
 % 
 
 % Written by Richard Murray, Sep 2012
@@ -40,7 +38,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
+function varargout= txtl_prom_plas_ptet(mode, tube, dna, rna, varargin)
 
 
     % Create strings for reactants and products
@@ -48,14 +46,12 @@ function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP:' dna.Name];
-%     P1 = 'protein sigma70';
-    
-%     P2 = 'protein tetRdimer';
-%     P3 = 'protein AraC';
-%     AraCbound = ['arabinose:' P3];
-    
+%     P2 = 'protein tetRdimer'; % we dont know a priori which versions of
+%     the activator and repressor proteins will be present. 
+%     P3 = 'OC12HSL:protein lasR';
+%     DNAP3 = [ dna.Name ':' P3 ];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('pBAD_ptet');
+    paramObj = txtl_component_config('plas_ptet');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
@@ -68,30 +64,21 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    defaultBasePairs = {'pBAD_ptet','junk','thio';150,500,0};
+    defaultBasePairs = {'plas_ptet','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound};
-
+    coreSpecies = {RNAP, RNAPbound};
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)),'Internal');
-    % empty cellarray for amount => zero amount
+
 %     if mode.utr_attenuator_flag
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ], prom_spec, rbs_spec, {P2} );
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{AraCbound} );
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{P2, AraCbound} );
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} ); 
 %     else
-%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2}); %lowest rate
-%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound}); %highest rate
-%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ':' AraCbound ],{P2, AraCbound}); %slightly higher than 1.
+%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3}); 
 %     end
 
-    %(check agains shaobin results. the parameters here should be tuned to
-    %get the shaobin curves. translation/degradation etc should be standard.)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
@@ -103,26 +90,54 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
+
+    % leaky expression (put in a leaky expression mode)
     
+    %find the activator species and the repressor species
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
     listOftetRdimer = vertcat(matchStr{:});
     
-    p = regexp(listOfSpecies,'^arabinose:protein AraC(-lva)?$', 'match');
-    listOfactivators = vertcat(p{:});    
+    % we dont allow for activation by non inducer bound activator. in a
+    % future leaky expression mode, those type of reactions would get activated.
+    p = regexp(listOfSpecies,'^OC12HSL:protein lasR(-lva)?$', 'match');
+    listOfactivators = vertcat(p{:});
     
+    % setup the activation and repression reactions. 
+    % logic: repression supersedes activation. Even if we have an activated
+    % promoter, if the repressor binds to it later, it will cause the
+    % activator to fall off. 
+    
+    % first define the activator reactions, since the repression reactions
+    % depend on these. again, will not be a problem in the multipass case. 
     for k = 1:size(listOfactivators,1)
         setup_promoter_reactions(mode, tube, dna, rna, RNAP,RNAPbound,...
             prom_spec, rbs_spec, gene_spec,listOfactivators{k}, paramObj)
-    end    
+    end
     
+    % to pick the species to which we want tetR to be bound, we
+    % search over the set of bound activator - DNA complexes, without tetR
+    % bound
     listOfSpecies_justAdded = get(tube.species, 'name');
-    activ_bound = ['^(RNAP:' dna.name '|' dna.name '):(arabinose:protein AraC(-lva)?)$'];
+    activ_bound = ['^(RNAP:' dna.name '|' dna.name '):(OC12HSL:protein lasR(-lva)?)$'];
+%     tetR dimer binds to the string after the activated lasR binds. and
+%     the AGTP and CUTP bind before. 
+%     I.e., dont want the following species to to get recognized
+%     'RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR:protein tetRdimer'
+%     'AGTP:CUTP:RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR:protein tetRdimer'
+%     'AGTP:CUTP:RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR'
+%     'AGTP:RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR'
+%     but do want the following to bind: 
+%     'DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR'
+%     'RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR'
     
     [tkns, species_list_2] = regexp(listOfSpecies_justAdded,activ_bound,'tokens', 'match');
     
     list_of_repressible_dna = vertcat(species_list_2{:});
-    list_of_tokens = vertcat(tkns{:});    
+    list_of_tokens = vertcat(tkns{:});
     
+    % regexp logic is: start with dna with the plas promoter, or with RNAP
+    % bound to the plas promoter. end with the activated protein bound. 
+    % 
     matchStr = regexp(listOfSpecies_justAdded,'(^protein tetR.*dimer$)','tokens','once'); 
     listOftetRdimer = vertcat(matchStr{:});
     % repression of ptet by tetR dimer
@@ -144,6 +159,11 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
                           'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
                       
 %            repressor knocking off activator
+            % use the tokens captured previously to set up the reacion
+            % products. (DNA, RNAP if present, and ligand bound activator)
+            % first token is the RNAP optionally bound to the dna, and the
+            % second is the activator complex. 
+            
             % check if RNAP is present in the first token
             token1 = list_of_tokens{i}{1};
             token2 = list_of_tokens{i}{2};
@@ -159,36 +179,47 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
                     dna.name ':' listOftetRdimer{k} '] + RNAP + [' token2 ']'],...
                     'MassAction',{'TXTL_COMBINATORIAL_ACTIVATOR_KNOCKOFF_F',paramObj.Combinatorial_activ_knockoff_F;...
                                 'TXTL_COMBINATORIAL_ACTIVATOR_KNOCKOFF_R',paramObj.Combinatorial_activ_knockoff_R});                  
+                
             end
+            
+            
+         
         end
     end
     
     
     
+    % transcription only happens when there is no repression and there is
+    % positive activation.
     
-    
-    
-    
-    
-    
-    
-    
+%     
+%     %% plasR activaton
+%     Robj3 = addreaction(tube, [dna.Name ' + ' P3 ' <-> [' dna.Name ':' P3 ']' ]);
+%     Kobj3 = addkineticlaw(Robj3, 'MassAction');
+%     addparameter(Kobj3, 'kf', paramObj.activation_F);
+%     addparameter(Kobj3, 'kr', paramObj.activation_R);
+%     set(Kobj3, 'ParameterVariableNames', {'kf', 'kr'});
+%      
+%     Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
+%     Kobj6 = addkineticlaw(Robj6, 'MassAction');
+%     addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward);
+%     addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
+%     set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
+   
     %%
-%     % parameters for leaky transcription
-%     parameters = {'TXTL_PBADPTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
-%                   'TXTL_PBADPTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
-%     % Set up binding reaction
-%     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-%         'MassAction',parameters);
-    %
-
+%     if mode.utr_attenuator_flag
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,...
+%             [RNAPbound ':' P3],prom_spec, rbs_spec, gene_spec,{P3} );
+%     else
+%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3});  
+%     end
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else
-    error('txtltoolbox:txtl_prom_pBAD_ptet:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_plas_ptet:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end 
 end
-end
-
 
 function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
     prom_spec, rbs_spec, gene_spec, TF, paramObj)
@@ -197,13 +228,13 @@ function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
 
 txtl_addreaction(tube, ...
     [dna.Name ' + ' TF ' <-> [' dna.Name ':' TF ']' ],...
-    'MassAction',{'TXTL_PBAD_TFBIND_F',paramObj.activation_F;...
-    'TXTL_PBAD_TFBIND_R',paramObj.activation_R});
+    'MassAction',{'TXTL_PLAS_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLAS_TFBIND_R',paramObj.activation_R});
 
 txtl_addreaction(tube, ...
     [dna.Name ':' TF ' + ' RNAP ' <-> [' RNAPbound ':' TF ']' ],...
-    'MassAction',{'TXTL_PBAD_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
-    'TXTL_PBAD_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
+    'MassAction',{'TXTL_PLAS_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
+    'TXTL_PLAS_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
 
 % 
 % if mode.utr_attenuator_flag
@@ -219,6 +250,7 @@ txtl_addreaction(tube, ...
 % end
 
 end
+
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

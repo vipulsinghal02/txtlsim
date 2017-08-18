@@ -21,9 +21,9 @@ tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_tetR = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'tetR(647)', 15, 'linear');
+  'p70(50)', 'utr1(20)', 'tetR(647)', 15, 'linear');
 dna_deGFP = txtl_add_dna(tube3, ...
-  'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+  'ptet(50)', 'utr1(20)', 'deGFP(1000)', 5, 'linear');
 
 
 %
@@ -124,10 +124,10 @@ xlabel('Time [min]');
 for count = 1:9
   % Plot the time trace  
   figure(5); hold on;
-  iGFP = findspecies(Mobj, 'DNA ptet--rbs--deGFP');
+  iGFP = findspecies(Mobj, 'DNA ptet--utr1--deGFP');
   plot(t_ode{count}, x_ode{count}(:, iGFP), colors{count});
   labels{count} = [int2str(levels(count)) ' nM aTc'];
-  title('DNA ptet--rbs--deGFP')
+  title('DNA ptet--utr1--deGFP')
   % Keep track of the max expression for later plotting
   maxGFP(count) = max(x_ode{count}(:, iGFP));
 end
@@ -156,10 +156,10 @@ xlabel('Time [min]');
 for count = 1:9
   % Plot the time trace  
   figure(7); hold on;
-  iGFP = findspecies(Mobj, 'DNA ptet--rbs--deGFP:protein tetRdimer');
+  iGFP = findspecies(Mobj, 'DNA ptet--utr1--deGFP:protein tetRdimer');
   plot(t_ode{count}, x_ode{count}(:, iGFP), colors{count});
   labels{count} = [int2str(levels(count)) ' nM aTc'];
-  title('DNA ptet--rbs--deGFP:protein tetRdimer')
+  title('DNA ptet--utr1--deGFP:protein tetRdimer')
   % Keep track of the max expression for later plotting
   maxGFP(count) = max(x_ode{count}(:, iGFP));
 end

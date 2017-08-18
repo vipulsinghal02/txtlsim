@@ -53,7 +53,14 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = geneData;
     
-    coreSpecies = {protein.Name};
+    coreSpecies = {protein.Name, ['OC12HSL:' protein.Name]};
+    
+    % generalize using multipass of a reference to a component file when
+    % txtl addspecies is called. for now, we just add the inducer bound
+    % species here. 
+    
+    
+    
     %this fixes it partly, still need to go to promoter reactions mode and add the right reactions there after searching over listOfSpecies.
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     

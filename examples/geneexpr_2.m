@@ -5,10 +5,11 @@
 % for gene expression using the standard TXTL control plasmid.
 %
 
+
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E30VNPRL');
-tube2 = txtl_buffer('E30VNPRL');
+tube1 = txtl_extract('E32');
+tube2 = txtl_buffer('B32');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
@@ -17,7 +18,7 @@ tube3 = txtl_newtube('gene_expression');
 dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'utr1(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
    30, ...					% concentration (nM)
-  'plasmid');					% type
+  'linear');					% type
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
@@ -33,6 +34,10 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 tic
 [simData] = txtl_runsim(Mobj,14*60*60);
 toc
+t_ode = simData.Time;
+x_ode = simData.Data;
+
+
 
 % plot the result
 txtl_plot(simData,Mobj);

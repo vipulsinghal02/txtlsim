@@ -1,7 +1,7 @@
 %TXTL_ADD_DNA   Set up species and reactions for a DNA segment
 %
 %
-%   dna = TXTL_ADD_DNA(tube, prom_spec, rbs_spec, gene_spec, amount, type)
+%   dna = TXTL_ADD_DNA(tube, prom_spec, utr_spec, cds_spec, amount, type)
 %   constructs the species and reactions required for transcription,
 %   translation and degradation of DNA, mRNA and proteins in the
 %   TX-TL system.
@@ -13,9 +13,9 @@
 %     promoter name and 'len' is the length of the promoter. pre_prom cound
 %     consist of nucleatide sequences and corresponding
 %   sizes. One example of their use is as a protection from exonucleases.
-%   * rbs_spec = spec of the form 'rbs(nn)' where 'rbs' is the RBS
+%   * utr_spec = spec of the form 'rbs(nn)' where 'rbs' is the RBS
 %     name and 'len' is the length of the RBS.
-%   * gene_spec = spec of the form 'gene(nn)-lva(nn)-terminator(nn)' where 'gene' is the
+%   * cds_spec = spec of the form 'gene(nn)-lva(nn)-terminator(nn)' where 'gene' is the
 %     gene name and 'len' is the length of the gene.
 %   * amount = amount of DNA to put in the tube (in nM)
 %   * type = 'linear' if you want to include degradation reactions
@@ -50,76 +50,39 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 %%
-function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, type, varargin)
+function dna = txtl_add_dna(tube, prom_spec, utr_spec, cds_spec, dna_amount, type, varargin)
 mode = struct('add_dna_driver', {[]},...
               'prot_deg_flag',{false},...
               'no_protein_flag',{false}, ...
               'prot_term_flag',{false},...
-              'utr_attenuator_flag',{false},...
-              'utr_antisense_flag',{false},...
-              'utr_rbs_flag',{false}, ...
-              'prom_junk_flag',{false},'prom_thio_flag',{false}, ...
-              'sim_module_exception', {false}, 'double_antisense', {false}); 
-%!TODO: generalise code to remove sim module. 
-          
+              'prom_junk_flag',{false},...
+              'prom_thio_flag',{false}); 
           
 % Extract out the names and lengths
 [promData, promStr] = txtl_parsespec(prom_spec);
-[utrData, utrStr] = txtl_parsespec(rbs_spec);
-[geneData, geneStr] = txtl_parsespec(gene_spec);
-%utrData is a cell array, 2 x n, n = num of utr domains. 1st row:
-%names ('att', 'rbs'). second: lengths.
+[utrData, utrStr] = txtl_parsespec(utr_spec);
+[geneData, geneStr] = txtl_parsespec(cds_spec);
 
 % check for variations in DNA, used to select specific code
 mode.prot_deg_flag = checkForStringInACellList(geneData(1,:),'lva');
 mode.prot_term_flag = checkForStringInACellList(geneData(1,:),'terminator');
 mode.no_protein_flag = checkForStringInACellList(geneData(1,:),'no_protein');
-mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),{'att1', 'att2'});
-mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti1', 'anti2'});
-mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),{'rbs','rbs1','rbs2','rbs3','rbs4','rbs5','rbs6', 'SNP10UTR1'});
 [mode.prom_junk_flag, junkIndex] = checkForStringInACellList(promData(1,:),'junk');
 mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
 
-[BooleanAtt1Present,indexesOfAtt1Present] = checkForStringInACellList(utrData(1,:),'att1');
-[BooleanAnti1Present,indexesOfAnti1Present] = checkForStringInACellList(utrData(1,:),'anti1');
-if length(indexesOfAtt1Present)==2 
-    % %! TODO: VS 11/13/13 in the more general setup, the sim module exception should not need to be handled so exceptionally
-    % how to implement this generally? may be worth discussing.
-    if indexesOfAtt1Present == [1 2]
-        mode.sim_module_exception = true;
-    end
-end
-if length(indexesOfAnti1Present)==2
-    if indexesOfAnti1Present == [2 3]
-        mode.double_antisense = true;
-    end
-end
-
-%! TODO: (VS 4/17/13) need to add to this if other new types of domains are added to which ribisome can bind.
-
 % species name string building
 geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
-%! TODO: VS 4/17/13 Is rbs always the last entry of utr? what about
-%spacer?
 
 rbsName = utrData{1,end}; % format is att-...-rbs.
 if mode.no_protein_flag
     protstr = ['protein ' geneStr];
     rnastr = ['RNA ' utrStr];
     dnastr = ['DNA ' promStr '--' utrStr];
-
 else
     protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
     rnastr = ['RNA ' utrStr '--' geneStr];
     dnastr = ['DNA ' promStr '--' utrStr '--' geneStr];
 end
-
-    %! TODO: VS 11/13/13 Enable having anything after antisense. 
-% the steps here are to modify these flags here so the antisense can have
-% stuff after it, and in the tx_cascade file, the antisense att interaction
-% need not have the antisense the last thing on the RNA. as long as
-% antisense is present. this can be recognized using regexp. 
-
 
 promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
 
@@ -131,15 +94,13 @@ if isempty(varargin)
     mode.add_dna_driver = 'Setup Species';
     tubeUser = get(tube, 'UserData');
     dnaList = tubeUser.DNAinfo;
-    dnaList{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type, 'rxns_not_set_up', mode};
+    dnaList{end+1} = {prom_spec, utr_spec, cds_spec, dna_amount, type, 'rxns_not_set_up', mode};
     tubeUser.DNAinfo = dnaList;
     set(tube, 'UserData', tubeUser)
     clear dnaList tubeUser
     
-    % set up protein reactions and data, followed by utr followed by promoter
-    % (promoter reactions require the lengths of the rna, therefore need to be
+    % promoter reactions require the lengths of the rna, therefore need to be
     % set up after the protein and utr files are called.
-    
     
     %% Protein properties, parameters and reactions %
     protein = txtl_addspecies(tube, protstr, 0, 'Internal');
@@ -150,58 +111,20 @@ if isempty(varargin)
     protein.UserData = genelenTot / 3;
     
     %% Untranslated Region properties, parameters and reactions %
-    %! TODO: VS 11/13/13 all this will need to be changed in the more
-    % general setting. need a file based system. 
+    
     rna = txtl_addspecies(tube, rnastr, 0, 'Internal');
-    if exist(['txtl_utr_' rbsName], 'file') == 2
-        if mode.utr_rbs_flag 
+    if exist(['txtl_5UTR_' rbsName], 'file') == 2
             %ribosome must bind
-            [Ribobound, utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
-        else
-            % no rbs present, no ribosome binds. (so far there are no files apart from txtl_utr_rbs
-            %! TODO: VS 11/13/13 can do this better, considering all the
-            %possible cases, and that rbs may not always be the last entry.
-            [utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
-        end
+            [Ribobound, utrlen] = eval(['txtl_5UTR_' rbsName '(mode, tube, rna, protein, utrData)']);
     else 
-        if mode.utr_rbs_flag 
-            %file doesnt exist and rbs flag is set. basically never happens, since rbs file is present. 
-            warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
+            warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_5UTR_' rbsName ...
                 '; using default rbs params']);
-            [Ribobound, utrlen] = txtl_utr_rbs(mode, tube, rna, protein, utrData);
-        else
-            if ~(mode.utr_antisense_flag || strcmp(rbsName, 'control'))
-            warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
-                '; using default rbs params']);
-            end
-            [utrlen] = txtl_utr_rbs(mode, tube, rna, protein, utrData);
-        end
+            [Ribobound, utrlen] = txtl_5UTR_utr1(mode, tube, rna, protein, utrData);
     end
     
     utrlenTot = sum(cell2mat(utrlen(2,:)));
-    if mode.utr_attenuator_flag
-        if mode.sim_module_exception % SIM module exception
-                attFirstLength = cell2mat(utrlen(2,1)); 
-                attSecondLength = cell2mat(utrlen(2,2)); 
-                restOfRNALength = utrlenTot + genelenTot - attFirstLength - attSecondLength;
-                RNAlengthData.attFirst = attFirstLength;
-                RNAlengthData.attSecond = attSecondLength;
-                RNAlengthData.remaining = restOfRNALength;
-            
-        else
-        attenuatorLength = cell2mat(utrlen(2,1)); % assume att is always the first thing in the UTR 
-        %! TODO: VS 11/13/13 the abose assumption also not necessarily true
-        %anymore. all this needs changing!
-        restOfRNALength = utrlenTot + genelenTot - attenuatorLength;
-        RNAlengthData.att = attenuatorLength;
-        RNAlengthData.remaining = restOfRNALength;
-        end
-    else
-        RNAlengthData = utrlenTot + genelenTot;
-    end
-    
+    RNAlengthData = utrlenTot + genelenTot;
     rna.UserData = RNAlengthData;
-    clear RNAlengthData attenuatorLength restOfRNALength
     
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     % DNA solution is 22.5% of the 10ul reaction volume
@@ -210,11 +133,7 @@ if isempty(varargin)
     dna = txtl_addspecies(tube, dnastr, dna_amount, 'Internal');
     % Transcription %%
     if exist(['txtl_prom_' promoterName], 'file') == 2 
-        if mode.utr_attenuator_flag
-        promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData, prom_spec, rbs_spec, gene_spec)']);
-        else
-            promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData)']);
-        end
+        promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData, prom_spec, utr_spec, cds_spec)']);
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
             '; using default promoter params']);
@@ -229,20 +148,13 @@ if isempty(varargin)
     dna.UserData = promlenTot + utrlenTot + genelenTot;
     
     %% Translation %%
-    if mode.utr_rbs_flag % no translation if there is no ribosome binding site present
-        txtl_translation(mode, tube, dna, rna, protein, Ribobound);
-    end
+         txtl_translation(mode, tube, dna, rna, protein, Ribobound);
+    
     
     %% DNA, protein degradation
     
     % DNA degradation
     if strcmp(type, 'linear') 
-        % set up species for linear DNA degradation
-        % Extract is 1/3 of the 10ul reaction volume
-        extractStockMulti = 10/(10/3);
-        % Add in exonuclease 
-        txtl_addspecies(tube, 'RecBCD', extractStockMulti*5);	% % 0.3 from Clare Chen (Jongmin will provide ref)
-        
         txtl_dna_degradation(mode, tube, dna);
     end
     
@@ -277,15 +189,10 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
     
     rna = sbioselect(tube, 'Name', rnastr);
-    if exist(['txtl_utr_' rbsName], 'file') == 2
-        eval(['txtl_utr_' rbsName '(mode, tube, rna, protein)']);
+    if exist(['txtl_5UTR_' rbsName], 'file') == 2
+        eval(['txtl_5UTR_' rbsName '(mode, tube, rna, protein)']);
     else
-        if ~(mode.utr_antisense_flag || strcmp(rbsName, 'control'))
-            warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
-                '; using default rbs params']);
-        end
-        
-        txtl_utr_rbs(mode, tube, rna, protein, utrData);
+        txtl_5UTR_utr1(mode, tube, rna, protein, utrData);
     end
     
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
@@ -293,11 +200,8 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     dna = sbioselect(tube, 'Name', dnastr);
     % Transcription %%
     if exist(['txtl_prom_' promoterName], 'file') == 2 
-        if mode.utr_attenuator_flag
-        eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, rbs_spec, gene_spec)']);
-        else
-            eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, rbs_spec, gene_spec)']);
-        end
+        eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, utr_spec, cds_spec)']);
+
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
             '; using default promoter params']);
@@ -305,10 +209,8 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
     
     % Translation %%
-    if mode.utr_rbs_flag % no translation unless rbs present. (no rbs => no Ribobound)
         Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
         txtl_translation(mode, tube, dna, rna, protein, Ribobound);
-    end
     %% DNA, mRNA, protein degradation
     
     % DNA degradation
@@ -337,7 +239,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
     
     % Add in mRNA degradation reactions
-    txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec);
+    txtl_mrna_degradation(mode, tube, dna, rna, utr_spec);
     
     % Protein degradation (if tagged)
     if mode.prot_deg_flag

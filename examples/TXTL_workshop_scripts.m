@@ -8,7 +8,7 @@ clear all; close all; clc
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('geneexpr_noClpX');
-txtl_add_dna(tube3, 'p70(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'p70(50)', 'utr1(20)',...
     'deGFP(1000)-lva(20)', 10, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 [simData] = txtl_runsim(Mobj,14*60*60);
@@ -19,7 +19,7 @@ clear all;
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('geneexpr_ClpX');
-txtl_add_dna(tube3, 'p70(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'p70(50)', 'utr1(20)',...
     'deGFP-lva(1000)', 10, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj, 'protein ClpX*', 100);
@@ -32,9 +32,9 @@ txtl_plot(simData,Mobj);
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('negautoreg_plasmid');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'tetR(1200)', 1, 'plasmid');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'deGFP(1000)', 10, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj, 'aTc', 500);
@@ -43,9 +43,9 @@ txtl_plot(simData,Mobj);
 
 %% linear unprotected DNA
 tube3 = txtl_newtube('negautoreg_linear_noGamS');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'tetR(1200)', 1, 'linear');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'deGFP(1000)', 10, 'linear');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj, 'aTc', 500);
@@ -54,9 +54,9 @@ txtl_plot(simData,Mobj);
 
 %% linear protected DNA
 tube3 = txtl_newtube('negautoreg_linear_GamS');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'tetR(1200)', 1, 'linear');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'deGFP(1000)', 10, 'linear');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj, 'aTc', 500);
@@ -78,9 +78,9 @@ for i = 1:6
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('induction');
-txtl_add_dna(tube3, 'plac(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'plac(50)', 'utr1(20)',...
     'tetR(1200)', tetRconc(i), 'linear');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)',...
     'deGFP(1000)', 10, 'linear');
 Mobj_cellarray{i} = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj_cellarray{i}, 'aTc', aTcconc(i));
@@ -106,9 +106,9 @@ tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('IFFL_Sguo_plasmid');
 
-dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'rbs(20)', 'lasR(1000)',  1, 'plasmid'); % 163 in zach's index	
-dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'rbs(20)', 'tetR(1000)', 0.1,'plasmid'); % 196
-dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)-lva', 2,'plasmid');
+dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'utr1(20)', 'lasR(1000)',  1, 'plasmid'); % 163 in zach's index	
+dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'utr1(20)', 'tetR(1000)', 0.1,'plasmid'); % 196
+dna_deGFP = txtl_add_dna(tube3,  'plas_ptet(50)', 'utr1(20)', 'deGFP(1000)-lva', 2,'plasmid');
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
 % txtl_addspecies(Mobj, 'protein gamS', 3500);
@@ -134,9 +134,9 @@ tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('IFFL_Sguo_linear');
 
-dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'rbs(20)', 'lasR(1000)',  10, 'linear'); % 163 in zach's index	
-dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'rbs(20)', 'tetR(1200)', 10,'linear'); % 196
-dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)-lva', 10,'linear');
+dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'utr1(20)', 'lasR(1000)',  10, 'linear'); % 163 in zach's index	
+dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'utr1(20)', 'tetR(1200)', 10,'linear'); % 196
+dna_deGFP = txtl_add_dna(tube3,  'plas_ptet(50)', 'utr1(20)', 'deGFP(1000)-lva', 10,'linear');
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj, 'protein gamS', 100000);

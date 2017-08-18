@@ -17,20 +17,30 @@ classdef txtl_reaction_config
         RNAP_S70_R;
         GamS_RecBCD_F;
         GamS_RecBCD_R;
-        AA_Forward;
-        AA_Reverse;
+        TL_AA_Forward;
+        TL_AA_Reverse;
+        TL_AGTP_Forward;
+        TL_AGTP_Reverse;
         Ribosome_Binding_F;
         Ribosome_Binding_R;
         RNA_deg;
         RNase_F;
         RNase_R;
-        NTP_Forward;
-        NTP_Reverse;
+        NTP_Forward_1;
+        NTP_Reverse_1;
+        NTP_Forward_2;
+        NTP_Reverse_2;
         AGTP_Concentration;
         CUTP_Concentration;
         AA_Concentration;
         RNAPbound_termination_rate;
-      
+        Ribobound_termination_rate;
+        RecBCD_ic;
+        RNAP_ic;
+        Ribo_ic;
+        RNase_ic;
+        ATP_degradation_rate;
+        ATP_degradation_start_time
     end
     
     methods

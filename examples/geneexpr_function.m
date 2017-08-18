@@ -19,7 +19,7 @@ tube3 = txtl_newtube('gene_expression');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
-  promoter, 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
+  promoter, 'utr1(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
  dna_amount, ...					% concentration (nM)
   'plasmid');					% type
 

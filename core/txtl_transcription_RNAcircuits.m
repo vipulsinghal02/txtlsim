@@ -1,11 +1,10 @@
-% txtl_transcription.m - sigma factor independent implementation for gene
-% transcription in the TXTL system
-% RMM, 9 Sep 2012
+% txtl_transcription_RNAcircuits.m - transcription 
+% VS, 2017
 %
 % It can be called by promoter files that need to
 % set up the approriate transcription reactions.
 
-% Written by Richard Murray, 9 Sep 2012
+% Written by Vipul Singha, 2013
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.

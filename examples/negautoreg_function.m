@@ -24,7 +24,7 @@ tube3 = txtl_newtube('negautoreg');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', dna_amount, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'tetR(1200)', dna_amount, 'plasmid');
 
 
 

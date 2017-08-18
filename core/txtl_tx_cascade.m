@@ -160,7 +160,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
             txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
             'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate}); % change this rate to correct variable
     else
-        error('the number of argument should be at 9 or 10, not %d',nargin);
+        error('the number of arguments should be at 9 or 10, not %d',nargin);
     end
     
     

@@ -26,8 +26,8 @@ tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('genetics_switch');
 
 % add dna to tube3
-dna_lacI = txtl_add_dna(tube3,'ptet(50)', 'rbs(20)', 'lacI(647)', ptet_DNA, 'plasmid');
-dna_tetR = txtl_add_dna(tube3, 'plac(50)', 'rbs(20)', 'tetR(647)', placI_DNA, 'plasmid');
+dna_lacI = txtl_add_dna(tube3,'ptet(50)', 'utr1(20)', 'lacI(647)', ptet_DNA, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'plac(50)', 'utr1(20)', 'tetR(647)', placI_DNA, 'plasmid');
 % dna_deGFP = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'deGFP(1000)', ptet_DNA, 'plasmid');
 % dna_deCFP = txtl_add_dna(tube3, 'placI(50)', 'rbs(20)', 'deCFP(1000)', placI_DNA, 'plasmid');
 

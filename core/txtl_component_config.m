@@ -9,6 +9,8 @@ classdef txtl_component_config
         RNAPbound_Reverse_actv
         RNAPbound_Forward_2
         RNAPbound_Reverse_2
+        RBS_Length
+        spacer_Length
         Promoter_Length
         Thio_Length
         Junk_Length
@@ -44,6 +46,11 @@ classdef txtl_component_config
         prot_deg_R
         prot_deg_unfold
         ClpX_deg
+        Ribosome_Binding_F
+        Ribosome_Binding_R
+        Combinatorial_activ_knockoff_F
+        Combinatorial_activ_knockoff_R
+        
     end
     
     methods

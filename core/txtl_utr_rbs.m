@@ -1,4 +1,4 @@
-% txtl_utr_rbs.m - promoter information for standard RBS
+% txtl_utr_rbs.m - information for standard RBS
 % RMM, 8 Sep 2012
 %
 % This file contains a description of a standard ribosome binding site.

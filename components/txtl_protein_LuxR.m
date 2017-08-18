@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_protein_LuxR(mode, tube, protein, varargin)
+function varargout = txtl_protein_luxR(mode, tube, protein, varargin)
 % in 'setup Species' mode, it returns an array of gene lengths, having
 % added defaults in places where the lengths are missing. 
 
@@ -48,35 +48,35 @@ paramObj = txtl_component_config('luxR');
 if strcmp(mode.add_dna_driver, 'Setup Species')
 
     geneData = varargin{1};
-    defaultBasePairs = {'LuxR','lva','terminator';
+    defaultBasePairs = {'luxR','lva','terminator';
         paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     varargout{1} = geneData;
     
-    coreSpecies = {'AHL', ['AHL:' protein.Name]}; 
+    coreSpecies = {'OC6HSL', ['OC6HSL:' protein.Name]}; 
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
   listOfSpecies = varargin{1};
   
-    p = regexp(listOfSpecies,'^protein LuxR(-lva)?$', 'match');
+    p = regexp(listOfSpecies,'^protein luxR(-lva)?$', 'match');
     listOfProtein = vertcat(p{:});
 
 for k = 1:size(listOfProtein,1)
-       txtl_addreaction(tube,['[' listOfProtein{k} '] + AHL <-> [AHL:' listOfProtein{k} ']'],...
+       txtl_addreaction(tube,['[' listOfProtein{k} '] + OC6HSL <-> [OC6HSL:' listOfProtein{k} ']'],...
             'MassAction',{'TXTL_INDUCER_LUXR_AHL_F',paramObj.Protein_Inducer_Forward;...
             'TXTL_INDUCER_LUXR_AHL_R',paramObj.Protein_Inducer_Reverse});     
 end
-    % degrade the AHL inducer
-     txtl_addreaction(tube,'AHL -> null',...
-      'MassAction',{'TXTL_INDUCER_DEGRADATION_AHL',0.000267});%paramObj.Inducer_Degradation
+%     % degrade the AHL inducer (OPTIONAL MODE)
+%      txtl_addreaction(tube,'OC6HSL -> null',...
+%       'MassAction',{'TXTL_INDUCER_DEGRADATION_AHL',0.000267});%paramObj.Inducer_Degradation
 
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_LuxR:undefinedmode', ...
+    error('txtltoolbox:txtl_protein_luxR:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 

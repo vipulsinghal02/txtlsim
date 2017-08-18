@@ -15,9 +15,14 @@ tube3 = txtl_newtube('gene_expression');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
-  'p70(50)', 'utr1(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
+  'plas_ptet(50)', 'utr1(20)', 'lasR(1000)', ...	% promoter, rbs, gene
    30, ...					% concentration (nM)
   'plasmid');					% type
+dna_deGFP = txtl_add_dna(tube3, ...
+  'p70(50)', 'utr1(20)', 'tetR(1000)', ...	% promoter, rbs, gene
+   30, ...					% concentration (nM)
+  'plasmid');					% type
+txtl_addspecies(tube3, 'OC12HSL', 1000);
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
