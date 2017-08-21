@@ -3,6 +3,9 @@
 ## We have git for backups!
 ##---------------------------------------------------
 
+# .mat data files 
+*.mat
+
 # Windows default autosave extension
 *.asv
 
