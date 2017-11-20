@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>TXTL Tutorial</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-02"><meta name="DC.source" content="txtl_tutorial.m"><style type="text/css">
+      --><title>TXTL Tutorial</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-08-31"><meta name="DC.source" content="txtl_tutorial.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>TXTL Tutorial</h1><!--introduction--><p>txtl_tutorial.m - basic usage of the TXTL modeling toolbox Vipul Singhal, 28 July 2017</p><p>This file contains a simple tutorial of the TXTL modeling toolbox. You will learn about setting up a negative autoregulation circuit, simulating it, plotting the results, creating variations of the circuit, and understanding the object structure of the models.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initializing the toolbox</a></li><li><a href="#2">Negative Autoregulation - A simple example</a></li><li><a href="#3">plot the result</a></li><li><a href="#4">Model Structure</a></li><li><a href="#15">Plotting individual species</a></li><li><a href="#17">EMACS editor support (ignore)</a></li></ul></div><h2>Initializing the toolbox<a name="1"></a></h2><p>Use this command to add the subdirectories needed to your matlab path. To be run each time you begin a new TXTL toolbox session.</p><pre class="codeinput">txtl_init;
+  </style></head><body><div class="content"><h1>TXTL Tutorial</h1><!--introduction--><p>txtl_tutorial.m - basic usage of the TXTL modeling toolbox</p><p>Vipul Singhal, 28 July 2017</p><p>This file contains a simple tutorial of the TXTL modeling toolbox. You will learn about setting up a negative autoregulation circuit, simulating it, plotting the results, creating variations of the circuit, and understanding the object structure of the models.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Initializing the toolbox</a></li><li><a href="#2">Negative Autoregulation - A simple example</a></li><li><a href="#3">plot the result</a></li><li><a href="#4">Model Structure</a></li><li><a href="#15">Plotting individual species</a></li><li><a href="#17">EMACS editor support (ignore)</a></li></ul></div><h2>Initializing the toolbox<a name="1"></a></h2><p>Use this command to add the subdirectories needed to your matlab path. To be run each time you begin a new TXTL toolbox session.</p><pre class="codeinput">txtl_init;
 </pre><h2>Negative Autoregulation - A simple example<a name="2"></a></h2><p>Here we demonstrate the setup of a genetic circuit where a transcription factor represses its own expression.</p><p>Set up the standard TXTL tubes These load up the RNAP, Ribosome and degradation enzyme concentrations ``E30VNPRL'' refers to a configuration file</p><pre class="codeinput">tube1 = txtl_extract(<span class="string">'E30VNPRL'</span>);
 tube2 = txtl_buffer(<span class="string">'E30VNPRL'</span>);
 
@@ -74,8 +74,8 @@ tube2 = txtl_buffer(<span class="string">'E30VNPRL'</span>);
 tube3 = txtl_newtube(<span class="string">'gene_expression'</span>);
 
 <span class="comment">% Define the DNA strands, and all the relevant reactions</span>
-txtl_add_dna(tube3, <span class="string">'ptet(50)'</span>, <span class="string">'rbs(20)'</span>, <span class="string">'tetR(1200)'</span>, 1, <span class="string">'plasmid'</span>);
-txtl_add_dna(tube3, <span class="string">'ptet(50)'</span>, <span class="string">'rbs(20)'</span>, <span class="string">'deGFP(1000)'</span>, 1, <span class="string">'plasmid'</span>);
+txtl_add_dna(tube3, <span class="string">'ptet(50)'</span>, <span class="string">'utr1(20)'</span>, <span class="string">'tetR(1200)'</span>, 1, <span class="string">'plasmid'</span>);
+txtl_add_dna(tube3, <span class="string">'ptet(50)'</span>, <span class="string">'utr1(20)'</span>, <span class="string">'deGFP(1000)'</span>, 1, <span class="string">'plasmid'</span>);
 
 <span class="comment">% Mix the contents of the individual tubes</span>
 Mobj = txtl_combine([tube1, tube2, tube3]);
@@ -93,7 +93,7 @@ tic
 toc
 t_ode = simData.Time;
 x_ode = simData.Data;
-</pre><pre class="codeoutput">Elapsed time is 1.134961 seconds.
+</pre><pre class="codeoutput">Elapsed time is 1.991702 seconds.
 </pre><h2>plot the result<a name="3"></a></h2><p>The following function plots the proteins, RNA and resources in the toolbox. In the next section we delve deeper into the object oriented structure of the model, and how to plot arbitrary species in the model.</p><pre class="codeinput">txtl_plot(simData,Mobj);
 </pre><pre class="codeoutput">Current plot held
 </pre><img vspace="5" hspace="5" src="txtl_tutorial_01.png" style="width:560px;height:420px;" alt=""> <h2>Model Structure<a name="4"></a></h2><p>The model is organized as a model object, with sub objects specifying Parameters, Reactions, Species, etc. Type in</p><pre class="codeinput">Mobj
@@ -103,59 +103,64 @@ x_ode = simData.Data;
    Model Components:
      Compartments:      1
      Events:            2
-     Parameters:        73
-     Reactions:         47
+     Parameters:        84
+     Reactions:         54
      Rules:             0
-     Species:           43
+     Species:           48
 
 </pre><p>There is one comaprtment, 2 events, 73 parameters, 47 Reactions, no rules and 43 Species in the toolbox. We can explore further by typing, for example,</p><pre class="codeinput">Mobj.Species
 </pre><pre class="codeoutput">
    SimBiology Species Array
 
-   Index:    Compartment:    Name:                                     InitialAmount:    InitialAmountUnits:
-   1         contents        RNAP                                      100               
-   2         contents        protein sigma70                           35                
-   3         contents        protein sigma28                           20                
-   4         contents        Ribo                                      50                
-   5         contents        RNAP70                                    0                 
-   6         contents        RNase                                     100               
-   7         contents        AGTP                                      3.18005e+06       
-   8         contents        CUTP                                      1.90803e+06       
-   9         contents        AA                                        3.18005e+07       
-   10        contents        protein tetR                              0                 
-   11        contents        aTc                                       0                 
-   12        contents        protein tetRdimer                         0                 
-   13        contents        RNA rbs--tetR                             0                 
-   14        contents        Ribo:RNA rbs--tetR                        0                 
-   15        contents        DNA ptet--rbs--tetR                       1                 
-   16        contents        RNAP70:DNA ptet--rbs--tetR                0                 
-   17        contents        CUTP:AGTP:RNAP70:DNA ptet--rbs--tetR      0                 
-   18        contents        term_RNAP70:DNA ptet--rbs--tetR           0                 
-   19        contents        AA:AGTP:Ribo:RNA rbs--tetR                0                 
-   20        contents        protein deGFP                             0                 
-   21        contents        protein deGFP*                            0                 
-   22        contents        RNA rbs--deGFP                            0                 
-   23        contents        Ribo:RNA rbs--deGFP                       0                 
-   24        contents        DNA ptet--rbs--deGFP                      1                 
-   25        contents        RNAP70:DNA ptet--rbs--deGFP               0                 
-   26        contents        CUTP:AGTP:RNAP70:DNA ptet--rbs--deGFP     0                 
-   27        contents        term_RNAP70:DNA ptet--rbs--deGFP          0                 
-   28        contents        AA:AGTP:Ribo:RNA rbs--deGFP               0                 
-   29        contents        RNAP28                                    0                 
-   30        contents        2 aTc:protein tetRdimer                   0                 
-   31        contents        AGTP:RNAP70:DNA ptet--rbs--tetR           0                 
-   32        contents        CUTP:RNAP70:DNA ptet--rbs--tetR           0                 
-   33        contents        DNA ptet--rbs--tetR:protein tetRdimer     0                 
-   34        contents        RNA rbs--tetR:RNase                       0                 
-   35        contents        AA:AGTP:Ribo:RNA rbs--tetR:RNase          0                 
-   36        contents        Ribo:RNA rbs--tetR:RNase                  0                 
-   37        contents        AGTP:RNAP70:DNA ptet--rbs--deGFP          0                 
-   38        contents        CUTP:RNAP70:DNA ptet--rbs--deGFP          0                 
-   39        contents        DNA ptet--rbs--deGFP:protein tetRdimer    0                 
-   40        contents        RNA rbs--deGFP:RNase                      0                 
-   41        contents        AA:AGTP:Ribo:RNA rbs--deGFP:RNase         0                 
-   42        contents        Ribo:RNA rbs--deGFP:RNase                 0                 
-   43        contents        AGTP_UNUSE                                0                 
+   Index:    Compartment:    Name:                                      InitialAmount:    InitialAmountUnits:
+   1         contents        RNAP                                       100               
+   2         contents        Ribo                                       30                
+   3         contents        RecBCD                                     5                 
+   4         contents        RNase                                      100               
+   5         contents        AGTP                                       3.18005e+06       
+   6         contents        CUTP                                       1.90803e+06       
+   7         contents        AA                                         3.18005e+07       
+   8         contents        protein tetR                               0                 
+   9         contents        aTc                                        0                 
+   10        contents        protein tetRdimer                          0                 
+   11        contents        RNA utr1--tetR                             0                 
+   12        contents        Ribo:RNA utr1--tetR                        0                 
+   13        contents        DNA ptet--utr1--tetR                       1                 
+   14        contents        RNAP:DNA ptet--utr1--tetR                  0                 
+   15        contents        CUTP:AGTP:RNAP:DNA ptet--utr1--tetR        0                 
+   16        contents        term_RNAP:DNA ptet--utr1--tetR             0                 
+   17        contents        AA:2AGTP:Ribo:RNA utr1--tetR               0                 
+   18        contents        term_Ribo:RNA utr1--tetR                   0                 
+   19        contents        protein deGFP                              0                 
+   20        contents        protein deGFP*                             0                 
+   21        contents        RNA utr1--deGFP                            0                 
+   22        contents        Ribo:RNA utr1--deGFP                       0                 
+   23        contents        DNA ptet--utr1--deGFP                      1                 
+   24        contents        RNAP:DNA ptet--utr1--deGFP                 0                 
+   25        contents        CUTP:AGTP:RNAP:DNA ptet--utr1--deGFP       0                 
+   26        contents        term_RNAP:DNA ptet--utr1--deGFP            0                 
+   27        contents        AA:2AGTP:Ribo:RNA utr1--deGFP              0                 
+   28        contents        term_Ribo:RNA utr1--deGFP                  0                 
+   29        contents        2 aTc:protein tetRdimer                    0                 
+   30        contents        AGTP:RNAP:DNA ptet--utr1--tetR             0                 
+   31        contents        CUTP:RNAP:DNA ptet--utr1--tetR             0                 
+   32        contents        DNA ptet--utr1--tetR:protein tetRdimer     0                 
+   33        contents        AA:Ribo:RNA utr1--tetR                     0                 
+   34        contents        RNA utr1--tetR:RNase                       0                 
+   35        contents        Ribo:RNA utr1--tetR:RNase                  0                 
+   36        contents        AA:2AGTP:Ribo:RNA utr1--tetR:RNase         0                 
+   37        contents        term_Ribo:RNA utr1--tetR:RNase             0                 
+   38        contents        AA:Ribo:RNA utr1--tetR:RNase               0                 
+   39        contents        AGTP:RNAP:DNA ptet--utr1--deGFP            0                 
+   40        contents        CUTP:RNAP:DNA ptet--utr1--deGFP            0                 
+   41        contents        DNA ptet--utr1--deGFP:protein tetRdimer    0                 
+   42        contents        AA:Ribo:RNA utr1--deGFP                    0                 
+   43        contents        RNA utr1--deGFP:RNase                      0                 
+   44        contents        Ribo:RNA utr1--deGFP:RNase                 0                 
+   45        contents        AA:2AGTP:Ribo:RNA utr1--deGFP:RNase        0                 
+   46        contents        term_Ribo:RNA utr1--deGFP:RNase            0                 
+   47        contents        AA:Ribo:RNA utr1--deGFP:RNase              0                 
+   48        contents        AGTP_USED                                  0                 
 
 </pre><p>We see that there are 43 species in the model, and they have somewhat different syntax for specification. Proteins, RNA and DNA generally follow the convention protein CDS, RNA 5'UTR--CDS, DNA promoter--5' UTR--CDS, with variations possible. There are also simply named `core' species like RNAP, Ribo, RNase, etc. Finally we denote bound complexes with a colon, for example, Species 1:Species 2.</p><p>We also see that each of them has certain other associated properties. You can explore further by accessing individual species using their index, and using the `get' and `set' commands to get and set the properties of the species. For example, try typing</p><pre class="codeinput">Mobj.Species(1)
 </pre><pre class="codeoutput">
@@ -199,6 +204,7 @@ axis([curraxis(1:2) 0 curraxis(4)])
 ##### SOURCE BEGIN #####
 %% TXTL Tutorial
 % txtl_tutorial.m - basic usage of the TXTL modeling toolbox
+%
 % Vipul Singhal, 28 July 2017
 %
 % This file contains a simple tutorial of the TXTL modeling toolbox. You
@@ -225,8 +231,8 @@ tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('gene_expression');
 
 % Define the DNA strands, and all the relevant reactions
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1, 'plasmid');
-txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'deGFP(1000)', 1, 'plasmid');
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'tetR(1200)', 1, 'plasmid');
+txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);

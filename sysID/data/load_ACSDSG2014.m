@@ -43,8 +43,5 @@ switch mode
         meta = {'t is in minutes'; 
             'DNA conc for the GFP were 0.2, 0.5, 1, 2, 5, 20'};
 end
-
-
-
 end
 

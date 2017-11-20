@@ -21,18 +21,20 @@ txtl_init;
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 % ``E30VNPRL'' refers to a configuration file 
 tube1 = txtl_extract('E30VNPRL');
+%%
 tube2 = txtl_buffer('E30VNPRL');
-
+%%
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
-
+%%
 % Define the DNA strands, and all the relevant reactions
 txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'tetR(1200)', 1, 'plasmid');
+%%
 txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');
-
+%%
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
-
+%%
 % Run a simulaton
 %
 % At this point, the entire experiment is set up and loaded into 'Mobj'.
@@ -40,12 +42,18 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % and plot our results!
 
 cs = getconfigset(Mobj);
+%%
 set(cs.RuntimeOptions, 'StatesToLog', 'all');
+%%
 tic
+%%
 [simData] = txtl_runsim(Mobj,14*60*60);
+%%
 toc
 t_ode = simData.Time;
+%%
 x_ode = simData.Data;
+%%
 
 %% plot the result
 % The following function plots the proteins, RNA and resources in the

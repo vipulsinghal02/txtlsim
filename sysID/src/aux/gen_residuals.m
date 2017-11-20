@@ -36,7 +36,8 @@ if ~iscell(exportedMdlObj)
         
         spSD = selectbyname(sd, measuredSpecies);
         % !TODO :test if i can just feed in the cell of strings.
-        CONC_temp((i-1)*length(timevec) + 1:(i-1)*length(timevec) +length(timevec), :) = spSD.Data; % and then just do this.
+        CONC_temp((i-1)*length(timevec) + 1:(i-1)*length(timevec) +...
+            length(timevec), :) = spSD.Data; % and then just do this.
     end
     ExpData = data_array;
     if isequal(size(CONC_temp), size(ExpData))
@@ -55,11 +56,15 @@ else
     % check that all the arrays are in the right format.
     % I think using cell arrays here is probably very slow. But lets try it
     % nonetheless for generality
-    if ~iscell(data_array) || ~iscell(timevec) || ~iscell(dosedInitVals) || ~iscell(measuredSpecies)
-        error('txtl_toolbox:genresiduals:inputsIncompatible1', 'Cell array expected for data, time vector, dose values, and measured species')
+    if ~iscell(data_array) || ~iscell(timevec) || ~iscell(dosedInitVals) ...
+            || ~iscell(measuredSpecies)
+        error('txtl_toolbox:genresiduals:inputsIncompatible1',...
+            'Cell array expected for data, time vector, dose values, and measured species')
     end
-    assert(isequal(length(exportedMdlObj), length(data_array), length(timevec), length(dosedInitVals), length(measuredSpecies)), ...
-        'txtl_toolbox:genresiduals:inputsIncompatible2', 'The number of cells in the input arrays must be equal')
+    assert(isequal(length(exportedMdlObj), length(data_array), ...
+        length(timevec), length(dosedInitVals), length(measuredSpecies)), ...
+        'txtl_toolbox:genresiduals:inputsIncompatible2',...
+        'The number of cells in the input arrays must be equal')
     
     nOpt = length(exportedMdlObj);
 %     preallocate redidual array for speed
@@ -98,7 +103,8 @@ nres = zeros(nOpt, 1);
             
             spSD = selectbyname(sd, mS);
             % !TODO :test if i can just feed in the cell of strings.
-            CONC_temp((i-1)*length(tv) + 1:(i-1)*length(tv) +length(tv), :) = spSD.Data; % and then just do this.
+            CONC_temp((i-1)*length(tv) + 1:(i-1)*length(tv) +length(tv), :) ...
+                = spSD.Data; % and then just do this.
         end
         ExpData = da;
         if isequal(size(CONC_temp), size(ExpData))
