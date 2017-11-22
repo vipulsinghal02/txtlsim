@@ -110,8 +110,8 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % define the nucleotide binding parameters
     NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward_1;
         'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse_1};
-    NTPparameters_fast = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward_2;
-        'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse_2};
+    NTPparameters_fast = {'TXTL_NTP_RNAP_2_F', tube.UserData.ReactionConfig.NTP_Forward_2;
+        'TXTL_NTP_RNAP_2_R', tube.UserData.ReactionConfig.NTP_Reverse_2};
     
     % add the nucleotide binding reaction
     txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...
