@@ -1,4 +1,4 @@
-function [m] = globalize_parames(m)
+function [m] = globalize_params(m)
 % globalize_params change the scope of all the parameters from the reaction
 % to the model.
 %   delete the locally scoped parameters and add parameters at the model
