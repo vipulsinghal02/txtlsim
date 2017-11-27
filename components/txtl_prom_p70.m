@@ -69,8 +69,8 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
-
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    
+    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
@@ -81,6 +81,9 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
+    
+    
+    
     
     % Parameters that describe this promoter
     parameters = {'TXTL_P70_RNAPbound_F',paramObj.RNAPbound_Forward;...

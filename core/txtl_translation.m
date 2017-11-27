@@ -4,17 +4,17 @@
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
 % met:
-% 
+%
 %   1. Redistributions of source code must retain the above copyright
 %      notice, this list of conditions and the following disclaimer.
 %
-%   2. Redistributions in binary form must reproduce the above copyright 
-%      notice, this list of conditions and the following disclaimer in the 
+%   2. Redistributions in binary form must reproduce the above copyright
+%      notice, this list of conditions and the following disclaimer in the
 %      documentation and/or other materials provided with the distribution.
 %
-%   3. The name of the author may not be used to endorse or promote products 
+%   3. The name of the author may not be used to endorse or promote products
 %      derived from this software without specific prior written permission.
-% 
+%
 % THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
 % IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 % WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -35,80 +35,97 @@ function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
-     % Set up the species for translation 
-     Ribobound_term = ['term_' Ribobound.Name ];
+    % Set up the species for translation
+    Ribobound_term = ['term_' Ribobound.Name ];
     coreSpecies = {'AA',['AA:2AGTP:' Ribobound.Name],Ribobound_term, 'Ribo'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
+    %% Resource binding
     AAparameters = {'TL_AA_F',tube.UserData.ReactionConfig.TL_AA_Forward;
-                  'TL_AA_R',tube.UserData.ReactionConfig.TL_AA_Reverse};
+        'TL_AA_R',tube.UserData.ReactionConfig.TL_AA_Reverse};
     AGTPparameters = {'TL_AGTP_F',tube.UserData.ReactionConfig.TL_AGTP_Forward;
-                  'TL_AGTP_R',tube.UserData.ReactionConfig.TL_AGTP_Reverse};
-              
-    % translation rate             
-    ktlExpression =  strrep(tube.UserData.ReactionConfig.Translation_Rate,...
-            'Protein_Length','protein.UserData');             
-    ktl_rbs = eval(ktlExpression);              
-              
-    % define termination complex. 
-    Ribobound_term = ['term_' Ribobound.Name ];
+        'TL_AGTP_R',tube.UserData.ReactionConfig.TL_AGTP_Reverse};
     
-    % AA consumption models              
-    if tube.UserData.ReactionConfig.AAmodel == 1
-    % multimolecular binding, bad idea
-        aacnt = floor(protein.UserData/100);  % get number of K amino acids
-        if (aacnt == 0) 
-          aastr = '';
-        else
-          aastr = int2str(aacnt);
-        end
-        
-        txtl_addreaction(tube,...
-            ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']'],...
-            'MassAction',AAparameters);
-    else
-        % consumption reaction usage, a much better method. 
-        % resource binding
-        txtl_addreaction(tube, ...
-            ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']'],...
-            'MassAction',AAparameters);
-        txtl_addreaction(tube, ...
-            ['[AA:' Ribobound.Name ']  + 2 AGTP <-> [AA:2AGTP:' Ribobound.Name ']'],...
-            'MassAction',AGTPparameters);
-        
-        % consumption reaction
-        aacnt = floor(protein.UserData/100);
-        aa_consump_rate = (aacnt-1)*ktl_rbs;
-        txtl_addreaction(tube, ...
-            ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term],...
-            'MassAction',{'TXTL_TL_AA_consumption',aa_consump_rate});
+    % resource binding
+    txtl_addreaction(tube, ...
+        ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']'],...
+        'MassAction',AAparameters);
+    txtl_addreaction(tube, ...
+        ['[AA:' Ribobound.Name ']  + 2 AGTP <-> [AA:2AGTP:' Ribobound.Name ']'],...
+        'MassAction',AGTPparameters);
+    
+    
+    %% create the rules for the global parameters for the TL reaction and the consumption reaction
+    % add global elongation parameter
+    addparameter(tube, 'TL_elong_glob',tube.UserData.ReactionConfig.Translation_Rate);
+    
+    % grab the name strings for the protein
+    temp = regexp(protein.name, 'protein (\w*)', 'tokens');
+    protspec = [temp{1}{1}];
+    
+    % use this sting to name the translation and consumption reactions
+    tlparamname = ['TL_translation_' protspec];
+    resourceconsname = ['TL_REScons_' protspec];
+    
+    %%%%%
+    % get the protein length, which decides what the actual protein production
+    % rate is
+    proteinlength = round(protein.UserData);
+    
+    % add the transcription parameter in the model scope, with the length
+    % adjusted value.
+    addparameter(tube, tlparamname,tube.UserData.ReactionConfig.Translation_Rate/proteinlength);
+    
+    % compute the consumption reaction rate as follows
+    % pcnt = protein.length.
+    aacnt = round(proteinlength);
+    % add the aa consumption parameter in the global scope.
+    addparameter(tube, resourceconsname,tube.UserData.ReactionConfig.Translation_Rate/proteinlength*(aacnt-1));
+    
+    % now we actually add the rule that sets the translation rate and the
+    % aa consumption rate.
+    ruleStr = [tlparamname ' =  TL_elong_glob/' num2str(proteinlength)];
+    if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
+        addrule(tube, ruleStr, 'initialAssignment');
     end
     
-    % Translation (creation of protein and termination complex)
-    txtl_addreaction(tube, ...
-     ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term ' + ' protein.Name ],...
-     'MassAction',{'TXTL_TL_rate',ktl_rbs});
+    % add the reaction
+    Ribobound_term = ['term_' Ribobound.Name ];
+    reactionObj = addreaction(tube, ...
+        ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term ' + ' protein.Name ]);
+    addkineticlaw (reactionObj, 'MassAction');
+    reactionObj.KineticLaw.ParameterVariableNames = tlparamname;
     
-        % translation termination reaction
+    % do the same for the consumption reactions
+    ruleStr = [resourceconsname ...
+        ' =  TL_elong_glob/' num2str(proteinlength) '*(' num2str(aacnt) '-1)'];
+    if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
+        addrule(tube, ruleStr, 'initialAssignment');
+    end
+    
+    % add the consumption reactions.
+    reactionObj = addreaction(tube, ...
+        ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term]);
+    addkineticlaw (reactionObj, 'MassAction');
+    reactionObj.KineticLaw.ParameterVariableNames = resourceconsname;
+    %%%%%
+    
+    
+    % translation termination reaction
     txtl_addreaction(tube,['[' Ribobound_term '] -> ' rna.Name ' +  Ribo'],...
-            'MassAction',{'TXTL_RIBOBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.Ribobound_termination_rate});
+        'MassAction',{'TXTL_RIBOBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.Ribobound_termination_rate});
     % !TODO add these parameters to the config files and the parameter class
     
-    % old translation
-%     txtl_addreaction(tube, ...
-%      ['[AA:AGTP:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
-%      'MassAction',{'TXTL_TL_rate',ktl_rbs});
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_translation:undefinedmode', ...
-      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end    
-    
+        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end
+
 
 end

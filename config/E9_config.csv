@@ -1,7 +1,7 @@
 NTPmodel,Numeric,2, NTP model in use, see documentation
 AAmodel,Numeric,2, AA model in use, see documentation
-Transcription_Rate, Expression, log(2)/(RNA_Length/50), 50 NTP/second transcription
-Translation_Rate, Expression, log(2)/(Protein_Length/0.64), 1.5 AA/second translation 
+Transcription_Rate, Expression, log(2), 
+Translation_Rate, Expression, log(2), 
 
 DNA_RecBCD_Forward, Numeric, 0.4, 
 DNA_RecBCD_Reverse, Numeric, 0.1,

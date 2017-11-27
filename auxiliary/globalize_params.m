@@ -30,7 +30,6 @@ for r = 1:R
             % cell array of numbers, also put this outside the P loop.
         end
         
-        
         for p = 1:P
             % delete the parameter objects
             pTarget = sbioselect(rx, 'type', 'parameter', 'Name', parnames{p});
