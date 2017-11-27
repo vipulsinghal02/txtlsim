@@ -1,0 +1,34 @@
+MCMC estimation for MG apt and GFP, using the TXTL modeling toolbox 
+Data from file 'data_dsg2014' 
+################################################ 
+The estimated species and parameters are: 
+TX_elong_glob in range [0.01 100] 
+TL_elong_glob in range [0.01 100] 
+AGTPdeg_time in range [600 57600] 
+AGTPdeg_rate in range [1e-05 0.001] 
+TXTL_PROT_deGFP_MATURATION in range [0.001 0.1] 
+TXTL_UTR_UTR1_Kd in range [0.001 100] 
+TXTL_P70_RNAPbound_Kd in range [0.001 100] 
+TXTL_RNAPBOUND_TERMINATION_RATE in range [0.001 10] 
+TXTL_NTP_RNAP_1_Kd in range [0.001 100] 
+TXTL_NTP_RNAP_2_Kd in range [0.001 100] 
+TL_AA_Kd in range [0.001 100] 
+TL_AGTP_Kd in range [0.001 100] 
+TXTL_RIBOBOUND_TERMINATION_RATE in range [0.001 10] 
+TXTL_RNAdeg_Kd in range [0.001 100] 
+RNAP in range [0.1 5000] 
+Ribo in range [0.1 5000] 
+RNase in range [0.1 5000] 
+################################################ 
+Dosed Species are: 
+DNA p70--utr1--deGFP 
+################################################ 
+Simulation Parameters are: 
+path: /Users/vipulsinghal/Dropbox/Documents/vipul_repo/mcmc/code_mcmc/mcmc_simbio/projects/TXTLMT_MCMC_example 
+stdev: 1.0 
+number of walkers: 40 
+step size:2.10 
+tightening: 1.00 
+number of repeats: 2 
+thinning: 4 
+points per iter: 1000 
