@@ -1,0 +1,3 @@
+# git ignore file for the projects directory
+/proj_*/
+
