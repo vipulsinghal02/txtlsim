@@ -11,5 +11,6 @@ addpath([filedir '/examples'])
 addpath([filedir '/examples/CompanionFiles'])
 addpath([filedir '/tests'])
 addpath([filedir '/data'])
+addpath([filedir '/mcmc_simbio'])
 txtldir = filedir;
 end

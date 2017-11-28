@@ -9,34 +9,39 @@ function [m, emo ,mi] = model_dsg2014(mi,tv, varargin)
 %
 % THIS MODEL: <add info here>
 
-%% get txtl modeling toolbox
-if nargin >2
-    txtl_directory = varargin{1};
-else
-    % get the name of the (project) file calling this function, and its path.
-    % get the path of this file, replace with mfilename
-    fp = mfilename('fullpath');
-    slashes = regexp(fp, '/');
-    % looks like slashes =
-    %      1     7    20    28    38    49    54    64    76
-    mcmc_simbio_relpath = fp(1:slashes(end-1)-1);
-    % looks something like /Users/vipulsinghal/Dropbox/Documents/vipul_repo/mcmc/code_mcmc/mcmc_simbio
-    txtl_directory = [mcmc_simbio_relpath '/src/txtl_modeling_toolbox'];
-end
+% %% get txtl modeling toolbox
+% if nargin >2
+%     txtl_directory = varargin{1};
+% else
+%     % get the name of the (project) file calling this function, and its path.
+%     % get the path of this file, replace with mfilename
+%     fp = mfilename('fullpath');
+%     slashes = regexp(fp, '/');
+%     % looks like slashes =
+%     %      1     7    20    28    38    49    54    64    76
+%     mcmc_simbio_relpath = fp(1:slashes(end-1)-1);
+%     % looks something like /Users/vipulsinghal/Dropbox/Documents/vipul_repo/mcmc/code_mcmc/mcmc_simbio
+%     txtl_directory = [mcmc_simbio_relpath '/src/txtl_modeling_toolbox'];
+% end
+% 
+% addpath(txtl_directory);
+% txtl_init
 
-addpath(txtl_directory);
-txtl_init
-
-%% Setup base model using the TXTL modeling toolbox
+%% ################## EDIT THIS SECTION AS NEEDED ####################
+% Specify the config files, dna, inducers etc. See TXTL Modeling toolbox
+% documentation as needed. 
 
 % setup model object (this model uses the txtl toolbox at 
 tube1 = txtl_extract('Emcmc2017');
 tube2 = txtl_buffer('Emcmc2017');
 tube3 = txtl_newtube('gene_expression');
 txtl_add_dna(tube3, ...
-  'p70(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');					
+  'p70(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');	
+
 m = txtl_combine([tube1, tube2, tube3]);
 
+
+%% MOST OFTEN YOU WILL NOT NEED TO TOUCH THIS SECTION
 cs1 = getconfigset(m);
 set(cs1.RuntimeOptions, 'StatesToLog', 'all');
 
@@ -49,10 +54,9 @@ tic
     [~] = txtl_runsim(m,tv(end));
 toc
 
-%% remove txtl modeling toolbox
 
-
-%% modify the base model to get it ready for parameter estimation. 
+%% DONT TOUCH THIS SECTION
+% modify the base model to get it ready for parameter estimation. 
 % Change the scope of the reversible reaction parameters from the
 % reaction to the model level scope. This is needed for adding rules
 % between the parameters (like Kd rules).
@@ -68,8 +72,11 @@ toc
 
 globalize_params(m)
 
-%% export and accelerate simbiology model object using estimated species
+%% DONT TOUCH THIS SECTION
+% export and accelerate simbiology model object using estimated species
 % and dosing species names
+
+% select the parameters and species objects using the name array
 ep = sbioselect(m, 'Type', 'parameter', 'Name', ...
     mi.names_unord);% est parameters
 
@@ -78,6 +85,8 @@ es = sbioselect(m, 'Type', 'species', 'Name', ...
 
 aps = [ep; es]; % active parameters and species
 
+% reorder the parameter and species so they are in the same order as that
+% in the model. 
 eno = cell(length(aps), 1);% est names ordered
 
 for i = 1:length(aps)

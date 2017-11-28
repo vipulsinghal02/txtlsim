@@ -1,4 +1,4 @@
-function mcmc_info = mcmc_info_dsg2014
+function mcmc_info = mcmc_info_example
 % This file contains the info on 
 % - which parameters in the model get estimated
 % - what the dosing strategy is for the model
@@ -82,11 +82,11 @@ measuredSpecies = {{'[RNA utr1--deGFP]',...
 %% setup the MCMC simulation parameters
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 400; % actual: 200 - 600 ish
+nW = 40; % actual: 200 - 600 ish
 stepsize = 2.1; % actual: 2 to 4 ish
-niter = 10; % actual: 2 - 20 ish,
-npoints = 5e4; % actual: 1e5 ish
-thinning = 5; % actual: 10 to 40 ish
+niter = 2; % actual: 2 - 20 ish,
+npoints = 1e3; % actual: 1e5 ish
+thinning = 4; % actual: 10 to 40 ish
 
 
 
@@ -104,7 +104,7 @@ mcmc_info = struct(...
     'niter', {niter}, ...
     'npoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', true);
+    'parallel', false);
 
 
 
