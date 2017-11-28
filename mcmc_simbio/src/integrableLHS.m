@@ -85,7 +85,7 @@ if iscell(eMO)
 else
     
     nparam = length(enames);
-    npts = round(nW*4); % can tolerate up to 75% non integrability.
+    npts = round(nW*2); % can tolerate up to 50% non integrability.
     % Increase the factor here if you need to tolerate more.
     
     % generate latin hyper cube distributed points to test for
