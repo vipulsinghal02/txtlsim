@@ -11,7 +11,8 @@ function res = gen_residuals_3(logp, em, data_array, tv, ...
 % - tv is a time vector, just a vector of timepoints in seconds
 % 
 % - dv is a matrix of dose vals of size  # species to
-% dose x # dose combinations. We do not need to specify the names of the species to dose because
+% dose x # dose combinations. We do not need to specify the names of the 
+% species to dose because
 % that gets done when the exported model object gets made. 
 % 
 % - ms is a cell array of subcells of strings. so for example, we have 
@@ -41,7 +42,6 @@ p = p.Results;
 multiparam = p.multiopt_params; 
 summed_trajectories = zeros(length(tv), 1);
 
-
 if ~iscell(em)
     meanVals = mean(mean(data_array, 1), 3); % a 1 by # measured variables array
     wt = sum(meanVals)./meanVals; %hight mean = lower wt
@@ -60,10 +60,37 @@ if ~iscell(em)
     end
     
     ExpData = data_array;
-    if isequal(size(CONC_temp), size(ExpData)) % both must be #timepoints x # measured species x # dose combinations
-        relWt_tiled = repmat(relWt, size(CONC_temp,1), 1,  size(CONC_temp,3)); 
+    if isequal(size(CONC_temp), size(ExpData)) % both must be #timepoints x
+        % # measured species x # dose combinations
+        relWt_tiled = repmat(relWt, size(CONC_temp,1), 1,  size(CONC_temp,3));
         residuals = relWt_tiled.*(CONC_temp - ExpData);
         res = residuals(:);
+%         scaledsimdata = relWt_tiled.*(CONC_temp);
+%         scaleddata = relWt_tiled.*(ExpData);
+%         figure
+%         for ccol = 1:2
+%             for rrow = 1:4
+%                 subplot(4, 2, (rrow-1)*2+ccol)
+%                 plot(tv, CONC_temp(:,ccol, rrow), 'r', tv, scaledsimdata(:,ccol, rrow), 'b');
+%                 hold on
+%                 plot(tv, ExpData(:,ccol, rrow), ':r', tv, scaleddata(:,ccol, rrow), ':b');
+%                 hold on 
+%                 plot(tv, residuals(:,ccol, rrow), 'k');
+%             end
+%         end
+        
+%         figure
+%         for ccol = 1:2
+%             for rrow = 1:4
+%                 subplot(4, 2, (rrow-1)*2+ccol)
+%                 plot(tv, scaledsimdata(:,ccol, rrow), 'b');
+%                 hold on
+%                 plot(tv, scaleddata(:,ccol, rrow), ':b');
+%                 hold on 
+%                 plot(tv, residuals(:,ccol, rrow), 'k');
+%             end
+%         end
+        
         % scale the residuals by relative weight. THis emphasizes
         % the species which are low conc,
         % and deemphasizes species which are high in magnitude
@@ -90,7 +117,7 @@ else
     nOpt = length(em);
 %     preallocate redidual array for speed
 
-nres = zeros(nOpt, 1);
+    nres = zeros(nOpt, 1);
 
 
     for kk = 1:nOpt

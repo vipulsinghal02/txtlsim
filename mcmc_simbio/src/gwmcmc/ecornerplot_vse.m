@@ -19,7 +19,8 @@ function H=ecornerplot_vse(m,varargin)
 %   support: a 2xM matrix with upper and lower limits.
 %   ess: effective sample size. [default: auto-determine ess using EACORR.]
 %        - used to adjust bandwidth estimates in kernel density estimates.
-%   scatter: show scatter plot instead of 2d-kernel density estimate [true if #points<2000]. 
+%   scatter: show scatter plot instead of 2d-kernel density estimate 
+%           [true if #points<2000]. 
 %   fullmatrix: display upper corner of plotmatrix. [false]
 %   color: A color-theme for the plot. [.5 .5 .5].
 %   grid: show grid. [false].
@@ -84,7 +85,7 @@ Np=size(m,1);
 if p.ess>Np
     error('Effective Sample Size (ess) must be smaller than number of samples')
 end
-if M>20
+if M>25
     error('Too many dimensions. You probably don''t want to make that many subplots. ')
 end
 if isnan(p.scatter)
@@ -145,7 +146,7 @@ for r=1:M
         else
             if p.scatter
                 scplot = scatter(m(:,c),m(:,r),'.','CData',p.color);
-                scplot.MarkerEdgeAlpha = p.transparency;
+                scplot.MarkerEdgeAlpha = p.scatter; % changed from p.transparency;
             else
                 %                 [N,C]=hist3(m(:,[c r]),[0 0]+ceil(sqrt(Np)/5));
                 %                 imagesc(C{1},C{2},N)

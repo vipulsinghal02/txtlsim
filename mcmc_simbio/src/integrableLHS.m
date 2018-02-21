@@ -9,7 +9,7 @@ function int_minit = integrableLHS(eMO, nW, paramranges,...
 % spread = log-spread of the parameter values around logp
 % logp = the parameters that set the center of the latin hypercube
 % NEW VERSION:
-% just specify the parameter ranges explicitly
+% just specify the parameter ranges explicitly. these are log transformed. 
 
 % enames = names of estimated parameters
 % ds = dosing strategy
@@ -22,7 +22,11 @@ function int_minit = integrableLHS(eMO, nW, paramranges,...
 
 p = inputParser;
 p.addParameter('multiopt_params', [], @isnumeric)
+p.addParameter('distribution', 'LHS', @ischar)
+p.addParameter('width', .001, @isnumeric)
+
 p.parse(varargin{:});
+
 p = p.Results;
 
 if iscell(eMO)
@@ -36,7 +40,7 @@ if iscell(eMO)
     assert(isequal(length(eMO), size(mop, 1)), ...
         'The number of sub optimization problems must be consistent in the array of model objects and the estimation structure array');
     nOpt = length(eMO);
-    nparam = length(logp);
+    nparam = length(logp); % logp not defined?
     % for each sub problem, get indices of the integrable points
     % Most of the time we seem for have 70% or more integrability. So assume we lose 30% of points per sub problem.
     npts = round(nW/max([0.65^nOpt 0.1])); %we allow for up to 10X multiplication, need to rethink the method if this does not suffice
@@ -90,11 +94,31 @@ else
     
     % generate latin hyper cube distributed points to test for
     % integrability
-    lhsamp = lhsdesign(npts, nparam); 
-    lhsamp = lhsamp';% nparam by npts matrix of LHS points
+    switch p.distribution
+        case 'LHS'
+            lhsamp = lhsdesign(npts, nparam);
+            lhsamp = lhsamp'; % nparam by npts matrix of LHS points
+            
+            minit= ...
+                lhsamp.*(repmat(paramranges(:, 2), 1, npts)-repmat(paramranges(:, 1), 1, npts))+...
+                repmat(paramranges(:, 1), 1, npts);
+            
+        case 'gaussian'
+            midpt = (repmat(paramranges(:, 2), 1, npts) +...
+                repmat(paramranges(:, 1), 1, npts))/2;
+            
+            minit = p.width*randn(nparam,npts)-p.width/2 + midpt;
+                
+        case 'unifrand'
+            midpt = (repmat(paramranges(:, 2), 1, npts) +...
+                repmat(paramranges(:, 1), 1, npts))/2;
+            width = (repmat(paramranges(:, 2), 1, npts) -...
+                repmat(paramranges(:, 1), 1, npts));
+            minit = width.*rand(nparam,npts)-width/2 + midpt;
+    end
     
-    minit= lhsamp.*(repmat(paramranges(:, 2), 1, npts)-repmat(paramranges(:, 1), 1, npts))+repmat(paramranges(:, 1), 1, npts);
-    tic
+    
+   tic
     IP = sbiointegrable(eMO, minit, enames, ds);
     toc ;
     

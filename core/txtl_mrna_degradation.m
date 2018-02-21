@@ -66,7 +66,7 @@ function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
             productspecies = [productspecies ' + ' nonRNAlist{j}];
         end
         txtl_addreaction(tube,[RNAcomplexes{i} ':RNase -> RNase' productspecies],...
-            'MassAction',{'TXTL_RNAdeg_F',degRate});
+            'MassAction',{'TXTL_RNAdeg_kc',degRate});
         
     end
 end

@@ -1,0 +1,117 @@
+
+------------------------------------------------------------------------
+       Segmentation violation detected at Sat Nov 25 17:40:54 2017
+------------------------------------------------------------------------
+
+Configuration:
+  Crash Decoding      : Disabled
+  Crash Mode          : continue (default)
+  Current Graphics Driver: Intel Inc. Intel Iris Pro OpenGL Engine Version 2.1 INTEL-10.6.33
+  Current Visual      : Quartz
+  Default Encoding    : ISO-8859-1
+  Host Name           : Vipuls-MacBook-Pro-2.local
+  MATLAB Architecture : maci64
+  MATLAB Root         : /Applications/MATLAB_R2015b.app
+  MATLAB Version      : 8.6.0.267246 (R2015b)
+  OpenGL              : hardware
+  Operating System    : Darwin 14.5.0 Darwin Kernel Version 14.5.0: Sun Jun  4 21:40:08 PDT 2017; root:xnu-2782.70.3~1/RELEASE_X86_64 x86_64
+  Processor ID        : x86 Family 6 Model 70 Stepping 1, GenuineIntel
+  Virtual Machine     : Java 1.7.0_75-b13 with Oracle Corporation Java HotSpot(TM) 64-Bit Server VM mixed mode
+  Window System       : Quartz
+
+Fault Count: 1
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 00007fff50150c20  RBX = 00007fff93161667
+  RCX = 000000010fb6d000  RDX = 0000000000000010
+  RSP = 00007fff93160187  RBP = 00007fff50150c40
+  RSI = 00007fff50150d10  RDI = 0000000000000002
+
+   R8 = 00007ff64134fee0   R9 = 0000000000000010
+  R10 = 00007fff50150c60  R11 = 00007fff93ee143e
+  R12 = 00007ff64134fee0  R13 = 0000000000000002
+  R14 = 00007fff50150cd0  R15 = 00007fff9114578e
+
+  RIP = 00007ff6408d46b0  RFL = 0000000000000000
+
+   CS = 00007ff64135a070   FS = 00007ff64135a078   GS = 00007ff64135a078
+
+Stack Trace (from fault):
+[  0] 0x0000000111f04a34 /Applications/MATLAB_R2015b.app/bin/maci64/libmwfl.dylib+00027188 _ZN2fl4diag15stacktrace_base7captureERKNS0_14thread_contextEm+00000052
+[  1] 0x0000000111f0835a /Applications/MATLAB_R2015b.app/bin/maci64/libmwfl.dylib+00041818 _ZN2fl4test17terminate_handledEv+00000746
+[  2] 0x0000000111f07e08 /Applications/MATLAB_R2015b.app/bin/maci64/libmwfl.dylib+00040456 _ZN2fl4diag13terminate_logEPKcPK17__darwin_ucontext+00000152
+[  3] 0x0000000114470316 /Applications/MATLAB_R2015b.app/bin/maci64/libmwmcr.dylib+00336662 _Z32mnRunPathDependentInitializationv+00002806
+[  4] 0x00000001144705a9 /Applications/MATLAB_R2015b.app/bin/maci64/libmwmcr.dylib+00337321 _Z32mnRunPathDependentInitializationv+00003465
+[  5] 0x000000011446e8ca /Applications/MATLAB_R2015b.app/bin/maci64/libmwmcr.dylib+00329930 mnFatalSignalHandler+00000282
+[  6] 0x00007fff90526f1a           /usr/lib/system/libsystem_platform.dylib+00020250 _sigtramp+00000026
+[  7] 0x00007fff90234225                           /usr/lib/libobjc.A.dylib+00139813 _ZN4objc12DenseMapBaseINS_8DenseMapI12DisguisedPtrI11objc_objectEmLb1ENS_12DenseMapInfoIS4_EEEES4_mS6_Lb1EE4findERKS4_+00000035
+[  8] 0x00007fff9114578e /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+00505742 _ZNSt3__16vectorI7TFENodeNS_9allocatorIS1_EEE21__push_back_slow_pathIRKS1_EEvOT_+00000206
+[  9] 0x00007fff91236f7a /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+01494906 -[FI_TColumnViewController syncTargetPath:]+00000289
+[ 10] 0x00007fff91237191 /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+01495441 -[FI_TColumnViewController syncPathWithColumns:delayOpening:forwardKeydownsToNextColumn:]+00000228
+[ 11] 0x00007fff912416f3 /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+01537779 _ZN17StColumnOptimizerD2Ev+00000113
+[ 12] 0x00007fff9123447d /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+01483901 -[FI_TColumnView doClick:]+00000151
+[ 13] 0x00007fff97f93cd7              /usr/lib/system/libsystem_trace.dylib+00003287 _os_activity_initiate+00000075
+[ 14] 0x00007fff966bceb1 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+02444977 -[NSApplication sendAction:to:from:]+00000452
+[ 15] 0x00007fff966d2946 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+02533702 -[NSControl sendAction:to:]+00000086
+[ 16] 0x00007fff96782ef3 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+03256051 -[NSTableView _sendAction:to:row:column:]+00000090
+[ 17] 0x00007fff967816a7 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+03249831 -[NSTableView mouseDown:]+00006886
+[ 18] 0x00007fff96926d66 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+04975974 -[NSBrowserTableView mouseDown:]+00000195
+[ 19] 0x00007fff9122e75a /System/Library/PrivateFrameworks/FinderKit.framework/Versions/A/FinderKit+01460058 -[FI_TBrowserTableView mouseDown:]+00000705
+[ 20] 0x00007fff96c392dc /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+08196828 -[NSWindow _reallySendEvent:isDelayedEvent:]+00014125
+[ 21] 0x00007fff965c8c86 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+01444998 -[NSWindow sendEvent:]+00000470
+[ 22] 0x00007fff965c5212 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+01430034 -[NSApplication sendEvent:]+00002504
+[ 23] 0x00000001187067fe /Applications/MATLAB_R2015b.app/bin/maci64/libmwuix.dylib+00059390 _Z23MacSetMcrGetAppNameProcPFNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEEvE+00001326
+[ 24] 0x00007fff966c48ef /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+02476271 -[NSApplication _realDoModalLoop:peek:]+00000770
+[ 25] 0x00007fff966c0e76 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+02461302 -[NSApplication runModalForWindow:]+00000119
+[ 26] 0x00007fff96b07a84 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+06945412 -[NSSavePanel runModal]+00000323
+[ 27] 0x00000001181ada90 /Applications/MATLAB_R2015b.app/bin/maci64/libmwnativedialogs.dylib+00027280 _ZNSt3__16vectorINS_12basic_stringIwNS_11char_traitsIwEENS_9allocatorIwEEEENS4_IS6_EEE21__push_back_slow_pathIS6_EEvOT_+00009616
+[ 28] 0x00007fff8c42ada0 /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation+00601504 __NSThreadPerformPerform+00000293
+[ 29] 0x00007fff927b4821 /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+00526369 __CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__+00000017
+[ 30] 0x00007fff927a69ad /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+00469421 __CFRunLoopDoSources0+00000269
+[ 31] 0x00007fff927a5fdf /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+00466911 __CFRunLoopRun+00000927
+[ 32] 0x00007fff927a59f8 /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+00465400 CFRunLoopRunSpecific+00000296
+[ 33] 0x00007fff980af56f /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox+00206191 RunCurrentEventLoopInMode+00000235
+[ 34] 0x00007fff980af2ea /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox+00205546 ReceiveNextEventCommon+00000431
+[ 35] 0x00007fff980af12b /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox+00205099 _BlockUntilNextEventMatchingListInModeWithFilter+00000071
+[ 36] 0x00007fff964f98ab /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00596139 _DPSNextEvent+00000978
+[ 37] 0x00007fff964f8e58 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00593496 -[NSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]+00000346
+[ 38] 0x00007fff964eeaf3 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00551667 -[NSApplication run]+00000594
+[ 39] 0x000000011870732c /Applications/MATLAB_R2015b.app/bin/maci64/libmwuix.dylib+00062252 _Z23MacSetMcrGetAppNameProcPFNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEEvE+00004188
+[ 40] 0x00007fff9285445c /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+01180764 __CFNOTIFICATIONCENTER_IS_CALLING_OUT_TO_AN_OBSERVER__+00000012
+[ 41] 0x00007fff92744444 /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation+00066628 _CFXNotificationPost+00003140
+[ 42] 0x00007fff8c39f881 /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation+00030849 -[NSNotificationCenter postNotificationName:object:userInfo:]+00000066
+[ 43] 0x00007fff96503a8b /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00637579 -[NSApplication _postDidFinishNotification]+00000291
+[ 44] 0x00007fff965037f6 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00636918 -[NSApplication _sendFinishLaunchingNotification]+00000191
+[ 45] 0x00007fff96500946 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00624966 -[NSApplication(NSAppleEventHandling) _handleAEOpenEvent:]+00000574
+[ 46] 0x00007fff96500385 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00623493 -[NSApplication(NSAppleEventHandling) _handleCoreEvent:withReplyEvent:]+00000244
+[ 47] 0x00007fff8c3d27e8 /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation+00239592 -[NSAppleEventManager dispatchRawAppleEvent:withRawReply:handlerRefCon:]+00000290
+[ 48] 0x00007fff8c3d2659 /System/Library/Frameworks/Foundation.framework/Versions/C/Foundation+00239193 _NSAppleEventManagerGenericHandler+00000102
+[ 49] 0x00007fff88c4e43c /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/AE.framework/Versions/A/AE+00042044 _Z20aeDispatchAppleEventPK6AEDescPS_jPh+00000531
+[ 50] 0x00007fff88c4e1b9 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/AE.framework/Versions/A/AE+00041401 _ZL25dispatchEventAndSendReplyPK6AEDescPS_+00000031
+[ 51] 0x00007fff88c4e0c3 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/AE.framework/Versions/A/AE+00041155 aeProcessAppleEvent+00000295
+[ 52] 0x00007fff980bdc6e /System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox+00265326 AEProcessAppleEvent+00000056
+[ 53] 0x00007fff964f9da2 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00597410 _DPSNextEvent+00002249
+[ 54] 0x00007fff964f8e58 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00593496 -[NSApplication nextEventMatchingMask:untilDate:inMode:dequeue:]+00000346
+[ 55] 0x00007fff964eeaf3 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00551667 -[NSApplication run]+00000594
+[ 56] 0x00007fff9646b244 /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit+00012868 NSApplicationMain+00001832
+[ 57] 0x00000001187077ac /Applications/MATLAB_R2015b.app/bin/maci64/libmwuix.dylib+00063404 _Z21MacRunApplicationMainb+00000076
+[ 58] 0x0000000114440e90 /Applications/MATLAB_R2015b.app/bin/maci64/libmwmcr.dylib+00142992 _ZN3mcr7runtime10MainThread7runMainERKN5boost9function0IiEEbb+00000432
+[ 59] 0x0000000114440baf /Applications/MATLAB_R2015b.app/bin/maci64/libmwmcr.dylib+00142255 _Z12mcr_run_mainRKN5boost9function0IiEEbb+00000095
+[ 60] 0x0000000113da7502 /Applications/MATLAB_R2015b.app/bin/maci64/libmwMVMLocal.dylib+00124162 _ZN3mvm6detail11SessionImpl12localRunMainEPS1_RKN5boost9function1IiRKNSt3__16vectorINS5_12basic_stringIDsNS5_11char_traitsIDsEENS5_9allocatorIDsEEEENSA_ISC_EEEEEESG_+00000786
+[ 61] 0x000000010fbfffaf /Applications/MATLAB_R2015b.app/bin/maci64/libmwmvm.dylib+00597935 _ZN3mvm6detail11SessionImpl7runMainERKN5boost9function1IiRKNSt3__16vectorINS4_12basic_stringIDsNS4_11char_traitsIDsEENS4_9allocatorIDsEEEENS9_ISB_EEEEEESF_+00000095
+[ 62] 0x000000010fc007af /Applications/MATLAB_R2015b.app/bin/maci64/libmwmvm.dylib+00599983 _ZN3mvm6detail11SessionImpl16runMatlabDesktopEv+00000527
+[ 63] 0x000000010faabf0d /Applications/MATLAB_R2015b.app/bin/maci64/../../Contents/MacOS/MATLAB_maci64+00003853 main+00000493
+[ 64] 0x00007fff8a5bd5c9                      /usr/lib/system/libdyld.dylib+00013769 start+00000001
+[ 65] 0x0000000000000002                                   <unknown-module>+00000000
+
+
+If this problem is reproducible, please submit a Service Request via:
+    http://www.mathworks.com/support/contact_us/
+
+A technical support engineer might contact you with further information.
+
+Thank you for your help.

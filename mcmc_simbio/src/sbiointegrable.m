@@ -74,7 +74,8 @@ if exported
     % concentrations to be estimated, then the species initial
     % copncentrations to be dosed.
     fullpn = [pn; dnames];
-    errmsg = 'the number of variables in the exported model object should be the sum of the number of parameters being varied and number of species to be dosed.';
+    errmsg = ['the number of variables in the exported model object should'...
+    ' be the sum of the number of parameters being varied and number of species to be dosed.'];
     assert(length(fullpn)==length(m.ValueInfo), errmsg)
     for i = 1:length(fullpn)
         errmsg2 = sprintf('user specified value %d is %s while model expects %s',...

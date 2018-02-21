@@ -13,10 +13,10 @@ for r = 1:R
     
     % check if the reaction has an internal parameter object.
     if ~isempty(rx.KineticLaw.Parameters) 
-        % nothing to do it there are no reaction scoped parameters.
+        % nothing to do if there are no reaction scoped parameters.
         
         % get the parameter names
-        %     parnames = get(rx.kineticlaw.getparameters, 'Name'); % done need to use this.
+        %     parnames = get(rx.kineticlaw.getparameters, 'Name'); % dont need to use this.
         %     use this instead:
         parnames = rx.KineticLaw.ParameterVariableNames;
         
@@ -42,7 +42,7 @@ for r = 1:R
         if rx.Reversible
             parname_base = parnames{1}(1:end-2);
             % assume a form like TXTL_UTR_UTR1_F, and so we want to remove the '_F' at the end.
-            
+            %todo: check if this is the format of all the parameters. 
             if isempty(sbioselect(m,'Type','Parameter', 'Name', [parname_base '_Kd']))
                 addparameter(m, [parname_base '_Kd'], pvals(2)/pvals(1)) ;
             end

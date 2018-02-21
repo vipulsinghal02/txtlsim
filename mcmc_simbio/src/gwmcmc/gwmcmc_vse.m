@@ -1,4 +1,4 @@
-function [models,logP, non_integrable_m, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
+function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 %% Cascaded affine invariant ensemble MCMC sampler. "The MCMC hammer"
 %
 % GWMCMC is an implementation of the Goodman and Weare 2010 Affine
@@ -12,7 +12,7 @@ function [models,logP, non_integrable_m, rejProp]=gwmcmc_vse(minit,logPfuns,mcco
 % truly deserves to be called the MCMC hammer.
 %
 % (This code uses a cascaded variant of the Goodman and Weare algorithm).
-%
+% 
 % USAGE:
 %  [models,logP]=gwmcmc(minit,logPfuns,mccount,[Parameter,Value,Parameter,Value]);
 %
@@ -75,7 +75,8 @@ function [models,logP, non_integrable_m, rejProp]=gwmcmc_vse(minit,logPfuns,mcco
 %
 %
 % References:
-% Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+% Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. 
+% App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
 % Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 %
 % WebPage: https://github.com/grinsted/gwmcmc
@@ -99,14 +100,16 @@ end
 
 p=inputParser;
 if isoctave
-    p=p.addParamValue('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p=p.addParamValue('StepSize',2,@isnumeric); 
+    %addParamValue is chose for compatibility with octave. Still Untested.
     p=p.addParamValue('ThinChain',10,@isnumeric);
     p=p.addParamValue('ProgressBar',true,@islogical);
     p=p.addParamValue('Parallel',false,@islogical);
     p=p.addParamValue('BurnIn',0,@(x)(x>=0)&&(x<1));
     p=p.parse(varargin{:});
 else
-    p.addParameter('StepSize',2,@isnumeric); %addParamValue is chose for compatibility with octave. Still Untested.
+    p.addParameter('StepSize',2,@isnumeric); 
+    %addParamValue is chose for compatibility with octave. Still Untested.
     p.addParameter('ThinChain',10,@isnumeric);
     p.addParameter('ProgressBar',true,@islogical);
     p.addParameter('Parallel',false,@islogical);
@@ -117,7 +120,9 @@ p=p.Results;
 
 Nwalkers=size(minit,2);
 if size(minit,1)*2>size(minit,2)
-    warning('GWMCMC:minitdimensions','Check minit dimensions.\nIt is recommended that there be atleast twice as many walkers in the ensemble as there are model dimension.')
+    warning('GWMCMC:minitdimensions',...
+        ['Check minit dimensions.\nIt is recommended that there be atleast'...
+        ' twice as many walkers in the ensemble as there are model dimension.'])
 end
 if p.ProgressBar
     progress=@textprogress;
@@ -174,7 +179,7 @@ curlogP=logP(:,:,1);
 progress(0,0,0)
 totcount=Nwalkers;
 % preallocate matrix to store parameter values that could not get simulated
-non_integrable_m = nan(M, Nwalkers, Nkeep*p.ThinChain);
+% non_integrable_m = nan(M, Nwalkers, Nkeep*p.ThinChain);
 for row=1:Nkeep
     for jj=1:p.ThinChain
         %generate proposals for all walkers
@@ -202,15 +207,17 @@ for row=1:Nkeep
                 if lr(1)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         try
-                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix)); %have tested workerobjwrapper but that is slower.
+                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix)); 
+                        %have tested workerobjwrapper but that is slower.
                         catch ME
                              if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                                non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
+%                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
                              end
                         end
                         
-                        if lr(fix+1)>proposedlogP(fix)-cp(fix) || ~isreal(proposedlogP(fix)) || isnan( proposedlogP(fix) )
+                        if lr(fix+1)>proposedlogP(fix)-cp(fix) ||...
+                                ~isreal(proposedlogP(fix)) || isnan( proposedlogP(fix) )
                         %if ~(lr(fix+1)<proposedlogP(fix)-cp(fix))
                             acceptfullstep=false;
                             break
@@ -235,15 +242,17 @@ for row=1:Nkeep
                         proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
                         catch ME
                             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                                non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
+%                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
                              end
 %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
 %                                 proposedlogP(fix) = -inf;
                         end
                         
-                        if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix) || ~isreal(proposedlogP(fix)) || isnan(proposedlogP(fix))
-                        %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix)) %inverted expression to ensure rejection of nan and imaginary logP's.
+                        if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix)...
+                                || ~isreal(proposedlogP(fix)) || isnan(proposedlogP(fix))
+                        %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix))
+                        %inverted expression to ensure rejection of nan and imaginary logP's.
                             acceptfullstep=false;
                             break
                         end
@@ -300,7 +309,8 @@ if (cputime-lasttime>0.1)
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);
-    progressmsg=sprintf('\nGWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
+    progressmsg=sprintf('\nGWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',...
+        pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
 
     fprintf('%s%s',repmat(char(8),1,lastNchar),progressmsg);
     drawnow;lasttime=cputime;

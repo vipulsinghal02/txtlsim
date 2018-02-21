@@ -27,7 +27,6 @@ if tube.Userdata.Vesicule && size(tube.Compartments,1) > 1
         reactionEq = strjoin(mergeStr,'');
     end
     
-    
 end
 %%% Vesicule mode %%%
 

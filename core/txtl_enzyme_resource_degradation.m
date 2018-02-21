@@ -10,7 +10,7 @@ parameterObj = addparameter(modelObj, 'AGTPdeg_time', 0, 'ConstantValue', true);
 parameterObj = addparameter(modelObj, 'AGTPdeg_rate', atp_deg_rate, 'ConstantValue', true);
 evt2 = addevent(modelObj, 'time <= AGTPdeg_time' , 'AGTPdeg_F = 0');
 evt3 = addevent(modelObj, 'time > AGTPdeg_time',...
-    ['AGTPdeg_F = ' num2str(atp_deg_rate)]);
+    ['AGTPdeg_F = AGTPdeg_rate']);% '=' num2str(atp_deg_rate)]
 reactionObj = addreaction(modelObj,'AGTP -> AGTP_USED');
 kineticlawObj = addkineticlaw(reactionObj, 'MassAction');
 set(kineticlawObj, 'ParameterVariableName', 'AGTPdeg_F');

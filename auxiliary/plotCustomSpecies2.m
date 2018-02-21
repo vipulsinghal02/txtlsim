@@ -1,12 +1,20 @@
 function varargout = plotCustomSpecies2(mobj, x_ode, t_ode, cellofspecies, varargin)
 % plotting routine: input list of species, mobj cell array, data cell array, title containing what is being plotted and what speie is being varied, and cell array of parameter values
 numvarargs = length(varargin);
-optargs = {{}, [],[],[]};
+optargs = {{}, [],[],[], []};
 optargs(1:numvarargs) = varargin;
-[legendList, saveflag, folderName, figureName] = optargs{:};
+[legendList, saveflag, folderName, figureName, fighandle] = optargs{:};
  scrsz = get(0,'screensize');
- figure('position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3])%,'name','simulation plot window','numbertitle','off')
+ if ~isempty(fighandle)
+ figure(fighandle )%,'name','simulation plot window','numbertitle','off')
+ set(fighandle, 'position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3]);
  
+ 
+ else
+   figure( 'position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3])%,'name','simulation plot window','numbertitle','off')
+ end
+ 
+   
 if iscell(mobj)
     
     colororder1 = lines;

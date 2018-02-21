@@ -1,60 +1,105 @@
-function [m, emo ,mi] = model_dsg2014(mi,tv, varargin)
-%model_dsg2014 Constitutive gene expression model using the txtl
-%modeling toolbox stored in txtl_directory
+function m = model_dsg2014(varargin)
+% model_dsg2014 Constitutive gene expression model using the TXTL modeling toolbox
 % 
-% the default txtl modeling toolbox directory is the one stored in the src
-% folder but you can specify another one. Whichever directory is used to
-% setup the model, it is added to the path, the model is created, and then it is
-% removed from the path. 
+% ~~~ INPUTS ~~~
+% 
+% Optional name-value pair input arguments: 
+% 	 'timeVector': A vector of timepoints to set up the model for. Default is 1:100. 
+%    'paramInfo': A param_info struct that is used to set parameter values in the model object. 
+%         This struct has fields: 
+%        'paramNames':         A string corresponding to the parameter name, or 
+%                                  a 1 by 2 cell array of strings of forward and backward 
+%                                  reaction rate parameters for reversible reactions. 
+%        'paramVals':          A numerical value of the parameter, or a 1 by 2 vector 
+%                                  for reversible reactions. 
+%        'reactionString':     This is either the reaction string or the  
+%                                  string 'global'. If the paramNames is a 1 x 2 cell array
+%                                  and the paramVals is a 
+%                                  then the reaction is reversible, and if the paramNames is
+%                                  a string, then it is a irreversible reaction. When this 
+%                                  argument is 'global', we always have a string and a scalar 
+%                                  for paramNames and paramVals respectively. 
+%        'reactionString':     this is either the reaction string or the  
+%                                  string 'global'. 
+%        'paramRanges':        Non-negative orthant values for the parameter upper and 
+%                                  lower bounds. For each parameter this is either a 
+%                                  2 by 1 vector (for irreversible reactions) or a 2 by 2
+%                              matrix, where the first and second rows are the upper 
+%                                  and lower bounds respectively, and the first and second 
+%                                  columns are the bounds for the forward and reverse rate
+%                                  parameters respectively. If nothing is specified, then 
+%                                  the bounds for a parameter with value VAL is [VAL/10; VAL*10]
+%        'paramNotes'          Human readable notes. 
+%                  
+% 
+% ~~~ OUTPUTS ~~~
 %
-% THIS MODEL: <add info here>
+% m: a Simbiology Model Object
+%
+% emo: An exported Simbiology Model Object. 
+%
+% mi: An updated mcmc_info struct. The following fields are added to the mcmc_info struct 
+%   names_ord: An ordered list of species and parameters to be estimated.  
+%   emo: Exported model Object. 
 
-% %% get txtl modeling toolbox
-% if nargin >2
-%     txtl_directory = varargin{1};
-% else
-%     % get the name of the (project) file calling this function, and its path.
-%     % get the path of this file, replace with mfilename
-%     fp = mfilename('fullpath');
-%     slashes = regexp(fp, '/');
-%     % looks like slashes =
-%     %      1     7    20    28    38    49    54    64    76
-%     mcmc_simbio_relpath = fp(1:slashes(end-1)-1);
-%     % looks something like /Users/vipulsinghal/Dropbox/Documents/vipul_repo/mcmc/code_mcmc/mcmc_simbio
-%     txtl_directory = [mcmc_simbio_relpath '/src/txtl_modeling_toolbox'];
-% end
-% 
-% addpath(txtl_directory);
-% txtl_init
+% Copyright (c) 2018, Vipul Singhal, Caltech
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included in all
+% copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+
+p = inputParser;
+p.addParameter('paramInfo', [], @isstruct);
+p.addParameter('timeVector', 1:100, @isnumeric);
+p.parse(varargin{:});
+p = p.Results;
+tv = p.timeVector;
+
+
 
 %% ################## EDIT THIS SECTION AS NEEDED ####################
-% Specify the config files, dna, inducers etc. See TXTL Modeling toolbox
-% documentation as needed. 
+
+% Specify the parameter config files, dna string and initial concentration,
+% inducers etc. See the TXTL Modeling toolbox documentation for more information. 
 
 % setup model object (this model uses the txtl toolbox at 
 tube1 = txtl_extract('Emcmc2017');
 tube2 = txtl_buffer('Emcmc2017');
 tube3 = txtl_newtube('gene_expression');
 txtl_add_dna(tube3, ...
-  'p70(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');	
-
+  'p70(50)', 'utr1(20)', 'deGFP(1000)', 20, 'plasmid');	
 m = txtl_combine([tube1, tube2, tube3]);
 
-
-%% MOST OFTEN YOU WILL NOT NEED TO TOUCH THIS SECTION
+%% MOST LIKELY YOU WILL NOT NEED TO TOUCH THIS SECTION
+% See: 
+% https://www.mathworks.com/help/simbio/ug/selecting-absolute-tolerance-and-relative-tolerance-for-simulation.html
 cs1 = getconfigset(m);
 set(cs1.RuntimeOptions, 'StatesToLog', 'all');
-
 set(cs1.SolverOptions, 'AbsoluteToleranceScaling', 1);
 set(cs1.SolverOptions, 'AbsoluteTolerance', 1.0e-6);
 set(cs1.SolverOptions, 'AbsoluteToleranceStepSize', tv(end)*1.0e-6*0.1);
 set(cs1.SolverOptions, 'RelativeTolerance', 1.0e-6);
 % try: AbsoluteToleranceStepSize = AbsoluteTolerance * StopTime * 0.1
+
 tic
     [~] = txtl_runsim(m,tv(end));
 toc
 
 
+%
 %% DONT TOUCH THIS SECTION
 % modify the base model to get it ready for parameter estimation. 
 % Change the scope of the reversible reaction parameters from the
@@ -62,46 +107,21 @@ toc
 % between the parameters (like Kd rules).
 % The rules are needed because in parameter esitmation when you change some
 % base parameter (like Kd) the parameters that are associated should also
-% change. 
-% Just like for the reversible reactions, the irreversible reaction params 
-% need to be model scoped because
-% for the elongation rate the parameter is tied to NTP consumption rates,
-% and for the RNA deg rate... actually I dont know. I think at this point I
-% am just making everything global, so that a single code set can be used
-% uniformly for all the parameters.
+% change. Just like for the reversible reactions, the irreversible 
+% reaction params need to be model scoped because
+% for the elongation rate the parameter is tied to NTP consumption rates
 
 globalize_params(m)
 
-%% DONT TOUCH THIS SECTION
-% export and accelerate simbiology model object using estimated species
-% and dosing species names
-
-% select the parameters and species objects using the name array
-ep = sbioselect(m, 'Type', 'parameter', 'Name', ...
-    mi.names_unord);% est parameters
-
-es = sbioselect(m, 'Type', 'species', 'Name', ...
-    mi.names_unord);% est species
-
-aps = [ep; es]; % active parameters and species
-
-% reorder the parameter and species so they are in the same order as that
-% in the model. 
-eno = cell(length(aps), 1);% est names ordered
-
-for i = 1:length(aps)
-    eno{i} = aps(i).Name;
+%% Optionally set parameters for in the model object
+if ~isempty(p.paramInfo)
+    pinf = p.paramInfo;
+    % set the parameters
+    for i = 1:length(pinf, 1) 
+        setparam(m, pinf.reactionString(i), pinf.paramNames(i), pinf.paramVals(i));
+    end
 end
 
-% 
-ds = sbioselect(m, 'Type', 'species', 'Name', mi.dosednames);
 
-emo = export(m, [ep; es; ds]); % exported model object, dosed species names. 
-SI = emo.SimulationOptions;
-SI.StopTime = tv(end);
-accelerate(emo);
-
-mi.names_ord = eno;
-mi.emo = emo;
 end
 

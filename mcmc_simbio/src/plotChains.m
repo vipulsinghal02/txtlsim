@@ -16,7 +16,9 @@ figure('Visible', p.Visible)
 for i = 1:nParam
     subplot(n1, n2, i)
     for j = 1:length(wix)
-        plot(1:nSamples, squeeze(m(i, j, :)), 'LineWidth', 0.1, 'color', [0.2 0.7 0.1].^2)%
+        plot(1:nSamples, squeeze(m(i, j, :)),...
+            'LineWidth', 0.1,...
+            'color', [0.2 0.7 0.1].^2)
         hold on       
     end
     title(legends{i})
