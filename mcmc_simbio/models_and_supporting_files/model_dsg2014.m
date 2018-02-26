@@ -85,7 +85,8 @@ m = txtl_combine([tube1, tube2, tube3]);
 
 %% MOST LIKELY YOU WILL NOT NEED TO TOUCH THIS SECTION
 % See: 
-% https://www.mathworks.com/help/simbio/ug/selecting-absolute-tolerance-and-relative-tolerance-for-simulation.html
+% https://www.mathworks.com/help/simbio/ug/selecting-absolute-
+% tolerance-and-relative-tolerance-for-simulation.html
 cs1 = getconfigset(m);
 set(cs1.RuntimeOptions, 'StatesToLog', 'all');
 set(cs1.SolverOptions, 'AbsoluteToleranceScaling', 1);

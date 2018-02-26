@@ -124,8 +124,6 @@ for i = 1:nTopo % each topology
         % concatenate in the 5th dimension (the geometries dimension.)
         da{i} = cat(5, da{i}, currda); 
     end
-    
-
     % EXPORT MODEL object to get it ready for MCMC
     % the resulting object is of class SimBiology.export.Model
     % documentation: 
@@ -143,7 +141,7 @@ for i = 1:nTopo % each topology
         mi(i).namesUnord);% est parameters
 
     es = sbioselect(mobj, 'Type', 'species', 'Name', ...
-        mi.namesUnord);% est species
+        mi(i).namesUnord);% est species
 
     aps = [ep; es]; % active parameters and species
 
@@ -205,7 +203,6 @@ end
 % similar to another, they should have the same STARTING values. 
 
 if isempty(p.UserInitialize)
-   
     minit = integrableLHS_v2(mi, mai, ri, ...
         'distribution', p.InitialDistribution, ...
         'width', p.Width);

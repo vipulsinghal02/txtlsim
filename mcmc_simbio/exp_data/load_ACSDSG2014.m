@@ -16,32 +16,54 @@ filedir = fp(1:slashes(end)-1);
 run([filedir '/rawdata_ACSDSG2014.m'])
 switch mode
     case 'RNAdeg'
-        % interpolate 0 to 120 , in 3 min intervals
-        t = (0:6:120)';
+        initialConc = [37.5, 75, 150, 200, 600, 700, 800, 900, 1000];
+        % interpolate 0 to 120 , in 6 min intervals
+        t = 60*(0:6:120)';
         y = zeros(length(t), length(rnadeg));
         for i = 1:length(rnadeg)
-            y(:,i) = interp1(rnadeg{i}(:,1), rnadeg{i}(:,2), t, 'linear', 'extrap');
+            y(:,i) = interp1(60*rnadeg{i}(:,1), rnadeg{i}(:,2), t, 'spline', 'extrap');
+            % rescale the values so that they start exactly at the dosed
+            % numbers
+            y(:,i) = initialConc(i)*y(:,i)/y(1, i);
+            
         end
+        
         meta = {'t is in minutes'; 
             'initial RNA conc were 37.5, 75, 150, 200, 600, 700, 800, 900, 1000'};        
         
         
     case 'MGapt'
-        t = (0:8:800)';
+        t = 60*(0:8:800)';
         y = zeros(length(t), length(mg));
         for i = 1:length(mg)
-            y(:,i) = interp1(mg{i}(:,1), mg{i}(:,2), t, 'linear', 'extrap');
+            y(:,i) = interp1(60*mg{i}(:,1), mg{i}(:,2), t, 'spline', 'extrap');
         end
         meta = {'t is in minutes'; 
             'DNA conc for the mgAptamer were 0.5, 2, 5, 20'};
     case 'deGFP'
-                t = (0:8:800)';
+                t = 60*(0:8:800)';
         y = zeros(length(t), length(gfp));
         for i = 1:length(gfp)
-            y(:,i) = interp1(gfp{i}(:,1), gfp{i}(:,2), t, 'linear', 'extrap');
+            y(:,i) = interp1(60*gfp{i}(:,1), gfp{i}(:,2), t, 'spline', 'extrap');
         end
         meta = {'t is in minutes'; 
             'DNA conc for the GFP were 0.2, 0.5, 1, 2, 5, 20'};
-end
+        
+    case 'deGFP_deriv'
+        t = 60*(0:8:800)';
+        y = zeros(length(t), length(gfp));
+        dgfp = cell(length(gfp),1);
+        
+        
+        for i = 1:length(gfp)
+            tv_temp = 60*gfp{i}(1:end-1,1);
+            dgfp_temp = diff(gfp{i}(:,2))./diff(60*gfp{i}(:,1));
+            dgfp{i} = [tv_temp dgfp_temp];
+            y(:,i) = interp1(dgfp{i}(:,1), dgfp{i}(:,2), t,...
+                'spline', 'extrap');
+        end
+        meta = {'t is in minutes'; 
+            'DNA conc for the GFP were 0.2, 0.5, 1, 2, 5, 20'};    
+    end
 end
 

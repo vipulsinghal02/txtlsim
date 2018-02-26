@@ -1,4 +1,4 @@
-function mcmc_info = mcmc_info_dsg2014_mrna(modelObj)
+function mcmc_info = mcmc_info_dsg2014_mrna_v2(modelObj)
     % Define the mcmc_info struct for the dsg2014 dataset, for the estimation 
     % of the mrna parameters, using only measurements of the mrna for 
     % the estimation. The data is from figure 1 of the paper:

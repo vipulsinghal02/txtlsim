@@ -212,14 +212,18 @@ function fhandle = mcmc_trajectories(em, di, mi, marray, titl, lgds, varargin)
 		nWalkers = size(marray, 2);
 		m = marray(:,:)'; % the parameter array is now #points x #params
 	elseif ismatrix(marray)
-		nWalkers = mi.nW;
+% 		nWalkers = mi.nW;
 		m = marray; % assume that the 2 dims are correct - npoints x nparams
 	end
 
 	% Number of curves to simulate is the minimum of the specified number and the
 	% number of available walkers. 
-	if p.nSimCurves > nWalkers
-		p.nSimCurves = nWalkers;
+% 	if p.nSimCurves > nWalkers
+% 		p.nSimCurves = nWalkers;
+%     end
+    
+    if p.nSimCurves > size(m, 1)
+		p.nSimCurves = size(m, 1);
 	end
 
 	%% initialize things
@@ -436,7 +440,7 @@ function fhandle = mcmc_trajectories(em, di, mi, marray, titl, lgds, varargin)
 							'LineWidth', 1,...
 							'SpreadColor', colorz2(i, :),...
 							'SpreadLineStyle', ':',...
-							'SpreadLineWidth', 0.25,...
+							'SpreadLineWidth', 2,...
 							'FaceAlpha', 0.25); % removed out arg: (doesnt work yet) ,, ptchhandle2(i)
 							hold on
 							% set titles 
@@ -541,34 +545,6 @@ function datamax = computeMaxes(summst, spreadst, dispmode, dimensionLabels)
 	end
 end
 
-function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms)
-	nICs = size(dose, 1);
-	nMS = length(ms);
-	kknotused = zeros(nSimCurves, 1);
-    da = zeros(length(tv), nMS, nSimCurves, nICs);
-	for i = 1:nICs
-	    for kk=1:nSimCurves
-	        try
-	            sd = simulate(em, [exp(m(end - kk+1,:)'); dose(i,:)']);
-	            sd = resample(sd, tv);
-	            % since measured species is a cell array of cell arrays of strings,
-	            % we need to loop over the outer cell, summing the values of the
-	            % species in the inner cell. 
-	            for ss = 1:nMS
-	            	% ms{ss} is a cell array of strings
-	                    [~, XX] = selectbyname(sd, ms{ss}); 
-                        X = sum(XX, 2);
-	                    % output the relevant data to the samples 
-	                    da(:,ss,kk, i) = X;
-	            end
-	        catch ME
-	            ME.message
-	            kknotused(kk) = 1;
-	        end
-	    end
-	end
-	idxnotused = find(kknotused);
-end
 
 %!!
 function [summst, spreadst] = computeDataStats(dataArray, dispmode)
@@ -661,7 +637,7 @@ function [ax, varargout] = plotintoaxis(ax, mode, tv,...
 	p.addParameter('LineWidth', 2, @isnumeric);
 	p.addParameter('SpreadColor', summer(1), @isnumeric);
 	p.addParameter('SpreadLineStyle', ':', @ischar); %  gets used if the spread is curves. 
-	p.addParameter('SpreadLineWidth', 0.5, @isnumeric);
+	p.addParameter('SpreadLineWidth', 2, @isnumeric);
 
 	% gets used if the spread is standard deviation 
 	p.addParameter('FaceAlpha', 0.25, @isnumeric); 
@@ -701,7 +677,7 @@ function [ax, varargout] = plotintoaxis(ax, mode, tv,...
 		elseif strcmp(mode, 'mediancurves') || strcmp(mode, 'meancurves')
 
 			[linehandle] = plot(tv, ...
-				expsummst(:,msi,1, dosei));
+				summst(:,msi,1, dosei));
 		    set(linehandle, ...
 		    	'Color', p.LineColor,...
 		     	'LineStyle', p.LineStyle,...

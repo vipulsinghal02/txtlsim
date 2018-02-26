@@ -164,6 +164,7 @@ for i = 1:length(paramnames)
         set(p1, 'Value', paramvals(i);
     end
 end
+
 for i = 1:length(paramnames)
     s1 = sbioselect(mobj.species, 'Name', paramnames{i});
     if ~isempty(s1)
@@ -173,7 +174,6 @@ end
 
 % set dose values, simulate model, and populate output data array. 
 for dID = 1:size(dv, 2)
-
 	% set the dose value using the mcmc_info struct
     for i = 1:length(p.dosedNames)
         s1 = sbioselect(mobj.species, 'Name', p.dosedNames{i});

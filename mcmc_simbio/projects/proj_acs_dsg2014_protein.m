@@ -16,7 +16,7 @@
 
 %% initialize the directory where things are stored.
 [tstamp, projdir, st] = project_init;
-data_init
+% data_init
 
 % data_info struct. 
 di = data_dsg2014; %
@@ -38,20 +38,23 @@ mai = mcmc_info.master_info;
 
 %% set up the MCMC estimation
 
-marray = mcmc_get_walkers({'20180219_154541'}, {10}, projdir);
+marray = mcmc_get_walkers({'20180221_011619'}, {2}, projdir);
 marray_cut = mcmc_cut(marray, (1:10), flipud((mai.paramRanges)'));
-if size(marray_cut, 2) ~= ri.nW
+if size(marray_cut, 2) < ri.nW
     error('too few initial points');
+elseif size(marray_cut, 2) > ri.nW
+    marray_cut = marray_cut(:,1:ri.nW, :);
 end
 %%
-mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,'UserInitialize', marray_cut(:,:,end));%'InitialDistribution', 'gaussian' 'UserInitialize', marray_cut(:,:,end)); 
+mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+    'UserInitialize', marray_cut(:,:,end));
+%'InitialDistribution', 'gaussian' 'UserInitialize', marray_cut(:,:,end)); 
 %%
-
-% load([projdir '/simdata_' tstamp '/full_variable_set_' tstamp '.mat']);
+ load([projdir '/simdata_' tstamp '/full_variable_set_' tstamp '.mat']);
 %%
-marray = mcmc_get_walkers({tstamp}, {1}, projdir);
+marray = mcmc_get_walkers({tstamp}, {1:2}, projdir);
 %%
-mcmc_plot(marray(:,:,end), mai.estNames);
+mcmc_plot(marray(:,1:2:400,:), mai.estNames);
 %% plot trajectories
 titls = {'dna 0.5'; 'dna 2';'dna 5';'dna 20'};
 lgds = {};
@@ -60,7 +63,66 @@ lgds = {};
 mvarray = masterVecArray(marray, mai);
 marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
 %% plot trajectories
-mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd, titls, lgds)
+close all
+
+aaa = [{[  2.1904]} {'TX_elong_glob'                  }
+    {[  6]}        {'TL_elong_glob'                  }
+    {[  6.7502]}    {'AGTPdeg_time'                   }
+    {[ -8.9816]}    {'AGTPdeg_rate'                   }
+    {[ -1.9799]}    {'TXTL_PROT_deGFP_MATURATION'     }
+    {[ -1.4155]}    {'TXTL_UTR_UTR1_Kd'               }
+    {[  4.0949]}    {'TXTL_UTR_UTR1_F'                }
+    {[  1.8325]}    {'TXTL_P70_RNAPbound_Kd'          }
+    {[  4.5064]}    {'TXTL_P70_RNAPbound_F'           }
+    {[  -2.297]}    {'TXTL_RNAPBOUND_TERMINATION_RATE'}
+    {[0.096026]}    {'TXTL_NTP_RNAP_1_Kd'             }
+    {[  6.1533]}    {'TXTL_NTP_RNAP_1_F'              }
+    {[  2.2435]}    {'TXTL_NTP_RNAP_2_Kd'             }
+    {[-0.83904]}    {'TXTL_NTP_RNAP_2_F'              }
+    {[  3.4805]}    {'TL_AA_Kd'                       }
+    {[-0.22471]}    {'TL_AA_F'                        }
+    {[  5.6524]}    {'TL_AGTP_Kd'                     }
+    {[ 0.97604]}    {'TL_AGTP_F'                      }
+    {[    4   ]}    {'TXTL_RIBOBOUND_TERMINATION_RATE'}
+    {[  8.5748]}    {'TXTL_RNAdeg_Kd'                 }
+    {[ -0.5005]}    {'TXTL_RNAdeg_F'                  }
+    {[ -5.1466]}    {'TXTL_RNAdeg_kc'                 }
+    {[  2.2309]}    {'RNAP'                           }
+    {[  6.7048]}    {'Ribo'                           }
+    {[  4.5145]}    {'RNase'                          }];
+
+
+aaa =...
+    [{[  2.1904]}    {[  2.1904]}    {'TX_elong_glob'     }
+    {[  6.1017]}    {[  6.1017]}    {'TL_elong_glob'     }
+    {[  6.7502]}    {[  6.7502]}    {'AGTPdeg_time'      }
+    {[ -8.9816]}    {[ -8.9816]}    {'AGTPdeg_rate'      }
+    {[ -1.9799]}    {[ -1.9799]}    {'TXTL_PROT_deGFP_?'}
+    {[ -1.4155]}    {[ -1.4155]}    {'TXTL_UTR_UTR1_Kd'  }
+    {[  1.0949]}    {[  1.0949]}    {'TXTL_UTR_UTR1_F'   }
+    {[  1.8325]}    {[  1.8325]}    {'TXTL_P70_RNAPbou?'}
+    {[  4.5064]}    {[  4.5064]}    {'TXTL_P70_RNAPbou?'}
+    {[  -2.297]}    {[  -2.297]}    {'TXTL_RNAPBOUND_T?'}
+    {[0.096026]}    {[0.096026]}    {'TXTL_NTP_RNAP_1_Kd'}
+    {[  2.1533]}    {[  2.1533]}    {'TXTL_NTP_RNAP_1_F' }
+    {[  2.2435]}    {[  2.2435]}    {'TXTL_NTP_RNAP_2_Kd'}
+    {[-0.83904]}    {[-0.83904]}    {'TXTL_NTP_RNAP_2_F' }
+    {[  3.4805]}    {[  3.4805]}    {'TL_AA_Kd'          }
+    {[-0.22471]}    {[-0.22471]}    {'TL_AA_F'           }
+    {[  5.6524]}    {[  5.6524]}    {'TL_AGTP_Kd'        }
+    {[ 0.97604]}    {[ 0.97604]}    {'TL_AGTP_F'         }
+    {[-0.95634]}    {[-0.95634]}    {'TXTL_RIBOBOUND_T?'}
+    {[  8.5748]}    {[  8.5748]}    {'TXTL_RNAdeg_Kd'    }
+    {[ -0.5005]}    {[ -0.5005]}    {'TXTL_RNAdeg_F'     }
+    {[ -5.1466]}    {[ -5.1466]}    {'TXTL_RNAdeg_kc'    }
+    {[  2.2309]}    {[  2.2309]}    {'RNAP'              }
+    {[  6.7048]}    {[  6.7048]}    {'Ribo'              }
+    {[  4.5145]}    {[  4.5145]}    {'RNase'             }]
+simulatecurves(mi(1).emo,cell2mat(aaa(:,1))',...
+    1, di.dosedVals', tv{1}, mi.measuredSpecies)
+
+% mcmc_trajectories(mi(1).emo, di(1), mi(1), cell2mat(aaa(:,1))', titls, lgds,...
+%     'SimMode', 'curves')
 
 
 

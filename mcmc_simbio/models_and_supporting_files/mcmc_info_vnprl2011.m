@@ -1,5 +1,9 @@
-function mcmc_info = mcmc_info_dsg2014_protein_v2(modelObj)
+function mcmc_info = mcmc_info_vnprl2011(modelObj)
     % version2 mcmc_info struct. Compatible with multimodel parameter inference. 
+    % This mcmc info has two linked estimation problems: 
+    % 1) mg aptamer and protein estimation (constitutive gene expression)
+    % 2) RNA degradation 
+    %
     % key differences with version 1: 
     % model parameters specified now include the ones to be estimated and the 
     % ones to keep fixed. 
@@ -11,59 +15,6 @@ function mcmc_info = mcmc_info_dsg2014_protein_v2(modelObj)
     % master_info:  contains the master vector, and a spec for which parameters
     %               get estimated. 
     % 
-    % Version 1's help text: (!TODO: write this version's full help file.)
-    % 
-    % Define the mcmc_info struct for the dsg2014 dataset, for the estimation 
-    % of the protein parameters, using only measurements of the protein for 
-    % the estimation. The data is from figure 1 of the paper:
-    % Gene Circuit Performance Characterization and Resource Usage in a 
-    % Cell-Free “Breadboard” by Siegal-Gaskins et al. 
-    %
-    % INPUTS: A Simbiology model object. 
-    % 
-    % OUTPUTS: You should set up an mcmc_info struct with the fields:
-    %
-    % The strust has fields: 
-    % 
-    % 'circuitInfo': A human readable despription of the circuit. (optional)
-    % 
-    % 'modelObj': The simbiology model object
-    %
-    % 'modelName': The name property of the Simbiology model object. (optional)
-    %
-    % 'namesUnord': List of species and parameters that are to be estimated. These 
-    % are strings naming things in the model object. 
-    %
-    % 'paramRanges': A length(mcmc_info.namesUnord) x 2 matrix of log transformed 
-    % upper and lower bounds for the parameters and species concentrations. 
-    %
-    % 'dosedNames': A cell array of strings of species names for species that are 
-    % dosed in the model. 
-    %
-    % 'dosedVals': A matrix of dose values of size # of dosed species by 
-    % # of dose combinations. 
-    %
-    % 'measuredSpecies': A 1 x number of measured output variables. This is a 
-    % cell array of cell arrays of the strings of species whose concentrations
-    %  are to be added to get the measured variable. 
-    %
-    % 'stdev': MCMC likelihood function standard deviation
-    %
-    % 'tightening': A division factor for the standard deviation. 
-    %
-    % 'nW': Number of Walkers
-    %
-    % 'stepSize': MCMC step size
-    %
-    % 'nIter': Number of MCMC iterations. 
-    %
-    % 'nPoints': Number of MCMC points per iteration. 
-    %   
-    % 'thinning': Number of steps to skip before taking an MCMC sample. 
-    %
-    % 'parallel': Boolean variable specifying whether parallel computing is used. 
-    %
-
     % Copyright (c) 2018, Vipul Singhal, Caltech
     % Permission is hereby granted, free of charge, to any person obtaining a copy
     % of this software and associated documentation files (the "Software"), to deal
@@ -85,7 +36,7 @@ function mcmc_info = mcmc_info_dsg2014_protein_v2(modelObj)
 
     % User readable description of the circuit. Will be used in the log file generated
     % from the MCMC inference procedure. 
-    circuitInfo = ...
+    circuitInfo1 = ...
     ['This is a simple constitutive gene expression model \n'...
     'built using the TXTL modeling toolbox. It models DNA binding \n'...
     'to RNAP and nucleotides, followed by transcription. The resulting\n'...
@@ -94,6 +45,9 @@ function mcmc_info = mcmc_info_dsg2014_protein_v2(modelObj)
     'mRNA. The latter involves binding to Ribosomes, followed by amino acids \n'...
     'and ATP, and finally elongation and termination resulting in protein.']
 
+    
+
+    %{
     % activeNames has the mRNA parameters and the protein parameters. 
     % first half (up to RNase) are TX and the rest are TL. 
     % TX params are fixed from previous sims. 
@@ -126,6 +80,8 @@ function mcmc_info = mcmc_info_dsg2014_protein_v2(modelObj)
     % the fixed parameters (from the previous simulations), when we access
     % them using paramMaps, we get the ones corresponding to the names in
     % activeNames. 
+    %}
+    
     
     
     

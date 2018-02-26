@@ -48,7 +48,7 @@ fprintf(fileID,'points per iter: %d \n', ri.nPoints);
 
 for i = 1:length(mi)
     %% Circuit description
-    if  ~isempty(mi.circuitInfo)
+    if  ~isempty(mi(i).circuitInfo)
         fS = ['\n ################################################ \n' ...
             'Circuit description: \n'];
         fprintf(fileID,fS);

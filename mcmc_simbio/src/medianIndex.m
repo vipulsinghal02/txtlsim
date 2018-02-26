@@ -12,26 +12,74 @@ function [ix, medianvals] = medianIndex(inputarray, dim)
 	% inputarray that ix points to. 
 	% 
 	% (c) Vipul Singhal
-
+    
+    % EXAMPLE: inputarray is, for eg, 1-2-1-4 ---> 1-4-1-2 when dim = 3. 
+    % time - ms - replicates - doses ---> replicates - doses - time - ms
 	shiftedarray = shiftdim(inputarray, dim-1);
     
-    % if there are leading singleton dimensions, then they will be lost 
-    % when shiftdim works. This can be undone by first rotating the 
+   
+    % if all the leading dimensions to be shifted are singletons, then they
+    % will be lost when shiftdim works: ie, if dim = 3, so the shifting is
+    % to be by 2 dimensions, then the result of shifting is: 
+    % 1-2-3-4 ---> 3-4-1-2 (stays 4D array!)
+    % 1-1-3-4 ---> 3-4 (becomes 2D array!)
+    % 
+    % Also, note that 
+    %     rr = rand(2, 1, 3, 4);
+    %     size(shiftdim(rr, 2))
+    % 
+    %     ans =
+    % 
+    %          3     4     2
+    % 
+    % ie, basically matlab will just not report trailing singletons, and
+    % therein lies the problem. 
+    % 
+    % 
+    % so later when we do the shift back, have to do it as follows: 
+    % 
+    % First pad on the left with singletons equal to the number removed:
+    % 
+    % [1-2-3-4 --->] 3-4-1-2 --(pad with 0)--> 3-4-1-2, then rotate by 
+    % ndims - ((ndims - dim +1) - 0) == 2, ---> 1-2-3-4. [ORIGINAL]
+    % 
+    % 
+    %
+    % [1-1-3-4 --->] 3-4 --(pad with 2 singletons)--> 1-1-3-4, then rotate
+    % by ndims - ((ndims - dim +1) - 2) == 4, ---> 1-1-3-4  [ORIGINAL]
+    %
+    %
+    %
+    % [2-1-3-4 --->] 3-4-2 --(pad with one singleton)--> 1-3-4-2 
+    % then rotate by ndims -((ndims - dim +1) - 1) == 3, ---> 2-1-3-4 [ORIGINAL]
+    % 
+    % Then do the rotation in the same direction as the original, but 
+    % ndims - dim +1
+    % 
+
+    %{ OLD:
+    % This can be undone by first rotating the 
     % remaining dimensions back, and then adding singletons on the right. 
-%     if ndims(shiftedarray) < ndims(inputarray)
-%         dimsToRightPad = ndims(inputarray) - ndims(shiftedarray);
-%     end
+    %     if ndims(shiftedarray) < ndims(inputarray)
+    %         dimsToRightPad = ndims(inputarray) - ndims(shiftedarray);
+    %     end
        % otherwise: 
 	% undo using shiftdim(shiftedarray, ndims(array) - dim +1)
     % actually instead of circularly shifting, can just do :
-%     shiftdim(I5, -dim+1) to undo it!!!!
+    %     shiftdim(I5, -dim+1) to undo it!!!! <--- NOPE. 
+    % From the documentation: "When N is negative, shiftdim
+    % shifts the dimensions to the right and pads with singletons."
+    %}
     
-    % 
+    % EXAMPLE (cont): srted is 1-4-1-2, and in this case the same as 
+    % shiftedarray, since dimension 1 has length 1, so there is nothing to
+    % sort. I is a array of ones of the saem size. 
 	[srted, I] = sort(shiftedarray, 1);
 
 	%index of the element in srted that is the closest 
 	% overestimate of the median 
 	% also indices the first dimension of I
+    
 	II = ceil((size(I, 1)+1)/2); 
 
 	% Reshape I into a matrix
@@ -46,8 +94,20 @@ function [ix, medianvals] = medianIndex(inputarray, dim)
 	I5 = reshape(I4, [1, szmat(2:end)]);
 	srted5 = reshape(srted4, [1, szmat(2:end)]);
 	% shift back to the original dimensions
-	ix = shiftdim(I5, -dim+1);%ndims(inputarray) - dim +1
-	medianvals = shiftdim(srted5, -dim+1);
+    % there are 2 cases here: 
+    % if the original count of the dimension sizes was 
+    % 1-1-nRep-nDoses, then the shiftdim above resulted in a 2D matrix
+    % 
+    
+    singletonsToPad = ndims(inputarray) - ndims(shiftedarray);
+    padded_srted5 = shiftdim(srted5, -singletonsToPad);
+    padded_I5 = shiftdim(I5, -singletonsToPad);
+    
+    % dimsToRotateBy = ndims -((ndims - dim +1) - singletonsToPad) 
+    % = dim -1 + singletonsToPad
+    dimsToRotateBy = dim - 1 + singletonsToPad;
+	ix = shiftdim(padded_I5,dimsToRotateBy);
+	medianvals = shiftdim(padded_srted5,dimsToRotateBy);
 
 	
 
