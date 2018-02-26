@@ -132,32 +132,34 @@ mai = mcmc_info.master_info;
 %     marray_cut = marray_cut(:,1:ri.nW, :);
 % end
 %%
+
+
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
     'InitialDistribution', 'LHS');
 % 'UserInitialize', marray_cut(:,:,end)
 %'InitialDistribution', 'gaussian' 'UserInitialize', marray_cut(:,:,end)); 
 %%
- load([projdir '/simdata_' tstamp '/full_variable_set_' tstamp '.mat']);
+%  load([projdir '/simdata_' tstamp '/full_variable_set_' tstamp '.mat']);
 %%
-marray = mcmc_get_walkers({tstamp}, {1:3}, projdir);
+% marray = mcmc_get_walkers({tstamp}, {1:3}, projdir);
 %%
-mcmc_plot(marray(:,1:5:400,:), mai.estNames);
+% mcmc_plot(marray(:,1:5:400,:), mai.estNames);
 %% plot trajectories
-titls = {'dna 0.5'; 'dna 2';'dna 5';'dna 20'};
-lgds = {};
-% marray must be in the right order to go into the exported model object. 
-
-mvarray = masterVecArray(marray, mai);
-marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-%%
-% cell2mat(aaa(:,1))'
-mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd, titls, lgds,...
-    'SimMode', 'curves')
-%%
-marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
-titls = {'37.5' '75' '150' '200' '600' '700' '800' '900' '1000'}';
-mcmc_trajectories(mi(2).emo, di(3), mi(2), marrayOrd, titls, lgds,...
-    'SimMode', 'curves')
+% titls = {'dna 0.5'; 'dna 2';'dna 5';'dna 20'};
+% lgds = {};
+% % marray must be in the right order to go into the exported model object. 
+% 
+% mvarray = masterVecArray(marray, mai);
+% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
+% %%
+% % cell2mat(aaa(:,1))'
+% mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd, titls, lgds,...
+%     'SimMode', 'curves')
+% %%
+% marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
+% titls = {'37.5' '75' '150' '200' '600' '700' '800' '900' '1000'}';
+% mcmc_trajectories(mi(2).emo, di(3), mi(2), marrayOrd, titls, lgds,...
+%     'SimMode', 'curves')
 
 %% plot trajectories
 % close all
