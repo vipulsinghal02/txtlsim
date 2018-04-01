@@ -46,7 +46,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
 
     
 
-    npts = round(ri.nW*2); % can tolerate up to 66.7% non integrability.
+    npts = round(ri.nW*3); % can tolerate up to 66.7% non integrability.
     % Increase the factor here if you need to tolerate more.
     
     % Compute the parameter sharing across all topologies and geometries for 
@@ -90,7 +90,12 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     mv = mai.masterVector;
     minit_fixedAndEstParams = repmat(mv, 1, npts);
     estParamsIx = setdiff((1:length(mv))', mai.fixedParams);
-    minit_fixedAndEstParams(estParamsIx, :) = minit;
+    minit_fixedAndEstParams(estParamsIx, :) = minit_justEstParams; 
+    % i changed this line on 3.12.2018. not sure if this break previous
+    % code or fixes it. check how the previous code was working in the
+    % first place. yeah i think the previous code, which was only the vnprl
+    % and the protein with the mrna parameters fixed to 10 sets of values
+    % all never had semantic groups for parameters to be ESTIMATED. 
 
     % each column of minit, when distributed across topologies and geometries
     % should work for every topology geometry pair. 
@@ -153,11 +158,11 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
         % not enough integrable points
         warning(['Not enough integrable points. '...
             'Reducing to maximal set of integrable points.'])
-        int_minit = minit(:, intIx);
+        int_minit = minit_justEstParams(:, intIx);
     else
         % randomly generate ri.nW samples from list of integrable indices
         r = randperm(numInt, ri.nW);
-        int_minit = minit(:, intIx(r));
+        int_minit = minit_justEstParams(:, intIx(r));
     end
 
 

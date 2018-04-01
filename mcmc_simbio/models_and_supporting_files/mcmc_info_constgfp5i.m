@@ -1,20 +1,8 @@
-function mcmc_info = mcmc_info_constgfp3i(modelObj)
-% % model_protein3: Constitutive gene expression model using a single
-% enzymatic step.
-%
-% The estimation problem here is data in a single topology and a single
-% geometry. (so no sharing of any kind)
-%
+function mcmc_info = mcmc_info_constgfp5i(modelObj)
+% tetR repression, kf(s) fixed. Separate estimation of ESPs and
+% CSPs. 
+% 
 % ~~~ MODEL ~~~
-% D + pol <-> D__pol  (k_f, k_r  )
-% D__pol -> D + pol + protien (kc)
-%
-% Fix kf = 0.5.
-% The rest of the params: k_r, pol and kc are to be estimated.
-%
-%
-%
-%
 
 % Copyright (c) 2018, Vipul Singhal, Caltech
 % Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,57 +26,78 @@ function mcmc_info = mcmc_info_constgfp3i(modelObj)
 % User readable description of the circuit. Will be used in the log file generated
 % from the MCMC inference procedure.
 circuitInfo = ...
-    [' D + pol <-> D__pol  (k_f, k_r \n'... )
-    'D__pol -> D + pol + protien (kc)\n'...
-    'single topology, single geometry.'];
+    ['dG + pol <-> dG_pol -> dG + pol + mG  \n'...
+    'mG + ribo <-> mG_ribo -> mG + ribo + pG  \n'...
+    'mG -> null  \n'];
+
 
 rkfdG = 5; % nM-1s-1
 rkrdG = 300; % s-1
-rkcp1 = 0.012; %s-1
-cpol1 = 100; % nM
+
+rkfpG = 10; % nM-1s-1
+rkrpG = 300; % s-1
+
+cpol = 100; % nM
+cribo = 50; %nM
+rkcm = 0.001; %s-1
+rkcp = 1/36;
+rdel_m = log(2)/720; % 12 min half life of mrna
 
 activeNames = ...
     {'kfdG'
     'krdG'
+    'kfpG'
+    'krpG'
+    'kcm'
     'kcp'
-    'pol'};
+    'del_m'
+    'pol'
+    'ribo'};
 
-estParams = {'krdG'
-    'kcp'
-    'pol'};
-masterVector = log([rkfdG 
-                    rkrdG
-                    rkcp
-                    cpol]);
+    masterVector = log([...
+    rkfdG
+    rkrdG
+    rkfpG
+    rkrpG
+    rkcm
+    rkcp
+    rdel_m
+    cpol
+    cribo]);
 
 % fixedParams vector
-fixedParams = [1];
+fixedParams = [1 3];
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
-paramMap = [1:length(masterVector)]';
+estParams = {'krdG'
+    'krpG'
+    'kcm'
+    'kcp'
+    'del_m'
+    'pol'
+    'ribo'};
 
+paramMap = [1:length(masterVector)]';
 paramRanges =  [masterVector(estParamsIx)-3 masterVector(estParamsIx)+3];
 
 dataIndices = [1];
 
 %% next we define the dosing strategy.
-dosedNames = {dG'};
+dosedNames = {'dG'};
 dosedVals = [10 30 60];
-
 measuredSpecies = {{'pG'}};
 msIx = 1; %
-
 
 %% setup the MCMC simulation parameters
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
 nW = 40; % actual: 200 - 600 ish
 stepsize = 3; % actual: 1.1 to 4 ish
-niter = 40; % actual: 2 - 30 ish,
+niter = 4; % actual: 2 - 30 ish,
 npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
-thinning = 10; % actual: 10 to 40 ish
+thinning = 1; % actual: 10 to 40 ish
 
 %% pull all this together into an output struct.
 % the mcmc info struct now is an array struct, the way struct should be used!
@@ -100,7 +109,7 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', true);
+    'parallel', false);
 
 % for now we simply make the model_info have just one model (topology).
 % But the code will be written in a way such that multiple models can be used.
@@ -122,7 +131,8 @@ model_info = struct(...
 % element of the model_info array is a vector of length # of geometries.
 
 
-semanticGroups = num2cell((1:length(estParams))'); %arrayfun(@num2str, 1:10, 'UniformOutput', false);
+semanticGroups = num2cell((1:length(estParams))'); 
+%arrayfun(@num2str, 1:10, 'UniformOutput', false);
 
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);

@@ -10,7 +10,7 @@ function mobj = model_protein3(varargin)
 
 %% set input defaults
 p = inputParser ;
-addParameter(p, 'simtime', 3600);
+addParameter(p, 'simtime', 2*3600);
 parse(p);
 p = p.Results;
 
@@ -18,28 +18,28 @@ p = p.Results;
 mobj = sbiomodel('expression');
 
 %% setup model reactions
-r1 = addreaction(mobj,'D + pol <-> D_pol');
+r1 = addreaction(mobj,'dG + pol <-> dG_pol');
 Kobj = addkineticlaw(r1,'MassAction');
-Kobj.ParameterVariableNames = {'kf','kr'};
-addparameter(mobj, 'kf', 0.5)
-addparameter(mobj, 'kr', 100)
+Kobj.ParameterVariableNames = {'kfdG','krdG'};
+addparameter(mobj, 'kfdG', 10);
+addparameter(mobj, 'krdG', 600);
 
-r2 = addreaction(mobj,'D_pol -> D + pol + protein');
+r2 = addreaction(mobj,'dG_pol -> dG + pol + pG');
 Kobj = addkineticlaw(r2,'MassAction');
-Kobj.ParameterVariableNames = {'kc'};
-addparameter(mobj, 'kc', 20)
+Kobj.ParameterVariableNames = {'kcp'};
+addparameter(mobj, 'kcp', 0.012);
 
 % setup model species initial concentrations. 
-P = sbioselect(mobj, 'name', 'D');
-P.InitialAmount = 1;
+P = sbioselect(mobj, 'name', 'dG');
+P.InitialAmount = 30;
 
 C = sbioselect(mobj, 'name', 'pol');
-C.InitialAmount = 10;
+C.InitialAmount = 100;
 
-E = sbioselect(mobj, 'name', 'D_pol');
+E = sbioselect(mobj, 'name', 'dG_pol');
 E.InitialAmount = 0;
 
-S = sbioselect(mobj, 'name', 'protein');
+S = sbioselect(mobj, 'name', 'pG');
 S.InitialAmount = 0;
 
 %% Run the model

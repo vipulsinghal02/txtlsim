@@ -57,7 +57,13 @@ function mcmc_plot(marray, legendz, varargin)
     p.addParameter('grid', false, @islogical);
     p.addParameter('fontsize', 10, @isnumeric);
     p.addParameter('nbins', [], @isnumeric);
-    p.addParameter('transparency', 0.2, @isnumeric);
+    p.addParameter('transparency', 0.05, @isnumeric);
+    p.addParameter('savematlabfig', false, @islogical);
+    p.addParameter('savejpeg', false, @islogical);
+    p.addParameter('projdir', [], @ischar);
+    p.addParameter('tstamp', [], @ischar);
+    
+    p.addParameter('extrafignamestring', [], @ischar);
     p.parse(varargin{:})
     p = p.Results;
 
@@ -71,21 +77,40 @@ function mcmc_plot(marray, legendz, varargin)
     end
 
     % Plot the corner plot
-    figure
+    
     ecornerplot_vse(marray,'scatter', p.scatter,...
                             'ks', p.ks,...
-                            'scatter', p.scatter,...
                             'names', legendz,...
                             'grid', p.grid,...
                             'color', p.color,...
                             'fullmatrix', p.fullmatrix,...
                             'ks', p.ks,...
                             'support', p.support, ...
-                            'transparency', p.support);
+                            'transparency', p.transparency);
+    if p.savematlabfig
+        if isempty(p.projdir) || isempty(p.tstamp)
+            warning('timestamp and project directory not specified. Nothing will be saved.')
+        else
 
+            specificproj = [p.projdir '/simdata_' p.tstamp];
+            saveas(gcf, [specificproj '/cornerplot' p.tstamp p.extrafignamestring]);
+
+        end
+    end
+
+    if p.savejpeg
+        if isempty(p.projdir) || isempty(p.tstamp)
+            warning('timestamp and project directory not specified. Nothing will be saved.')
+        else
+            specificproj = [p.projdir '/simdata_' p.tstamp];
+            print(gcf, '-djpeg', '-r200', [specificproj '/cornerplot' p.tstamp p.extrafignamestring])
+        end
+    end
+                        
+                        
+    
     % Plot the Ensemble Average Autocorrelation Function
     figure
-
     [C,lags,ESS]=eacorr(marray);
 
     plot(lags,C,'.-',...
@@ -100,6 +125,7 @@ function mcmc_plot(marray, legendz, varargin)
         'verticalalignment','bottom',...
         'horizontalalignment','right')
 
+    
     % Optionally plot the chains (if ndims(marray) == 3)
     if ndims(marray)==3
         if isempty(p.nWalkers)
@@ -107,8 +133,7 @@ function mcmc_plot(marray, legendz, varargin)
         else
             nW = p.nWalkers;
         end
-        figure
-        
+
         plotChains(marray, nW, legendz)
         
     end

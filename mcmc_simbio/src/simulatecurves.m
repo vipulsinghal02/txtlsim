@@ -1,4 +1,10 @@
-function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms)
+function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms, varargin)
+
+    p = inputParser;
+    p.addParameter('sbioplot', false, @islogical);
+	p.parse(varargin{:})
+	p = p.Results;
+    
 	nICs = size(dose, 1);
 	nMS = length(ms);
 	kknotused = zeros(nSimCurves, 1);
@@ -25,6 +31,9 @@ function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms)
 	    end
 	end
 	idxnotused = find(kknotused);
-    sbioplot(sd)
+    if p.sbioplot 
+        sbioplot(sd)
+    end
+    
 end
 

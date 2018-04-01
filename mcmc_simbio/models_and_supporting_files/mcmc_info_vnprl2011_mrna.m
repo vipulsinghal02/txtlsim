@@ -167,8 +167,8 @@ msIx = 1; % this is the index of the measured species in the data array
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
 nW = 400; % actual: 200 - 600 ish
-stepsize = 3; % actual: 1.1 to 4 ish
-niter = 3; % actual: 2 - 30 ish,
+stepsize = 1.5; % actual: 1.1 to 4 ish
+niter = 20; % actual: 2 - 30 ish,
 npoints = 4e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of 
 %                        params is small)
 thinning = 10; % actual: 10 to 40 ish

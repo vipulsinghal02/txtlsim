@@ -1,9 +1,11 @@
-function mcmc_info = mcmc_info_constgfp3i(modelObj)
+function mcmc_info = mcmc_info_constgfp3iv(modelObj)
 % % model_protein3: Constitutive gene expression model using a single
 % enzymatic step.
 %
-% The estimation problem here is data in a single topology and a single
-% geometry. (so no sharing of any kind)
+% The estimation problem here is data in a single topology and two geometries, 
+% with the CSPs shared across extracts. The CSP is the kr, and is estimated 
+% jointly between the extracts. The value used to generate the data in the 
+% nominal case is 100. 
 %
 % ~~~ MODEL ~~~
 % D + pol <-> D__pol  (k_f, k_r  )
@@ -11,8 +13,6 @@ function mcmc_info = mcmc_info_constgfp3i(modelObj)
 %
 % Fix kf = 0.5.
 % The rest of the params: k_r, pol and kc are to be estimated.
-%
-%
 %
 %
 
@@ -42,53 +42,57 @@ circuitInfo = ...
     'D__pol -> D + pol + protien (kc)\n'...
     'single topology, single geometry.'];
 
-rkfdG = 5; % nM-1s-1
-rkrdG = 300; % s-1
-rkcp1 = 0.012; %s-1
-cpol1 = 100; % nM
-
 activeNames = ...
-    {'kfdG'
-    'krdG'
-    'kcp'
+    {'kf'
+    'kr'
+    'kc'
     'pol'};
 
-estParams = {'krdG'
-    'kcp'
-    'pol'};
-masterVector = log([rkfdG 
-                    rkrdG
-                    rkcp
-                    cpol]);
+
+estParams = {'kf'
+    'kr'
+    'kc1'
+    'pol1'
+    'kc2'
+    'pol2'};
 
 % fixedParams vector
-fixedParams = [1];
+fixedParams = [];
 
-estParamsIx = setdiff((1:length(masterVector))', fixedParams);
+% master vector
+logp =  zeros(6,1);
 
-paramMap = [1:length(masterVector)]';
+masterVector = [logp]; % log transformed.
 
-paramRanges =  [masterVector(estParamsIx)-3 masterVector(estParamsIx)+3];
+paramMap = [1 2 3 4; 1 2 5 6]';
 
-dataIndices = [1];
+paramRanges = [-3 7
+    -3 7
+    -3 7
+    -3 7
+    -3 7
+    -3 7];
+% data indices tell us which data set to use for each topology - geometry pair
+% from the data_info struct array.
+dataIndices = [1, 2];
 
 %% next we define the dosing strategy.
-dosedNames = {dG'};
-dosedVals = [10 30 60];
+dosedNames = {'D'};
+dosedVals = [1 2 5];
 
-measuredSpecies = {{'pG'}};
+measuredSpecies = {{'protein'}};
 msIx = 1; %
 
 
 %% setup the MCMC simulation parameters
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 40; % actual: 200 - 600 ish
-stepsize = 3; % actual: 1.1 to 4 ish
-niter = 40; % actual: 2 - 30 ish,
-npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+nW = 400; % actual: 200 - 600 ish
+stepsize = 1.3; % actual: 1.1 to 4 ish
+niter = 30; % actual: 2 - 30 ish,
+npoints = 4e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
-thinning = 10; % actual: 10 to 40 ish
+thinning = 1; % actual: 10 to 40 ish
 
 %% pull all this together into an output struct.
 % the mcmc info struct now is an array struct, the way struct should be used!
@@ -122,7 +126,11 @@ model_info = struct(...
 % element of the model_info array is a vector of length # of geometries.
 
 
-semanticGroups = num2cell((1:length(estParams))'); %arrayfun(@num2str, 1:10, 'UniformOutput', false);
+semanticGroups = {1, 2, 3, 4, 5,6};
+
+%num2cell((1:5)'); 
+%arrayfun(@num2str, 1:10, 'UniformOutput', false);
+
 
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);

@@ -63,25 +63,24 @@ figure
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
-marray = mcmc_get_walkers({'20180313_125455'}, {20}, projdir);
-pID = 1:4;
-marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
-if size(marray_cut, 2) < ri.nW
-    error('too few initial points');
-elseif size(marray_cut, 2) > ri.nW
-    marray_cut = marray_cut(:,1:ri.nW, :);
-end
+% marray = mcmc_get_walkers({'20180311_223247'}, {10}, projdir);
+% marray_cut = mcmc_cut(marray, (1:10), flipud((mai.paramRanges)'));
+% if size(marray_cut, 2) < ri.nW
+%     error('too few initial points');
+% elseif size(marray_cut, 2) > ri.nW
+%     marray_cut = marray_cut(:,1:ri.nW, :);
+% end
 %%
 
 mi1 = mcmc_runsim_v2(tstamp1, projdir, di(1), mcmc_info,...
-    'UserInitialize', marray_cut(:,:,end));
-    % 'UserInitialize', marray_cut(:,:,end)); 'InitialDistribution', 'LHS'
+    'InitialDistribution', 'LHS');
+    % 'UserInitialize', marray_cut(:,:,end));
 
 %%  plot stuff 
-tstamptouse = tstamp1; %'20180313_125455'
-marray = mcmc_get_walkers({tstamptouse}, {15:ri.nIter}, projdir);
-% mcmc_plot(marray, mi1.namesUnord, 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse);
+tstamptouse = tstamp1; %'20180311_223247';
+marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
+mcmc_plot(marray, mi1.namesUnord, 'savematlabfig', true, 'savejpeg', true,...
+    'projdir', projdir, 'tstamp', tstamptouse);
 % mcmc_plot(marray, mi1.namesUnord,'ks', true, 'scatter', false);
 % mcmc_plot(marray, mi1.namesUnord,'transparency', 0.05);
 titls = {'dna 1'; 'dna 2';'dna 5'};
@@ -99,23 +98,22 @@ fhandle = mcmc_trajectories(mi1.emo, di(1), mi1, marrayOrd, titls, lgds,...
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
-marray = mcmc_get_walkers({'20180313_131824'}, {20}, projdir);
-pID = 1:4;
-marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
-if size(marray_cut, 2) < ri.nW
-    error('too few initial points');
-elseif size(marray_cut, 2) > ri.nW
-    marray_cut = marray_cut(:,1:ri.nW, :);
-end
+% marray = mcmc_get_walkers({'20180311_224651'}, {10}, projdir);
+% marray_cut = mcmc_cut(marray, (1:10), flipud((mai.paramRanges)'));
+% if size(marray_cut, 2) < ri.nW
+%     error('too few initial points');
+% elseif size(marray_cut, 2) > ri.nW
+%     marray_cut = marray_cut(:,1:ri.nW, :);
+% end
 
 mi2 = mcmc_runsim_v2(tstamp2, projdir, di(2), mcmc_info,...
-        'UserInitialize', marray_cut(:,:,end));
-    % 'UserInitialize', marray_cut(:,:,end)); 'InitialDistribution', 'LHS'
+        'InitialDistribution', 'LHS');
+    % 'UserInitialize', marray_cut(:,:,end));
 %%
-marray = mcmc_get_walkers({tstamp2}, {15:ri.nIter}, projdir);
-% mcmc_plot(marray, mi2.namesUnord);
-% mcmc_plot(marray, mi2.namesUnord,'ks', true, 'scatter', false);
-% mcmc_plot(marray, mi2.namesUnord,'transparency', 0.05);
+marray = mcmc_get_walkers({tstamp2}, {1:ri.nIter}, projdir);
+mcmc_plot(marray, mi2.namesUnord);
+mcmc_plot(marray, mi2.namesUnord,'ks', true, 'scatter', false);
+mcmc_plot(marray, mi2.namesUnord,'transparency', 0.05);
 titls = {'dna 1'; 'dna 2';'dna 5'};
 lgds = {};
 mvarray2 = masterVecArray(marray, mai);
@@ -130,13 +128,13 @@ labellist = mai.estNames;
 for plotID = 1:size(pToPlot, 1)
     mstacked1 = mvarray1(:,:)';
     figure
-    XX = mstacked1(1:end, [pToPlot(plotID,1)]);
-    YY = mstacked1(1:end, [pToPlot(plotID,2)]);
-    ZZ = mstacked1(1:end, [pToPlot(plotID,3)]);
+    XX = mstacked1(1:2:end, [pToPlot(plotID,1)]);
+    YY = mstacked1(1:2:end, [pToPlot(plotID,2)]);
+    ZZ = mstacked1(1:2:end, [pToPlot(plotID,3)]);
     scatter3(XX,YY,ZZ)
     xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
-    ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)
-    zlabel(labellist{pToPlot(plotID,3)}, 'FontSize', 20)
+    ylabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
+    zlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
     title('covariation in Extract 1', 'FontSize', 20)
     saveas(gcf, [projdir '/simdata_' tstamp1 '/3dfig_ext1_' num2str(plotID) '_' tstamp1]);
 end
@@ -145,9 +143,9 @@ pToPlot = [1 2 3; 1 2 4; 1 3 4; 2 3 4];
 for plotID = 1:size(pToPlot, 1)
     mstacked2 = mvarray2(:,:)';
     figure
-    XX = mstacked2(1:end, [pToPlot(plotID,1)]);
-    YY = mstacked2(1:end, [pToPlot(plotID,2)]);
-    ZZ = mstacked2(1:end, [pToPlot(plotID,3)]);
+    XX = mstacked2(1:2:end, [pToPlot(plotID,1)]);
+    YY = mstacked2(1:2:end, [pToPlot(plotID,2)]);
+    ZZ = mstacked2(1:2:end, [pToPlot(plotID,3)]);
     scatter3(XX,YY,ZZ)
     xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
     ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)

@@ -1,4 +1,4 @@
-function mcmc_log_v2(tstamp,projdir,  savedir, mcmc_info, di)
+function mcmc_log_v2(tstamp,projdir,  savedir, mcmc_info, di, initialization_used)
 % mcmc_log generate mcmc log text file. 
 %   This function generates a log file describing the mcmc run used to call
 %   it. Inputs are the timestamp string: tstamp, the savedir string, ie, which 
@@ -30,7 +30,7 @@ currdir = pwd;
 cd(savedir);
 fileID = fopen(['summary_' tstamp '.txt'],'w');
 
-
+initialization_used
 %% Simulation Parameters
 fS = ['################################################ \n'...
     'Simulation Parameters are: \n'];
@@ -77,6 +77,11 @@ for i = 1:length(mi)
             (mai.paramRanges(j, 2)));
     end
 
+    fS = ['################################################ \n'...
+        'initialization used was: \n'];
+        fprintf(fileID,fS);
+        fS = [initialization_used '\n'];
+        fprintf(fileID,fS);
     % %% Dosed Species Info
     % % names of dosed species from the mcmc_info struct and the data_info struct. 
     % fS = ['################################################ \n' ...

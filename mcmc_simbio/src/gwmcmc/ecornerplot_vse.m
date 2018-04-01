@@ -63,7 +63,7 @@ p.parse(varargin{:});
 p=p.Results;
 
 
-if (size(m,1)<size(m,2))&&(ismatrix(m)), m=m'; end; %Consider this behaviour further....
+if (size(m,1)<size(m,2))&&(ismatrix(m)), m=m'; end %Consider this behaviour further....
 
 
 if isempty(p.ess)
@@ -146,7 +146,7 @@ for r=1:M
         else
             if p.scatter
                 scplot = scatter(m(:,c),m(:,r),'.','CData',p.color);
-                scplot.MarkerEdgeAlpha = p.scatter; % changed from p.transparency;
+                scplot.MarkerEdgeAlpha = p.transparency;%p.scatter; % changed from p.transparency;
             else
                 %                 [N,C]=hist3(m(:,[c r]),[0 0]+ceil(sqrt(Np)/5));
                 %                 imagesc(C{1},C{2},N)

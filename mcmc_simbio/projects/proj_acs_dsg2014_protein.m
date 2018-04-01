@@ -46,13 +46,18 @@ elseif size(marray_cut, 2) > ri.nW
     marray_cut = marray_cut(:,1:ri.nW, :);
 end
 %%
+
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
     'UserInitialize', marray_cut(:,:,end));
 %'InitialDistribution', 'gaussian' 'UserInitialize', marray_cut(:,:,end)); 
 %%
+% /Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017/mcmc_simbio/projects/proj_acs_dsg2014_protein/simdata_20180221_103250
+projdir = '/Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017/mcmc_simbio/projects/proj_acs_dsg2014_protein';
+
+tstamp = '20180221_103250';
  load([projdir '/simdata_' tstamp '/full_variable_set_' tstamp '.mat']);
 %%
-marray = mcmc_get_walkers({tstamp}, {1:2}, projdir);
+marray = mcmc_get_walkers({tstamp}, {1:10}, projdir);
 %%
 mcmc_plot(marray(:,1:2:400,:), mai.estNames);
 %% plot trajectories
@@ -62,6 +67,9 @@ lgds = {};
 
 mvarray = masterVecArray(marray, mai);
 marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
+%%
+mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd(:,:,end), titls, lgds,...
+    'SimMode', 'curves')
 %% plot trajectories
 close all
 
@@ -121,8 +129,8 @@ aaa =...
 simulatecurves(mi(1).emo,cell2mat(aaa(:,1))',...
     1, di.dosedVals', tv{1}, mi.measuredSpecies)
 
-% mcmc_trajectories(mi(1).emo, di(1), mi(1), cell2mat(aaa(:,1))', titls, lgds,...
-%     'SimMode', 'curves')
+ mcmc_trajectories(mi(1).emo, di(1), mi(1), cell2mat(aaa(:,1))', titls, lgds,...
+     'SimMode', 'curves')
 
 
 

@@ -1,12 +1,17 @@
-function mobj = model_tetR_repression1
-% repression with enzymatic one step protein production
+function mobj = model_protein5_5
+% enzymatic mrna and protein production and first order mrna degradation
 % 
 % ~~~ MODEL ~~~
-% D_T + P <-> D_T:P -> D_T + P + T
-% D_G + P <-> D_G:P -> D_G + P + G
-% 2 T <-> T2
-% D_G + T2 <-> D_G:T2
-
+% D + pol <-> D__pol  (k_fd, k_rd) 
+% D__pol -> D + pol + mrna (kcm) 
+% 
+% mrna + ribo <-> mrna__ribo (k_fm, k_rm)
+% mrna__ribo <-> mrna + ribo + protein (kcp)
+% 
+% protein -> null (del_p)
+% 
+% mrna -> null (kcx)
+% 
 % Copyright (c) 2018, Vipul Singhal, Caltech
 % Permission is hereby granted, free of charge, to any person obtaining a copy
 % of this software and associated documentation files (the "Software"), to deal
@@ -26,80 +31,62 @@ function mobj = model_tetR_repression1
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 % SOFTWARE.
 
-% D_T + P <-> D_T:P -> D_T + P + T
-% D_G + P <-> D_G:P -> D_G + P + G
-% 2 T <-> T2
-% D_G + T2 <-> D_G:T2
-% 
-p = inputParser ;
-addParameter(p, 'simtime', 2*3600);
-parse(p);
-p = p.Results;
 %% setup model
-mobj = sbiomodel('tetRepression1');
+mobj = sbiomodel('expression');
 %% setup model reactions
-
-rxn = addreaction(mobj,'dT + pol <-> dT_pol');
+rxn = addreaction(mobj,'D + pol <-> D_pol');
 Kobj = addkineticlaw(rxn,'MassAction');
-Kobj.ParameterVariableNames = {'kfdT','krdT'};
-addparameter(mobj, 'kfdT', 10);
-addparameter(mobj, 'krdT', 600);
+Kobj.ParameterVariableNames = {'kfd','krd'};
+addparameter(mobj, 'kfd', 4)
+addparameter(mobj, 'krd', 20)
 
-rxn = addreaction(mobj,'dT_pol -> dT + pol + pT');
+rxn = addreaction(mobj,'D_pol -> D + pol + mrna');
+Kobj = addkineticlaw(rxn,'MassAction');
+Kobj.ParameterVariableNames = {'kcm'};
+addparameter(mobj, 'kcm', 0.1)
+
+rxn = addreaction(mobj,'mrna + ribo <-> mrna__ribo');
+Kobj = addkineticlaw(rxn,'MassAction');
+Kobj.ParameterVariableNames = {'kfm','krm'};
+addparameter(mobj, 'kfm', 4)
+addparameter(mobj, 'krm', 20)
+
+rxn = addreaction(mobj,'mrna__ribo -> mrna + ribo + protein');
 Kobj = addkineticlaw(rxn,'MassAction');
 Kobj.ParameterVariableNames = {'kcp'};
-addparameter(mobj, 'kcp', 0.012);
+addparameter(mobj, 'kcp', 0.1)
 
-rxn = addreaction(mobj,'dG + pol <-> dG_pol');
+rxn = addreaction(mobj,'mrna -> null');
 Kobj = addkineticlaw(rxn,'MassAction');
-Kobj.ParameterVariableNames = {'kfdG','krdG'};
-addparameter(mobj, 'kfdG', 10);
-addparameter(mobj, 'krdG', 600);
+Kobj.ParameterVariableNames = {'kcx'};
+addparameter(mobj, 'kcx', 0.1)
 
-rxn = addreaction(mobj,'dG_pol -> dG + pol + pG');
+rxn = addreaction(mobj,'protein -> null');
 Kobj = addkineticlaw(rxn,'MassAction');
-Kobj.ParameterVariableNames = {'kcp'};
-% already added to model. 
-
-rxn = addreaction(mobj,'2 pT <-> pT2');
-Kobj = addkineticlaw(rxn,'MassAction');
-Kobj.ParameterVariableNames = {'kfdimTet','krdimTet'};
-addparameter(mobj, 'kfdimTet', 20);
-addparameter(mobj, 'krdimTet', 40);
-
-rxn = addreaction(mobj,'dG + pT2 <-> dG_pT2');
-Kobj = addkineticlaw(rxn,'MassAction');
-Kobj.ParameterVariableNames = {'kfseqTet','krseqTet'};
-addparameter(mobj, 'kfseqTet', 20);
-addparameter(mobj, 'krseqTet', 40);
+Kobj.ParameterVariableNames = {'del_p'};
+addparameter(mobj, 'del_p', 1)
 
 % setup model species initial concentrations. 
 % setup model species initial concentrations. 
-specie = sbioselect(mobj, 'name', 'dT');
-specie.InitialAmount = 0.5;
-
-specie = sbioselect(mobj, 'name', 'dG');
-specie.InitialAmount = 30;
-
-specie = sbioselect(mobj, 'name', 'pT');
-specie.InitialAmount = 0;
-
-specie = sbioselect(mobj, 'name', 'pG');
-specie.InitialAmount = 0;
+specie = sbioselect(mobj, 'name', 'D');
+specie.InitialAmount = 1;
 
 specie = sbioselect(mobj, 'name', 'pol');
 specie.InitialAmount = 100;
 
-specie = sbioselect(mobj, 'name', 'dT_pol');
+specie = sbioselect(mobj, 'name', 'D_pol');
 specie.InitialAmount = 0;
 
-specie = sbioselect(mobj, 'name', 'dG_pol');
+specie = sbioselect(mobj, 'name', 'mrna');
 specie.InitialAmount = 0;
 
-specie = sbioselect(mobj, 'name', 'pT2');
+specie = sbioselect(mobj, 'name', 'ribo');
+specie.InitialAmount = 100;
+
+specie = sbioselect(mobj, 'name', 'mrna__ribo');
 specie.InitialAmount = 0;
 
-specie = sbioselect(mobj, 'name', 'dG_pT2');
+specie = sbioselect(mobj, 'name', 'protein');
 specie.InitialAmount = 0;
 
 %% Run the model

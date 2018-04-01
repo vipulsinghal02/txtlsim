@@ -337,8 +337,10 @@ estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 %% master parameter vector, param ranges, 
 master_info = struct(...
     'estNames', {estParams},...
-    'masterVector', {masterVector},...
-    'paramRanges', {paramRanges},... % 
+    'masterVector', {masterVector},... % master vector is the set of all parameters that get distributed 
+     ...                                   % across all models and topologies. not just the estimated params
+    'paramRanges', {paramRanges},... % paramRanges are the ranges of parameter values for the values in the 
+    ... % master vector that are estimated. ie, are specified by estParamIx as defined above. 
     'fixedParams', {fixedParams},...   % indexes of the parameters that are fixed (withing master vector)
     'semanticGroups', {semanticGroups}); % EITHER EMPTY OR
                                         % a cell array of vectors specifying parameter 
@@ -377,7 +379,7 @@ master_info = struct(...
 % can use the master_info.estNames for the names and 
 % master_info.mastervector(~master_info.fixedParams) for the 
 % parameter values. 
-% sematic
+
 
 
 mcmc_info = struct('runsim_info', runsim_info, ...

@@ -72,7 +72,8 @@ minew = struct(...
 %
 titls = {'dna 0.5'; 'dna 2';'dna 5';'dna 20'};
 lgds = {};
-mcmc_trajectories(mi.emo, di, minew, marray', titls, lgds, 'nSimCurves', nPrevPoints)
+mcmc_trajectories(mi.emo, di, minew, marray', titls,...
+    lgds, 'nSimCurves', nPrevPoints)
 
 %% plot the 3D plots. !TODO later
 titlestr = ['test title'];

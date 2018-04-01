@@ -1,191 +1,103 @@
 function mcmc_info = mcmc_info_constgfp3ii(modelObj)
-    % individually estimating the full parameter sets for 
-    % this circuit. 2 extrasts, no sharing of any kind. 
-    % All parameters except the kf parameter that sets 
-    % the timescale of the binding reaction. 
-    %
-    %
-    %
-    %
-    %
-    %
-    %
-    %
-    %
+% % model_protein3: Constitutive gene expression model using a single
+% enzymatic step.
+%
+% The estimation problem here is data in a single topology and two geometries, 
+% with the CSPs shared across extracts. The CSP is the kr, and is estimated 
+% jointly between the extracts. The value used to generate the data in the 
+% nominal case is 100. 
+%
+% ~~~ MODEL ~~~
+% D + pol <-> D__pol  (k_f, k_r  )
+% D__pol -> D + pol + protien (kc)
+%
+% Fix kf = 0.5.
+% The rest of the params: k_r, pol and kc are to be estimated.
+%
+%
 
-    % Copyright (c) 2018, Vipul Singhal, Caltech
-    % Permission is hereby granted, free of charge, to any person obtaining a copy
-    % of this software and associated documentation files (the "Software"), to deal
-    % in the Software without restriction, including without limitation the rights
-    % to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    % copies of the Software, and to permit persons to whom the Software is
-    % furnished to do so, subject to the following conditions:
+% Copyright (c) 2018, Vipul Singhal, Caltech
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
 
-    % The above copyright notice and this permission notice shall be included in all
-    % copies or substantial portions of the Software.
+% The above copyright notice and this permission notice shall be included in all
+% copies or substantial portions of the Software.
 
-    % THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    % IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    % FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    % AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    % LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    % SOFTWARE.
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
 
-    % User readable description of the circuit. Will be used in the log file generated
-    % from the MCMC inference procedure. 
-    circuitInfo = ...
-    ['']
+% User readable description of the circuit. Will be used in the log file generated
+% from the MCMC inference procedure.
+circuitInfo = ...
+    [' D + pol <-> D__pol  (k_f, k_r \n'... )
+    'D__pol -> D + pol + protien (kc)\n'...
+    'single topology, two geometries.'];
 
- 
-    
-    
-    
-    activeNames = {};
-            
-            
-estParams = {'TL_elong_glob'
-                'TXTL_PROT_deGFP_MATURATION'
-                'TXTL_UTR_UTR1_Kd'
-                'TXTL_UTR_UTR1_F'
-                'TL_AA_Kd'
-                'TL_AA_F'
-                'TL_AGTP_Kd'
-                'TL_AGTP_F'
-                'TXTL_RIBOBOUND_TERMINATION_RATE'
-                'Ribo'};
-            
+rkfdG = 5; % nM-1s-1
+rkrdG = 300; % s-1
+rkcp1 = 0.012; %s-1
+rkcp2 = 0.024; %s-1
+cpol1 = 100; % nM
+cpol2 = 200; % nM
 
+activeNames = ...
+    {'kfdG'
+    'krdG'
+    'kcp'
+    'pol'};
 
-    % get 10 sets of parameter values (= 10 points) from a previously estimated sims:
-    % get parameter values from a few different mcmc points from the runs of 
-    % the file proj_acs_dsg2014_protein
-    marray = mcmc_get_walkers({'20180121_131114'}, {5}, ...
-      ['/Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017/'...
-      'mcmc_simbio/projects/proj_acs_dsg2014_mrna']);
-  
-    
-    nPrevPoints = 5;
-    minit = marray(:, ((end-nPrevPoints+1) : end), end); % Final set of walker positions. 
-    minit = minit(:,:); % nparam x npoints, nparam is the tx params, ie, 15. npoints is 10. 
+estParams = {'krdG'
+    'kcp1'
+    'kcp2'
+    'pol1'
+    'pol2'};
 
-    % fixedParams vector
-    fixedParams = [1:numel(minit)]';
+masterVector = log([...
+rkfdG 
+rkrdG
+rkcp1
+rkcp2
+cpol1
+cpol2]);
+% fixedParams vector
+fixedParams = [1];
 
-    % master vector
-    logp =  zeros(10,1);
+estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
-    masterVector = [minit(:)
-                    logp]; % log transformed. 
+paramMap1 = [1 2 3 5]';
+paramMap2 = [1 2 4 6]';
+paramMap = [paramMap1 paramMap2];
+paramRanges =  [masterVector(estParamsIx)-3 masterVector(estParamsIx)+3];
 
-    % paramMap is a matrix mapping the parameters in the master vector to the 
-    % (unordered) list of parameters in the model. (obvioulsy within the code 
-    % these parameters get ordered before they are used in the exported model)
-    % More precisely, Let pp = paramMap(:, 1); then masterVector(pp) is the list 
-    % of parameters for the first geometry within that topology. 
-    % 
-    % One such matrix exists for each topology. It has dimnesions 
-    % length(model_info(i).namesUnord) x number of geometries associated with that topo. 
-    % 
-    % 
+dataIndices = [1 2];
 
-    TLparamIX = [(length(masterVector)-length(logp)+1) : length(masterVector)]';
-    paramMap = [reshape((1:numel(minit))', 15, numel(minit)/15); 
-                repmat(TLparamIX, 1, numel(minit)/15)];
+%% next we define the dosing strategy.
+dosedNames = {'dG'}; 
+dosedVals = [10 30 60];
 
-    % parameter ranges for the logp (the parameters within the master vector that 
-    % are to be estimated.)
-    
-    % 20180218_225205 -> 3 successful runs
-    % 20180219_021944 -> 10 successpul runs, comtinued from 20180218_225205
-    % used: 
-%     paramRanges = [4 8
-%     -7 -3
-%     -1 7
-%     -3 3
-%     -1 6
-%     -1 6
-%     -1 6
-%     -1 6
-%     -6 -1
-%     2 7];
-
-% '20180219_154541', 10 successful runs, started from 
-% 20180219_021944, but with the parameter intiial points constrained to:
-
-% paramRanges = [5 8
-%     -4 0
-%     0 6
-%     -1 3
-%     0 6
-%     0 6
-%     -1 6
-%     -1 6
-%     -1.5 2
-%     6 8];
-
-
-% New run '20180221_011619' started from 20180219_154541 but with the 
-% parameter intiial points constrained to:
-paramRanges = [3 8
-    -4 0
-    -2 8
-    -2 4
-    -2 8
-    -2 8
-    4 8
-    -3 2
-    -1.5 -0.5
-    3 9];
-
-% New run _______ started from 20180221_011619 but with the 
-% parameter intiial points constrained to:
-paramRanges = [5 9
-    -4 0
-    -2 10
-    -1 3
-    -2 10
-    -3 10
-    2 7
-    -3 4
-    -1.2 -0.8
-    5 8];
-
-
-% data indices tell us which data set to use for each topology (model) - geometry pair
-% from the data_info struct array. 
-% Here we have 1 model, and 10 geometries, all pointing to the same data: 
-% at data index 1 in the data_info array created by data_dsg2014.m
-dataIndices = ones(nPrevPoints,1);
-
-%% next we define the dosing strategy. 
-dosedNames = {'DNA p70--utr1--deGFP'};
-dosedVals = [0.5 2 5 20];
-
-
-%% create the measured species cell array
-% this is a 1x2 cell array. each element of this cell array contains
-% further cell arrays. The first such cell array is a list of all the bound
-% and free versions of the RNA. The second cell array contains a single
-% cell, which contains the GFP string. 
-% all the species in the inner cell arrays get summed, and compared to the
-% corresponding column (dimension 2) of the experimental data array. 
-measuredSpecies = {{'protein deGFP*'}};
-msIx = 2; % this is the index of the measured species in the data array 
-% from data_dsg2014. There are two species: 1: mRNA and 2: GFP. 
-
+measuredSpecies = {{'pG'}};
+msIx = 1; %
 
 %% setup the MCMC simulation parameters
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 400; % actual: 200 - 600 ish
-stepsize = 1.3; % actual: 1.1 to 4 ish
-niter = 10; % actual: 2 - 30 ish,
-npoints = 4e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of 
+nW = 40; % actual: 200 - 600 ish
+stepsize = 1.5; % actual: 1.1 to 4 ish
+niter = 1; % actual: 2 - 30 ish,
+npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
-thinning = 4; % actual: 10 to 40 ish
+thinning = 1; % actual: 10 to 40 ish
 
-%% pull all this together into an output struct. 
+%% pull all this together into an output struct.
 % the mcmc info struct now is an array struct, the way struct should be used!
 
 runsim_info = struct('stdev', {stdev}, ...
@@ -195,77 +107,46 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', true);
+    'parallel', false);
 
-% for now we simply make the model_info have just one model (topology). 
-% But the code will be written in a way such that multiple models can be used. 
+% for now we simply make the model_info have just one model (topology).
+% But the code will be written in a way such that multiple models can be used.
 
 model_info = struct(...
     'circuitInfo',{circuitInfo},...
     'modelObj', {modelObj},... % array of model objects (different topologies)
-    'modelName', {modelObj.name},...; % model names. 
-    'namesUnord', {activeNames}, ... % names of parameters per model, unordered. 
-    'paramMaps', {paramMap}, ... % each paramMap is a matrix mapping models to the master vector. 
+    'modelName', {modelObj.name},...; % model names.
+    'namesUnord', {activeNames}, ... % names of parameters per model, unordered.
+    'paramMaps', {paramMap}, ... % paramMap: matrix mapping models to master vector.
     'dosedNames', {dosedNames},... % cell arrays of species. cell array corresponds
-     ...                               % to a model.
-    'dosedVals', {dosedVals},...  % matrices of dose vals 
-    'measuredSpecies', {measuredSpecies}, ... % cell array of cell arrays of 
-                      ...                  % species names. the elements of the inner
-                      ...                  % cell array get summed. 
-    'measuredSpeciesIndex', {msIx},...                                    
-    'dataToMapTo', dataIndices); % each dataToMapTo property within an element of the 
-                            % model_info array is a vector of length # of geometries. 
-                            
-                            
-semanticGroups = num2cell((1:10)'); %arrayfun(@num2str, 1:10, 'UniformOutput', false);
+    ...                               % to a model.
+    'dosedVals', {dosedVals},...  % matrices of dose vals
+    'measuredSpecies', {measuredSpecies}, ... % cell array of cell arrays of
+    ...                  % species names. the elements of the inner
+    ...                  % cell array get summed.
+    'measuredSpeciesIndex', {msIx},...
+    'dataToMapTo', dataIndices); % each dataToMapTo property within an 
+% element of the model_info array is a vector of length # of geometries.
+
+
+% semanticGroups = {1, [2 4] [3 5]}; % cant do this, then the points never
+% get differentiated at all. need some jitter. think about this actually.
+% 
+semanticGroups = num2cell((1:length(estParams))'); 
+%num2cell((1:5)'); 
+%arrayfun(@num2str, 1:10, 'UniformOutput', false);
+
 
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
-%% master parameter vector, param ranges, 
+%% master parameter vector, param ranges,
 master_info = struct(...
     'estNames', {estParams},...
     'masterVector', {masterVector},...
-    'paramRanges', {paramRanges},... % 
-    'fixedParams', {fixedParams},...   % indexes of the parameters that are fixed (withing master vector)
-    'semanticGroups', {semanticGroups}); % EITHER EMPTY OR
-                                        % a cell array of vectors specifying parameter 
-                                        % groupings. 
-                                        % The vectors contain indices to the 
-                                        % parameters in (non fixed subset of) the master 
-                                        % vector that need to be grouped.  
-                                        % I.e., They contain indexes of the subvector 
-                                        % logp =  
-                                        % master_info.mastervector(~master_info.fixedParams)
-                                        % and to the rows of the paramRanges matrix and the
-                                        % estNames cell array of strings. 
-                                        % 
-                                        % parameter grouping so that these parameters 
-                                        % get INITIALIZED to the same values.
-                                        %  
-                                        % every parameter index must show up in at least 
-                                        % one group, even if that is the only parameter in 
-                                        % that group. If the semanticGroups field is empty, 
-                                        % then all parameters are assumed to be in their distinct
-                                        % groups. 
-
-
-% how the parameter distribution flow works: 
-% WALKER INITIALIZATION
-% reduced master vector -- semanticGroups --> 
-% master vector -- paramMaps --> 
-% full parameter vector for each topo-geom pair -- orderingIx --> 
-% reordered vector for exported model simulation. 
-% 
-% param ranges: reduced param ranges matrix (by sematicGroups)
-% compute initial parameter distributons 
-% then expand in the same way as above. 
-% once the parameters have been estimated, there is no need to 
-% reorder them, since the master vector was never reordered. 
-% can use the master_info.estNames for the names and 
-% master_info.mastervector(~master_info.fixedParams) for the 
-% parameter values. 
-% sematic
+    'paramRanges', {paramRanges},...
+    'fixedParams', {fixedParams},...
+    'semanticGroups', {semanticGroups});
 
 
 mcmc_info = struct('runsim_info', runsim_info, ...
