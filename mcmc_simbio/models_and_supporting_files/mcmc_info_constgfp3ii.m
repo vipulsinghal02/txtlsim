@@ -90,12 +90,12 @@ msIx = 1; %
 %% setup the MCMC simulation parameters
 stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 40; % actual: 200 - 600 ish
-stepsize = 1.5; % actual: 1.1 to 4 ish
-niter = 1; % actual: 2 - 30 ish,
-npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+nW = 200; % actual: 200 - 600 ish
+stepsize = 1.3; % actual: 1.1 to 4 ish
+niter = 40; % actual: 2 - 30 ish,
+npoints = 4e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
-thinning = 1; % actual: 10 to 40 ish
+thinning = 10; % actual: 10 to 40 ish
 
 %% pull all this together into an output struct.
 % the mcmc info struct now is an array struct, the way struct should be used!
@@ -107,7 +107,7 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', false);
+    'parallel', true);
 
 % for now we simply make the model_info have just one model (topology).
 % But the code will be written in a way such that multiple models can be used.
