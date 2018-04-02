@@ -13,7 +13,7 @@ function mi = proj_protein_constgfp3ii_linux(varargin)
 % clear all
 % clc
 p = inputParser;
-p.addOptional('prevtstamp', []); 
+p.addParameter('prevtstamp', []); 
 p.addParameter('stepSize', []); 
 p.addParameter('nW', []); 
 p.addParameter('nPoints', []); 
