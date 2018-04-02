@@ -1,3 +1,5 @@
+function mi = proj_protein_constgfp3ii_linux(varargin)
+
 %% MCMC toolbox demo - proj_protein_constgfp3i.m
 %
 % const gfp 3, artificial data, separate, 2 extracts. Check if the CSPs line up exactly. 
@@ -10,6 +12,19 @@
 % close all
 % clear all
 % clc
+p = inputParser;
+p.addOptional('prevtstamp', []); 
+p.addParameter('stepSize', []); 
+p.addParameter('nW', []); 
+p.addParameter('nPoints', []); 
+p.addParameter('thinning', []); 
+p.addParameter('nIter', []);
+p.addParameter('parallel', []);
+
+p.addParameter('multiplier', 1);
+p.parse(varargin{:});
+p = p.Results;
+
 [tstamp, projdir, st] = project_init;
 
 %% We first define the model, mcmc_info struct, and the data_info struct. 
@@ -42,92 +57,59 @@ di = data_artificial_v2({mobj}, {0:180:7200}, {mi.measuredSpecies}, ...
     {mi.dosedNames}, {mi.dosedVals}, {mi.namesUnord},...
      {exp(masterVector([1:2 3 5])), exp(masterVector([1:2 4 6]))});
 
-da_extract1 = di(1).dataArray;
-da_extract2 = di(2).dataArray;
-tv = di(1).timeVector;
-
-% mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
-
 %     Run the MCMC 
-ri = mcmc_info.runsim_info;
-mai = mcmc_info.master_info;
+if ~isempty(p.stepSize)
+    mcmc_info.runsim_info.stepSize = p.stepSize; 
+end
+
+if ~isempty(p.nW)
+    mcmc_info.runsim_info.nW = p.nW; 
+end
+
+if ~isempty(p.nPoints)
+    mcmc_info.runsim_info.nPoints = p.nPoints; 
+end
+
+if ~isempty(p.thinning)
+    mcmc_info.runsim_info.thinning = p.thinning; 
+end
+
+if ~isempty(p.nIter)
+    mcmc_info.runsim_info.nIter = p.nIter; 
+end
+
+if ~isempty(p.parallel)
+    mcmc_info.runsim_info.parallel = p.parallel; 
+end
+
+
 %%
-mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-    'InitialDistribution', 'LHS');
 
-%%  plot stuff 
-% tstamptouse = tstamp; 
-% marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
-% mcmc_plot(marray([1 2 4], :,:), mai.estNames([1 2 4]), 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract1');
-% figure
-% mcmc_plot(marray([1 3 5], :,:), mai.estNames([1 3 5]), 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract2');
-% titls = {'E1 dG 10';'E1 dG 30';'E1 dG 60';};
-% lgds = {};
-% mvarray = masterVecArray(marray, mai);
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd, titls, lgds,...
-%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract1');
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 2),:,:);
-% titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
-% fhandle = mcmc_trajectories(mi(1).emo, di(2), mi(1), marrayOrd, titls, lgds,...
-%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract2');
-% 
-% mstacked = marray(:,:)';
-% 
-% 
-% 
-% pToPlot = [ 2 4 1 ;]; 
-% % CSP on the vertical axis to conform to schematics in presentations. 
-% 
-% labellist = mai.estNames;
-% for plotID = 1:size(pToPlot, 1)
-%     figure
-%     XX = mstacked(1:end, [pToPlot(plotID,1)]);
-%     YY = mstacked(1:end, [pToPlot(plotID,2)]);
-%     ZZ = mstacked(1:end, [pToPlot(plotID,3)]);
-%     scatter3(XX,YY,ZZ)
-%     xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
-%     ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)
-%     zlabel(labellist{pToPlot(plotID,3)}, 'FontSize', 20)
-%     title('covariation in Extract 1', 'FontSize', 20)
-%     saveas(gcf, [projdir '/simdata_' tstamptouse '/3dfig_ext1_' num2str(plotID) '_' tstamptouse]);
-% end
-% %
-% pToPlot = [3 5 1]; 
-% for plotID = 1:size(pToPlot, 1)
-%     figure
-%     XX = mstacked(1:end, [pToPlot(plotID,1)]);
-%     YY = mstacked(1:end, [pToPlot(plotID,2)]);
-%     ZZ = mstacked(1:end, [pToPlot(plotID,3)]);
-%     scatter3(XX,YY,ZZ)
-%     xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
-%     ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)
-%     zlabel(labellist{pToPlot(plotID,3)}, 'FontSize', 20)
-%     title('covariation in Extract 2', 'FontSize', 20)
-%     saveas(gcf, [projdir '/simdata_' tstamptouse '/3dfig_ext2_' num2str(plotID) '_' tstamptouse]);
-% end
-% 
+if isempty(p.prevtstamp)
+    mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+    'InitialDistribution', 'LHS', 'multiplier', p.multiplier);
+else
+    ri = mcmc_info.runsim_info;
+    marray = mcmc_get_walkers({p.prevtstamp}, {ri.nIter},...
+        projdir); 
+    % assume the projdir where this data is stored is the same one as the
+    % one created at the start of this file
+    mai = mcmc_info.master_info;
+    
+    pID = 1:length(mai.estNames);
+    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+    if size(marray_cut, 2) < ri.nW
+        error('too few initial points');
+    elseif size(marray_cut, 2) > ri.nW
+        marray_cut = marray_cut(:,1:ri.nW, :);
+    end
+
+        mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+        'UserInitialize', marray_cut(:,:,end), 'multiplier', p.multiplier);
+end
+
+end
 
 
-% 
-% 
-% 
-% 
-% 
-% titls = {'dna 1'; 'dna 2';'dna 5'};
-% lgds = {};
-% mvarray = masterVecArray(marray, mai);
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd, titls, lgds,...
-%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract1');
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 2),:,:);
-% fhandle = mcmc_trajectories(mi(1).emo, di(2), mi(1), marrayOrd, titls, lgds,...
-%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring', '_extract2');
-% 
-% %%
+
+
