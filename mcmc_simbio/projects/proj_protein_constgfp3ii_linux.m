@@ -87,12 +87,18 @@ end
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
+
 if isempty(p.prevtstamp)
     mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
     'InitialDistribution', 'LHS', 'multiplier', p.multiplier);
 else
-    
-    marray = mcmc_get_walkers({p.prevtstamp}, {ri.nIter},...
+
+    specificprojdir = [projdir '/simdata_' p.prevtstamp];
+
+    % load mcmc_info    and the updated model_info
+    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+
+    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
         projdir); 
     % assume the projdir where this data is stored is the same one as the
     % one created at the start of this file

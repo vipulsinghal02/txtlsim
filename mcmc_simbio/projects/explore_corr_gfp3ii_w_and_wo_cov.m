@@ -14,13 +14,18 @@ ts3 = '20180401_190738'; % nessa big 8e4 pts, 40 iter, 1.3 step size,
 ts4 = '20180401_190814'; % big lambda run on april 1. ran till april 2 afternoon. 
 % 8e4 pts, 40 iter, 1.3 step size, 400 walkers, thinning 10. iter21 tool
 % like 15 hours. everything else was fast
-ts5 = '20180402_184027'; % big lambda run on april 1. ran till april 2 afternoon. 
-% 8e4 pts, 40 iter, 1.3 step size, 400 walkers, thinning 10. iter21 tool
-% like 15 hours. everything else was fast
-tstouse = ts5;
+ts5 = '20180402_184027'; % big lambda run          
+%             nW: 400
+%       stepSize: 1.1000
+%          nIter: 40
+%        nPoints: 40000
+%       thinning: 10
+%       parallel: 1
 
- mi = proj_protein_constgfp3ii_linux('prevtstamp', '20180402_184027',...
-     'stepSize', 1.1, 'nW', 400, 'nPoints', 2e4, 'thinning', 10,...
+ tstouse = ts5;
+
+ [mi,mai, ri, tstamp, projdir, di] = proj_protein_constgfp3ii_linux('prevtstamp', '20180402_184027',...
+     'stepSize', 1.01, 'nW', 400, 'nPoints', 2e4, 'thinning', 10,...
      'nIter', 80, 'parallel', true, 'multiplier', 2);
 
 specificprojdir = ['/Users/vipulsinghal/Dropbox/Documents/'...
