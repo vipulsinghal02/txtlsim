@@ -20,6 +20,7 @@ p.addParameter('nPoints', []);
 p.addParameter('thinning', []); 
 p.addParameter('nIter', []);
 p.addParameter('parallel', []);
+p.addParameter('stdev', []); 
 
 p.addParameter('multiplier', 1);
 p.parse(varargin{:});
@@ -82,6 +83,9 @@ if ~isempty(p.parallel)
     mcmc_info.runsim_info.parallel = p.parallel; 
 end
 
+if ~isempty(p.stdev)
+    mcmc_info.runsim_info.stdev = p.stdev; 
+end
 
 %%
 ri = mcmc_info.runsim_info;
