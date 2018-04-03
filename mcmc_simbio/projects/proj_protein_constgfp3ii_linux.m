@@ -1,4 +1,4 @@
-function mi = proj_protein_constgfp3ii_linux(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_protein_constgfp3ii_linux(varargin)
 
 %% MCMC toolbox demo - proj_protein_constgfp3i.m
 %
@@ -84,17 +84,19 @@ end
 
 
 %%
+ri = mcmc_info.runsim_info;
+mai = mcmc_info.master_info;
 
 if isempty(p.prevtstamp)
     mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
     'InitialDistribution', 'LHS', 'multiplier', p.multiplier);
 else
-    ri = mcmc_info.runsim_info;
+    
     marray = mcmc_get_walkers({p.prevtstamp}, {ri.nIter},...
         projdir); 
     % assume the projdir where this data is stored is the same one as the
     % one created at the start of this file
-    mai = mcmc_info.master_info;
+    
     
     pID = 1:length(mai.estNames);
     marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
