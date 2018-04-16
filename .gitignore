@@ -33,6 +33,8 @@ octave-workspace
 *.txt
 *.todo
 
+# movie files
+*.mp4
 
 
 

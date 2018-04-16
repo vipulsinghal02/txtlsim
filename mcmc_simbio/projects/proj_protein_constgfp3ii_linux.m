@@ -120,6 +120,12 @@ else
         'UserInitialize', marray_cut(:,:,end), 'multiplier', p.multiplier);
 end
 
+ % keep this commented unless using to copy paste into the linux server
+ % window
+%   [mi,mai, ri, tstamp, projdir, di] = proj_protein_constgfp3ii_linux(...
+%       'prevtstamp', '20180402_160013',...
+%       'stepSize', 1.01, 'nW', 400, 'nPoints', 2e4, 'thinning', 30,...
+%       'nIter', 80, 'parallel', true, 'multiplier', 2, 'stdev', 5);
 end
 
 

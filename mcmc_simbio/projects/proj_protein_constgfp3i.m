@@ -20,7 +20,6 @@ mcmc_info = mcmc_info_constgfp3i(mobj);
 
 mi = mcmc_info.model_info;
 
-
 rkfdG = 5; % nM-1s-1
 rkrdG = 300; % s-1
 rkcp1 = 0.012; %s-1

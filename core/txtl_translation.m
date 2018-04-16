@@ -62,7 +62,10 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     %% create the rules for the global parameters for the TL reaction and the consumption reaction
     % add global elongation parameter
-    addparameter(tube, 'TL_elong_glob',tube.UserData.ReactionConfig.Translation_Rate);
+    tlglob = sbioselect(tube, 'Name', 'TL_elong_glob', 'Type', 'Parameter');
+    if isempty(tlglob)
+        addparameter(tube, 'TL_elong_glob',tube.UserData.ReactionConfig.Translation_Rate);
+    end
     
     % grab the name strings for the protein
     temp = regexp(protein.name, 'protein (\w*)', 'tokens');

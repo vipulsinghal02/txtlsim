@@ -67,7 +67,11 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % and the length of the gene to be transcribed
     
     % add global elongation parameter, 
-    addparameter(tube, 'TX_elong_glob',tube.Userdata.ReactionConfig.Transcription_Rate);
+    txglob = sbioselect(tube, 'Name', 'TX_elong_glob', 'Type', 'Parameter');
+    if isempty(txglob)
+        addparameter(tube, 'TX_elong_glob',tube.Userdata.ReactionConfig.Transcription_Rate);
+    end
+    
     
     % then add the dependent parameters for both the tx and the consumption
     % reactions, also at the global scope, and tie the three parameters via
