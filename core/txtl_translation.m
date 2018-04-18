@@ -56,11 +56,12 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']'],...
         'MassAction',AAparameters);
     txtl_addreaction(tube, ...
-        ['[AA:' Ribobound.Name ']  + 2 AGTP <-> [AA:2AGTP:' Ribobound.Name ']'],...
+        ['[AA:' Ribobound.Name ']  + AGTP <-> [AA:AGTP:' Ribobound.Name ']'],...
         'MassAction',AGTPparameters);
     
     
     %% create the rules for the global parameters for the TL reaction and the consumption reaction
+    
     % add global elongation parameter
     tlglob = sbioselect(tube, 'Name', 'TL_elong_glob', 'Type', 'Parameter');
     if isempty(tlglob)
@@ -75,20 +76,18 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     tlparamname = ['TL_translation_' protspec];
     resourceconsname = ['TL_REScons_' protspec];
     
-    %%%%%
     % get the protein length, which decides what the actual protein production
     % rate is
-    proteinlength = round(protein.UserData);
+    proteinlength = round(protein.UserData); % this is in amino acids not nucleotides.
     
     % add the transcription parameter in the model scope, with the length
-    % adjusted value.
-    addparameter(tube, tlparamname,tube.UserData.ReactionConfig.Translation_Rate/proteinlength);
+    % adjusted value. The value specified here actually does not matter
+    % because we will use a rule to set it.
+    addparameter(tube, tlparamname,0);
     
-    % compute the consumption reaction rate as follows
-    % pcnt = protein.length.
-    aacnt = round(proteinlength);
-    % add the aa consumption parameter in the global scope.
-    addparameter(tube, resourceconsname,tube.UserData.ReactionConfig.Translation_Rate/proteinlength*(aacnt-1));
+    % add the aa consumption parameter in the global scope. the value it is
+    % initialized to does not matter, since a rule will set it.
+    addparameter(tube, resourceconsname, 0);
     
     % now we actually add the rule that sets the translation rate and the
     % aa consumption rate.
@@ -97,33 +96,50 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         addrule(tube, ruleStr, 'initialAssignment');
     end
     
-    % add the reaction
-    Ribobound_term = ['term_' Ribobound.Name ];
-    reactionObj = addreaction(tube, ...
-        ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term ' + ' protein.Name ]);
-    addkineticlaw (reactionObj, 'MassAction');
-    reactionObj.KineticLaw.ParameterVariableNames = tlparamname;
-    
     % do the same for the consumption reactions
     ruleStr = [resourceconsname ...
-        ' =  TL_elong_glob/' num2str(proteinlength) '*(' num2str(aacnt) '-1)'];
+        ' =  TL_elong_glob/' num2str(proteinlength) '*(' num2str(proteinlength) '-1)'];
     if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
         addrule(tube, ruleStr, 'initialAssignment');
     end
     
-    % add the consumption reactions.
-    reactionObj = addreaction(tube, ...
-        ['[AA:2AGTP:' Ribobound.Name '] -> ' Ribobound_term]);
-    addkineticlaw (reactionObj, 'MassAction');
-    reactionObj.KineticLaw.ParameterVariableNames = resourceconsname;
+    
+    Ribobound_term = ['term_' Ribobound.Name ];
+    % add the reaction
+    if isfield(tube.UserData, 'energymode') && strcmp(tube.UserData.energymode, 'regeneration')
+        
+        reactionObj = addreaction(tube, ...
+            ['[AA:AGTP:' Ribobound.Name '] -> ' Ribobound_term ' + ' protein.Name ' +  AGMP' ]);
+        addkineticlaw (reactionObj, 'MassAction');
+        reactionObj.KineticLaw.ParameterVariableNames = tlparamname;
+        
+        % add the consumption reactions.
+        reactionObj = addreaction(tube, ...
+            ['[AA:AGTP:' Ribobound.Name '] -> ' Ribobound_term ' +  AGMP']);
+        addkineticlaw (reactionObj, 'MassAction');
+        reactionObj.KineticLaw.ParameterVariableNames = resourceconsname;
+        
+        
+    else
+        reactionObj = addreaction(tube, ...
+            ['[AA:AGTP:' Ribobound.Name '] -> ' Ribobound_term ' + ' protein.Name ]);
+        addkineticlaw (reactionObj, 'MassAction');
+        reactionObj.KineticLaw.ParameterVariableNames = tlparamname;
+        
+        % add the consumption reactions.
+        reactionObj = addreaction(tube, ...
+            ['[AA:AGTP:' Ribobound.Name '] -> ' Ribobound_term]);
+        addkineticlaw (reactionObj, 'MassAction');
+        reactionObj.KineticLaw.ParameterVariableNames = resourceconsname;
+    end
+    
+    
     %%%%%
     
     
     % translation termination reaction
     txtl_addreaction(tube,['[' Ribobound_term '] -> ' rna.Name ' +  Ribo'],...
         'MassAction',{'TXTL_RIBOBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.Ribobound_termination_rate});
-    % !TODO add these parameters to the config files and the parameter class
-    
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_translation:undefinedmode', ...

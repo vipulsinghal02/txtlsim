@@ -33,7 +33,7 @@ function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
         complexF = degRate/10;
         complexR = degRate/40;
     end
-    
+    length_over_2 = round(rna.UserData/2);
     % Setup RNA degradation reactions, by searching for strings with rna in
     % them, and then degrading those strings. 
     listOfSpecies = get(tube.species, 'name');
@@ -57,17 +57,25 @@ function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
         
         productspecies = [];
         for j = 1:length(nonRNAlist)
-            if strcmp(nonRNAlist{j}, '2AGTP')
-                nonRNAlist{j} = '2 AGTP';
-            elseif strcmp(nonRNAlist{j}, 'term_Ribo')
+            % if in the complex we have term_Ribo, then we need to
+            % return Ribo, not create nonsensical species term_Ribo. 
+            if strcmp(nonRNAlist{j}, 'term_Ribo')
                 nonRNAlist{j} = 'Ribo';
             end
-            
             productspecies = [productspecies ' + ' nonRNAlist{j}];
         end
-        txtl_addreaction(tube,[RNAcomplexes{i} ':RNase -> RNase' productspecies],...
-            'MassAction',{'TXTL_RNAdeg_kc',degRate});
         
+        if isfield(tube.UserData, 'energymode') && strcmp(tube.UserData.energymode, 'regeneration')
+           
+                txtl_addreaction(tube,[RNAcomplexes{i} ':RNase -> RNase + '...
+                    num2str(length_over_2) ' AGMP + ' num2str(length_over_2) ' CUMP '...
+                    productspecies],...
+                    'MassAction',{'TXTL_RNAdeg_kc',degRate});
+            
+        else
+            txtl_addreaction(tube,[RNAcomplexes{i} ':RNase -> RNase ' productspecies],...
+                'MassAction',{'TXTL_RNAdeg_kc',degRate});
+        end
     end
 end
 

@@ -1,6 +1,6 @@
 
 
-% Written by Zoltan A Tuza, Sep 2012
+% Written by Zoltan A Tuza and Vipul Singhal, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.

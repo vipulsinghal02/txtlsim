@@ -1,13 +1,13 @@
 % txtl_transcription.m - sigma factor independent implementation for gene
 % transcription in the TXTL system
 % RMM, 9 Sep 2012
-% 
+%
 % It can be called by promoter files that need to
 % set up the approriate transcription reactions.
 
 % Written by Richard Murray, 9 Sep 2012
 % Edited by Vipul Singhal, 2012 - 2017
-% 
+%
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
@@ -66,7 +66,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % calculate the transcription rate from information in the config file
     % and the length of the gene to be transcribed
     
-    % add global elongation parameter, 
+    % add global elongation parameter,
     txglob = sbioselect(tube, 'Name', 'TX_elong_glob', 'Type', 'Parameter');
     if isempty(txglob)
         addparameter(tube, 'TX_elong_glob',tube.Userdata.ReactionConfig.Transcription_Rate);
@@ -75,7 +75,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     % then add the dependent parameters for both the tx and the consumption
     % reactions, also at the global scope, and tie the three parameters via
-    % a couple of initial assignment rules. 
+    % a couple of initial assignment rules.
     
     % start with grabbing the name strings for the RNA
     temp = regexp(rna.name, 'RNA (\w*)--(\w*)', 'tokens');
@@ -89,30 +89,30 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % rate is
     RNAlength = rna.UserData;
     % add the transcription parameter in the model scope, with the length
-    % adjusted value. 
+    % adjusted value.
     addparameter(tube, txparamname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength);
     
     % compute the consumption reaction rate as follows
-    % ntpcnt = rna.length/2. 
-    ntpcnt = round(RNAlength/2);
-    % add the ntp consumption parameter in the global scope. 
+    % ntpcnt = rna.length/4.
+    ntpcnt = round(RNAlength/4); %
+    % add the ntp consumption parameter in the global scope.
     addparameter(tube, ntpconsname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength*(ntpcnt-1));
     
     % how to think about this: 1 nM of AGTP is 0.5nM of ATP, 0.5nM of GTP.
     % Since the reaction rnap:dna:agtp:cutp -> rnap:dna_term + mrna uses
     % 2nM of NTPs to make 1nM of mRNA, if the mrna is 1000ntp long, then we
     % still need to consume 998nM of ntp. The rate at which the above
-    % reaction took place is kt/1000. 
-    % 
-    % so now we consider the ntp consumption reaction. 
-    % rnap:dna:agtp:cutp -> rnap:dna 
+    % reaction took place is kt/1000.
+    %
+    % so now we consider the ntp consumption reaction.
+    % rnap:dna:agtp:cutp -> rnap:dna
     % each time this reaction fires, it uses 2nM of ntp. so it needs to
     % fire 998/2 = 499 times for each time the earlier reaction fires. Now
     % 499 is 1000/2 - 1, thus we define ntpcnt = rnalength/2, and the
     % reaction of the consumption reaction is ktx/rnalength*(ntpcnt-1)
     
     % now we actually add the rule that sets the transcription rate and the
-    % ntp consumption rate. 
+    % ntp consumption rate.
     ruleStr = [txparamname ' =  TX_elong_glob/' num2str(RNAlength)];
     if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
         addrule(tube, ruleStr, 'initialAssignment');
@@ -124,38 +124,52 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         addrule(tube, ruleStr, 'initialAssignment');
     end
     
-    % write down the string for the transcription equation
-    RNAPbound_term = ['term_' RNAPbound];
-    transcriptionEq = ...
-        ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + ' rna.Name];
+    % write down the string for the transcription equation depending on the
+    % mode of transcription. ie, if we have the energy regeneration mode,
+    % then we model AGMP, otherwise we do the usually 
+    if isfield(tube.UserData, 'energymode') && strcmp(tube.UserData.energymode, 'regeneration')
+        
+            RNAPbound_term = ['term_' RNAPbound];
+            transcriptionEq = ...
+                ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + '...
+                rna.Name ' + CUMP + AGMP'];
+            
+    else
+        RNAPbound_term = ['term_' RNAPbound];
+        transcriptionEq = ...
+            ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + ' rna.Name];
+        
+    end
     
     % add the actual transcription reaction. Note that we use addreaction (
     % a simbiology function) as opposed to the txtl toolbox wrapper
     % txtl_addreaction, because we want to specify a model scoped parameter
-    % as a parmeter, and not create a reaction scoped parameter. 
+    % as a parmeter, and not create a reaction scoped parameter.
     reactionObj = addreaction(tube,transcriptionEq);
     addkineticlaw (reactionObj, 'MassAction');
     reactionObj.KineticLaw.ParameterVariableNames = txparamname;
     
     
-    % add the consumption reactions. 
-        reactionObj = addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound]);
-        addkineticlaw (reactionObj, 'MassAction');
-        reactionObj.KineticLaw.ParameterVariableNames = ntpconsname;
+    % add the consumption reactions
+    reactionObj = addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound]);
+    addkineticlaw (reactionObj, 'MassAction');
+    reactionObj.KineticLaw.ParameterVariableNames = ntpconsname;
     
-        % add the termination reactions
+    
+    
+    % add the termination reactions
     if nargin < 6
         error('the number of argument should be at least 6, not %d',nargin);
     elseif nargin > 6
         extraSpecies = varargin{6};
-        % processing the extraSpecies, like activators, inducers etc. 
+        % processing the extraSpecies, like activators, inducers etc.
         extraStr = extraSpecies{1};
         for k=2:size(extraSpecies,2)
             extraStr = [extraStr ' + ' extraSpecies{k}];
         end
         
         % the termination reaction parameter is reaction scoped, and can be
-        % globalized with the globalize_params function. 
+        % globalized with the globalize_params function.
         txtl_addreaction(tube,['[' RNAPbound_term '] -> '...
             RNAP  ' + ' dna.Name ' + ' extraStr],...
             'MassAction',...
