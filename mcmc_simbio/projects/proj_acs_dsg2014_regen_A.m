@@ -1,86 +1,114 @@
+function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_A(varargin)
+
 %% MCMC toolbox fits using ACS DSG data, with VNPRL 2011 for some extra info,
-% and the new regeneration system for ATP management. 
-% We demonstrate the use of the MCMC estimation capabilities of the 
-% txtl modeling toolbox here. We set up an estimation problem with
-% constitutively expressed GFP in TXTL at different DNA concentrations.
-% 
+% and the new regeneration system for ATP management. There are 4 parts to
+% this fitting. 
+% A: Fitting the mRNA degradation and mRNA transcription data
+% B: Fit the protien data with the TX and degradation parameters set to 10
+% random points from A, B. 
+% C: Fit the major parameters from rna deg, tx and tl, (but not stuff like
+% NTP binding rates, AA binding rates, AGTP deg rate etc. 
+
 % Vipul Singhal, 
 % California Institute of Technology
 % 2018
 
+p = inputParser;
+p.addParameter('prevtstamp', []); 
+p.addParameter('stepSize', []); 
+p.addParameter('nW', []); 
+p.addParameter('nPoints', []); 
+p.addParameter('thinning', []); 
+p.addParameter('nIter', []);
+p.addParameter('parallel', []);
+p.addParameter('stdev', []); 
+
+p.addParameter('multiplier', 1);
+p.parse(varargin{:});
+p = p.Results;
 %% initialize the directory where things are stored.
 [tstamp, projdir, st] = project_init;
-data_init
+% data_init
 
 %% construct simbiology model object(s)
-mobj = model_dsg2014;
+mobj = model_dsg2014_regen;
 
 %% setup the mcmc_info struct
-mi = mcmc_info_dsg2014_mrna(mobj);
+mcmc_info = mcmc_info_dsg2014_regen_A(mobj);
+
+mi = mcmc_info.model_info;
+
 
 %% setup the data_info struct
-di = data_dsg2014; 
+di = data_dsg2014_full 
 % modify di to only contain the mRNA data. 
-di.dataArray = di.dataArray(:, 1, :, :); % pick out only the mrna
-di.measuredNames = di.measuredNames(1);
-di.dataUnits = di.dataUnits(1);
-di.dataInfo = ['Modified to only have mRNA data. \n',...
-di.dataInfo];
+% di.dataArray = di.dataArray(:, 1, :, :); % pick out only the mrna
+% di.measuredNames = di.measuredNames(1);
+% di.dataUnits = di.dataUnits(1);
+% di.dataInfo = ['Modified to only have mRNA data. \n',...
+% di.dataInfo];
+
+
+%     Run the MCMC 
+if ~isempty(p.stepSize)
+    mcmc_info.runsim_info.stepSize = p.stepSize; 
+end
+
+if ~isempty(p.nW)
+    mcmc_info.runsim_info.nW = p.nW; 
+end
+
+if ~isempty(p.nPoints)
+    mcmc_info.runsim_info.nPoints = p.nPoints; 
+end
+
+if ~isempty(p.thinning)
+    mcmc_info.runsim_info.thinning = p.thinning; 
+end
+
+if ~isempty(p.nIter)
+    mcmc_info.runsim_info.nIter = p.nIter; 
+end
+
+if ~isempty(p.parallel)
+    mcmc_info.runsim_info.parallel = p.parallel; 
+end
+
+if ~isempty(p.stdev)
+    mcmc_info.runsim_info.stdev = p.stdev; 
+end
+ri = mcmc_info.runsim_info;
+mai = mcmc_info.master_info;
 %% run the mcmc simulations 
-prevtstamp = {'20180120_172922'};
-simID = {'1'};
-marray = mcmc_get_walkers(prevtstamp, {simID}, projdir); 
-mtemp = marray(:,:);
+% prevtstamp = {'20180120_172922'};
+% simID = {'1'};
+% marray = mcmc_get_walkers(prevtstamp, {simID}, projdir); 
+% mtemp = marray(:,:);
+if isempty(p.prevtstamp)
+mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+    'InitialDistribution', 'gaussian', 'multiplier', p.multiplier);
+else
 
-mi = mcmc_runsim(tstamp, projdir, di, mobj, mi,'UserInitialize',...
- mtemp(:,(end-mi.nW):end)); 
+    specificprojdir = [projdir '/simdata_' p.prevtstamp];
 
-%% get the MCMC results from saved files.
-simID = {'1'};
-marray = mcmc_get_walkers({tstamp}, {simID}, projdir);
+    % load mcmc_info    and the updated model_info
+    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
 
-%% Cut the parameter manifolds / 
-% sets using slabs in parameter space (approximate affine spaces)
-paramindices = [1 4 6];
-parambounds = [2.5 4  -1  ; 1  1 -4];
-marray_cut = mcmc_cut(marray(:,:)', paramindices, parambounds);
+    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+        projdir); 
+    % assume the projdir where this data is stored is the same one as the
+    % one created at the start of this file
+    
+    
+    pID = 1:length(mai.estNames);
+    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+    if size(marray_cut, 2) < ri.nW
+        error('too few initial points');
+    elseif size(marray_cut, 2) > ri.nW
+        marray_cut = marray_cut(:,1:ri.nW, :);
+    end
 
-%% plot the chains, correlations, and corner plots
-mcmc_plot(marray, mi.names_ord)
-
-%% plot trajectories
-nPrevPoints = 5;
-
-load(['/Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017/'...
-'mcmc_simbio/projects/proj_acs_dsg2014_mrna/simdata_20180121_131114/full_variable_set_20180121_131114.mat'])
-marray = mcmc_get_walkers({'20180121_131114'}, {5}, ...
-      ['/Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017/'...
-      'mcmc_simbio/projects/proj_acs_dsg2014_mrna']);
-marray = marray(:, end-nPrevPoints+1:end, end);
-
-
-minew = struct(...
-    'circuitInfo',{'mrna circuit, acs dsg 2014'},...
-    'modelObj', {mobj},...
-    'modelName', {mobj.name},...;
-    'namesUnord', {mi.names_unord}, ...
-    'dosedNames', {mi.dosednames},...
-    'nW', {600},...                   
-    'dosedVals', {mi.dosedvals},... 
-    'measuredSpecies', {mi.measuredspecies});
-                            
-                            
-%
-titls = {'dna 0.5'; 'dna 2';'dna 5';'dna 20'};
-lgds = {};
-mcmc_trajectories(mi.emo, di, minew, marray', titls,...
-    lgds, 'nSimCurves', nPrevPoints)
-
-%% plot the 3D plots. !TODO later
-titlestr = ['test title'];
-axisLabels = {'ke TX', 'Kd', 'term'};
-mcmc_3D(marray_cut, axisLabels, titlestr)
-
-
-
+        mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+        'UserInitialize', marray_cut(:,:,end), 'multiplier', p.multiplier);
+end
 

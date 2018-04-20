@@ -9,4 +9,5 @@ RNase_ic, Numeric,100, !TODO: carry out MCMC and check lit,
 ,,,,
 ATP_degradation_rate, Numeric,0.002, !TODO: document,
 ATP_degradation_start_time, Numeric,10800, in seconds !TODO: document,
+ATP_regeneration_rate, Numeric,0.002, !TODO: document,
 ,,,,AGTP_Concentration, Expression,3000000, ATP and GTP are at 1.5mM each (JoVE),CUTP_Concentration, Expression,1800000, CTP and UTP are at 0.9mM each (JovE),AA_Concentration, Expression,30000000, 20 tyes of AAs, $20% usability$  30mM JoVE

@@ -137,7 +137,7 @@ estParams = {'TL_elong_glob'
     minit = marray(:, ((end-nPrevPoints+1) : end), end); % Final set of walker positions. 
     minit = minit(:,:); % nparam x npoints, nparam is the tx params, ie, 15. npoints is 10. 
 
-    % fixedParams vector
+    % fixedParams index vector
     fixedParams = [1:numel(minit)]';
 
     % master vector

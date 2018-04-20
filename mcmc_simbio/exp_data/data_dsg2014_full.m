@@ -1,32 +1,5 @@
-function di = data_VNPRL2011
-% This data is inspired from VNPRL 2011: 
-% Karzbrun, Eyal, Jonghyeon Shin, Roy H. Bar-Ziv, and Vincent Noireaux. 
-% ?Coarse-Grained Dynamics of Protein Synthesis in a Cell-Free System.? 
-% Physical Review Letters 106, no. 4 (January 24, 2011): 48104. 
-% https://doi.org/10.1103/PhysRevLett.106.048104.
-% 
-% It is not exactly the data from this paper, instead is created
-% artificially to reflect the conclusions of that work. 
-% Some of the main conclusions of that paper were: 
-% - Transcriptional Elongation rate: 1 ntp/s
-% - Translational Elongation rate: >4 aa/s
-% - mRNA exponential decay, even when purified RNA is in excess of 200nM
-% - mRNA degradation half life: 10 - 14 min
-% - 30nM RNAP conc
-% - 1.5nM RNAP - promoter Kd
-% - Protein production linear in mRNA (TL machinery not saturated)
-% - 1uM protein in 1h, And anywhere between 3 to 10 uM by the end (5 ish
-% hours)
-% - dp/dt|max is about 30 to 40 nM / min for proteins
-% - For 30 nM of DNA, mRNA steady state is 20 - 30 nM. 
-% 
-% The estimation uses the following fits: 
-% - mrna data from ACS DSG with the conc values all divided by 10 (the
-% original values in that paper seem unlikey, since they would use too many
-% nucleotides. 
-% - protein max values come down from 10uM to 10uM
-% - the rna degradation values just basically are exactly the same as in 
-% the ACS paper 
+function di = data_dsg2014_full
+% Dan ACS 2014 full dataset. MGaptamer, deGFP and RNA deg. 
 
 % Copyright (c) 2018, Vipul Singhal, Caltech
 % Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -63,8 +36,8 @@ ygfp = ygfp(:,[2 4 5 6]);
 
 tv = tmg;
 da = zeros(length(tv), 4, 2, 1);
-da(:, :, 1, 1) = ymg/10; % the mg aptameter data
-da(:, :, 2, 1) = ygfp/1.8; % the gfp data
+da(:, :, 1, 1) = ymg; % the mg aptameter data
+da(:, :, 2, 1) = ygfp; % the gfp data
 
 mn = {'MG aptamer', 'deGFP'};
 % final order is time x species x replicates x doses
@@ -72,7 +45,7 @@ da = permute(da, [1, 3, 4, 2]);
 
 dimlabels = {'time points', 'measured species', 'replicates', 'doses'};
 datadescription = ...
-['Data from ACSDSG 2014, modified according to VNPRL 2011, \n '...
+['Data from ACSDSG 2014 \n '...
 'MG aptamer as the first measured species, \n' ...
 'GFP as the second measured species. Dosing at 0.5, 2, 5, 20nM'...
 ];
@@ -91,11 +64,11 @@ di1 = struct('dataInfo', {datadescription}, ...
 ygfp_deriv = ygfp_deriv(:,[2 4 5 6]);
 
 da = zeros(length(tgfp_deriv), 4, 1, 1);
-da(:, :, 1, 1) = ygfp_deriv/1.8; % the gfp data
+da(:, :, 1, 1) = ygfp_deriv; % the gfp data
 da = permute(da, [1, 3, 4, 2]);
 
 datadescription = ...
-['Data from ACSDSG 2014, modified according to VNPRL 2011, \n '...
+['Data from ACSDSG 2014, \n '...
 'dGFP/dt as the measured species. Dosing at 0.5, 2, 5, 20nM'...
 ];
 

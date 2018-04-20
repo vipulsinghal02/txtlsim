@@ -5,21 +5,21 @@ function txtl_enzyme_resource_degradation(modelObj)
 if isfield(modelObj.UserData, 'energymode') && strcmp(modelObj.UserData.energymode, 'regeneration')
         atp_deg_rate = modelObj.UserData.ReactionConfig.ATP_degradation_rate;
         atp_regen_time = modelObj.UserData.ReactionConfig.ATP_degradation_start_time;
-        
+        atp_reg_rate = modelObj.UserData.ReactionConfig.ATP_regeneration_rate;
         % After some time, ATP regeneration stops, leading to an overall decrease in
         % ATP concentrations. c.f. V Noireaux 2003
-        parameterObj = addparameter(modelObj, 'AGTPreg_varying', atp_deg_rate, 'ConstantValue', false);
+        parameterObj = addparameter(modelObj, 'AGTPreg_varying', atp_reg_rate, 'ConstantValue', false);
         
         % time of the regenration system turn off
-        parameterObj = addparameter(modelObj, 'AGTPreg_time', atp_regen_time, 'ConstantValue', true);
+        parameterObj = addparameter(modelObj, 'AGTPdeg_time', atp_regen_time, 'ConstantValue', true);
         
-        parameterObj = addparameter(modelObj, 'AGTPreg_ON', atp_deg_rate, 'ConstantValue', true);
-        parameterObj = addparameter(modelObj, 'AGTPdeg_rate', atp_deg_rate/10, 'ConstantValue', true);
+        parameterObj = addparameter(modelObj, 'AGTPreg_ON', atp_reg_rate, 'ConstantValue', true);
+        parameterObj = addparameter(modelObj, 'AGTPdeg_rate', atp_deg_rate, 'ConstantValue', true);
         
         
-        evt2 = addevent(modelObj, 'time <= AGTPreg_time' , 'AGTPreg_varying = AGTPreg_ON');
+        evt2 = addevent(modelObj, 'time <= AGTPdeg_time' , 'AGTPreg_varying = AGTPreg_ON');
         
-        evt3 = addevent(modelObj, 'time > AGTPreg_time',...
+        evt3 = addevent(modelObj, 'time > AGTPdeg_time',...
             'AGTPreg_varying = 0');
         
         % constantly active first order degradation. 

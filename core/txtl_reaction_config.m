@@ -40,6 +40,7 @@ classdef txtl_reaction_config
         Ribo_ic;
         RNase_ic;
         ATP_degradation_rate;
+        ATP_regeneration_rate;
         ATP_degradation_start_time
     end
     

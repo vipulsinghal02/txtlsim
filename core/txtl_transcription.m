@@ -126,13 +126,15 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     % write down the string for the transcription equation depending on the
     % mode of transcription. ie, if we have the energy regeneration mode,
-    % then we model AGMP, otherwise we do the usually 
+    % then we model AGMP, otherwise we do the usual... except, with and
+    % without energy mode ends up being exactly the same for
+    % teranscription. ...
     if isfield(tube.UserData, 'energymode') && strcmp(tube.UserData.energymode, 'regeneration')
         
             RNAPbound_term = ['term_' RNAPbound];
             transcriptionEq = ...
                 ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + '...
-                rna.Name ' + CUMP + AGMP'];
+                rna.Name];
             
     else
         RNAPbound_term = ['term_' RNAPbound];
@@ -185,10 +187,10 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     end
     
     % define the nucleotide binding parameters
-    NTPparameters_step2 = {'TXTL_NTP_RNAP_2_F', tube.UserData.ReactionConfig.NTP_Forward_1;
-        'TXTL_NTP_RNAP_2_R', tube.UserData.ReactionConfig.NTP_Reverse_1};
-    NTPparameters_step1 = {'TXTL_NTP_RNAP_1_F', tube.UserData.ReactionConfig.NTP_Forward_2;
-        'TXTL_NTP_RNAP_1_R', tube.UserData.ReactionConfig.NTP_Reverse_2};
+    NTPparameters_step1 = {'TXTL_NTP_RNAP_1_F', tube.UserData.ReactionConfig.NTP_Forward_1;
+        'TXTL_NTP_RNAP_1_R', tube.UserData.ReactionConfig.NTP_Reverse_1};
+    NTPparameters_step2 = {'TXTL_NTP_RNAP_2_F', tube.UserData.ReactionConfig.NTP_Forward_2;
+        'TXTL_NTP_RNAP_2_R', tube.UserData.ReactionConfig.NTP_Reverse_2};
     
     % add the nucleotide binding reaction
     txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...

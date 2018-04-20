@@ -189,7 +189,7 @@ estParams = {'TL_elong_glob'
 
     masterVector = [minit(:)
                     logp]; % log transformed. 
-
+                    
     % paramMap is a matrix mapping the parameters in the master vector to the 
     % (unordered) list of parameters in the model. (obvioulsy within the code 
     % these parameters get ordered before they are used in the exported model)
