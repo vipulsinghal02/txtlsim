@@ -1,4 +1,14 @@
 function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_A(varargin)
+% notes: 
+% - the first run on this is on lambda, with timestamp simdata_20180419_212516
+% step size is 2, and stdev is 5. 
+% - and in parallel there is a nessa run 20180419_213851 step size is 1.05,
+% and stdev is 2. 
+% so these two runs are a bit different. 
+% April 19 - 20: once these are done, compare the cornerplots to each other
+% to see if the results you get are the same. This will give stationarity.
+% Otherwise, we need to run longer. this is a 20 dimensional search, so not
+% super trivial. need to probably do a lot of iterations. 
 
 %% MCMC toolbox fits using ACS DSG data, with VNPRL 2011 for some extra info,
 % and the new regeneration system for ATP management. There are 4 parts to
@@ -37,7 +47,6 @@ mobj = model_dsg2014_regen;
 mcmc_info = mcmc_info_dsg2014_regen_A(mobj);
 
 mi = mcmc_info.model_info;
-
 
 %% setup the data_info struct
 di = data_dsg2014_full 
@@ -110,5 +119,12 @@ else
 
         mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
         'UserInitialize', marray_cut(:,:,end), 'multiplier', p.multiplier);
+    
+    
+%     
+%     [mi,mai, ri, tstamp, projdir, di] = proj_acs_dsg2014_regen_A(...
+% 'stepSize', 1.05, 'nW', 400, 'nPoints', 4e4, 'thinning', 20,...
+% 'nIter', 80, 'parallel', true, 'multiplier', 2, 'stdev', 2);
+
 end
 

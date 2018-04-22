@@ -1,17 +1,20 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_protein_constgfp3ii_linux(varargin)
-
-%% MCMC toolbox demo - proj_protein_constgfp3i.m
+function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_B(varargin)
+% notes: 
+% - 
 %
-% const gfp 3, artificial data, separate, 2 extracts. Check if the CSPs line up exactly. 
-% 
+%% MCMC toolbox fits using ACS DSG data, with VNPRL 2011 for some extra info,
+% and the new regeneration system for ATP management. There are 4 parts to
+% this fitting. 
+% A: Fitting the mRNA degradation and mRNA transcription data
+% B: Fit the protien data with the TX and degradation parameters set to 10
+% random points from A, B. 
+% C: Fit the major parameters from rna deg, tx and tl, (but not stuff like
+% NTP binding rates, AA binding rates, AGTP deg rate etc. 
+
 % Vipul Singhal, 
 % California Institute of Technology
 % 2018
 
-%% initialize the directory where things are stored.
-% close all
-% clear all
-% clc
 p = inputParser;
 p.addParameter('prevtstamp', []); 
 p.addParameter('stepSize', []); 
@@ -25,38 +28,28 @@ p.addParameter('stdev', []);
 p.addParameter('multiplier', 1);
 p.parse(varargin{:});
 p = p.Results;
-
+%% initialize the directory where things are stored.
 [tstamp, projdir, st] = project_init;
+% data_init
 
-%% We first define the model, mcmc_info struct, and the data_info struct. 
+%% construct simbiology model object(s)
+mobj = model_dsg2014_regen;
 
-mobj = model_protein3;
-
-mcmc_info = mcmc_info_constgfp3ii(mobj);
+%% setup the mcmc_info struct
+mcmc_info = mcmc_info_dsg2014_regen_B(mobj);
 
 mi = mcmc_info.model_info;
 
 
-rkfdG = 5; % nM-1s-1
-rkrdG = 300; % s-1
-rkcp1 = 0.012; %s-1
-rkcp2 = 0.024; %s-1
-cpol1 = 100; % nM
-cpol2 = 200; % nM
+%% setup the data_info struct
+di = data_dsg2014_full 
+% modify di to only contain the mRNA data. 
+% di.dataArray = di.dataArray(:, 1, :, :); % pick out only the mrna
+% di.measuredNames = di.measuredNames(1);
+% di.dataUnits = di.dataUnits(1);
+% di.dataInfo = ['Modified to only have mRNA data. \n',...
+% di.dataInfo];
 
-
-masterVector = log([...
-rkfdG 
-rkrdG
-rkcp1
-rkcp2
-cpol1
-cpol2]);
-
-% supply parameter vectors to this function to generate simulated data. 
-di = data_artificial_v2({mobj}, {0:180:7200}, {mi.measuredSpecies}, ...
-    {mi.dosedNames}, {mi.dosedVals}, {mi.namesUnord},...
-     {exp(masterVector([1:2 3 5])), exp(masterVector([1:2 4 6]))});
 
 %     Run the MCMC 
 if ~isempty(p.stepSize)
@@ -86,15 +79,16 @@ end
 if ~isempty(p.stdev)
     mcmc_info.runsim_info.stdev = p.stdev; 
 end
-
-%%
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
-
-
+%% run the mcmc simulations 
+% prevtstamp = {'20180120_172922'};
+% simID = {'1'};
+% marray = mcmc_get_walkers(prevtstamp, {simID}, projdir); 
+% mtemp = marray(:,:);
 if isempty(p.prevtstamp)
-    mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-    'InitialDistribution', 'LHS', 'multiplier', p.multiplier);
+mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+    'InitialDistribution', 'gaussian', 'multiplier', p.multiplier);
 else
 
     specificprojdir = [projdir '/simdata_' p.prevtstamp];
@@ -115,18 +109,8 @@ else
     elseif size(marray_cut, 2) > ri.nW
         marray_cut = marray_cut(:,1:ri.nW, :);
     end
+
         mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
         'UserInitialize', marray_cut(:,:,end), 'multiplier', p.multiplier);
 end
-
- % keep this commented unless using to copy paste into the linux server
- % window
-%   [mi,mai, ri, tstamp, projdir, di] = proj_protein_constgfp3ii_linux(...
-%       'prevtstamp', '20180402_160013',...
-%       'stepSize', 1.01, 'nW', 400, 'nPoints', 2e4, 'thinning', 30,...
-%       'nIter', 80, 'parallel', true, 'multiplier', 2, 'stdev', 5);
-end
-
-
-
 
