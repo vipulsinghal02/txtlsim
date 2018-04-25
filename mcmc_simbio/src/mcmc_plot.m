@@ -110,20 +110,20 @@ function mcmc_plot(marray, legendz, varargin)
                         
     
     % Plot the Ensemble Average Autocorrelation Function
-    figure
-    [C,lags,ESS]=eacorr(marray);
+%     figure
+%     [C,lags,ESS]=eacorr(marray);
 
-    plot(lags,C,'.-',...
-        lags([1 end]),[0 0],'k');
-
-    grid on
-    xlabel('lags')
-    ylabel('autocorrelation');
-
-    text(lags(end),0,...
-        sprintf('Effective Sample Size (ESS): %.0f_ ',ceil(mean(ESS))),...
-        'verticalalignment','bottom',...
-        'horizontalalignment','right')
+%     plot(lags,C,'.-',...
+%         lags([1 end]),[0 0],'k');
+% 
+%     grid on
+%     xlabel('lags')
+%     ylabel('autocorrelation');
+% 
+%     text(lags(end),0,...
+%         sprintf('Effective Sample Size (ESS): %.0f_ ',ceil(mean(ESS))),...
+%         'verticalalignment','bottom',...
+%         'horizontalalignment','right')
 
     
     % Optionally plot the chains (if ndims(marray) == 3)
@@ -133,7 +133,6 @@ function mcmc_plot(marray, legendz, varargin)
         else
             nW = p.nWalkers;
         end
-
         plotChains(marray, nW, legendz)
         
     end

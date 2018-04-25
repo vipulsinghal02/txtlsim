@@ -10,9 +10,17 @@ p=p.Results;
 
 [nParam, nWalkers, nSamples] = size(m);
 [n1 n2] = twofactors(nParam);
+
+if isprime(nParam)
+    n1 = ceil(nParam/5); % 5 columns
+    n2 = 5;
+end
+
 wix = unique(ceil(rand(nW, 1)*nWalkers));
 m = m(:,wix, :);
 figure('Visible', p.Visible)
+ss = get(0, 'screensize');
+set(gcf, 'Position', [ss(3)*(1-1/1.1) ss(4)*(1-1/1.15) ss(3)/1.1 ss(4)/1.15]);
 for i = 1:nParam
     subplot(n1, n2, i)
     for j = 1:length(wix)

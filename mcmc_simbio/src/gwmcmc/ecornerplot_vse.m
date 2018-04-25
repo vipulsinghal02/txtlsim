@@ -109,10 +109,13 @@ if p.grid
 else
     p.grid='off';
 end
+ss = get(0, 'screensize');
+figure
+set(gcf, 'Position', [ss(3)*(1-1/1.05) ss(4)*(1-1/1.15) ss(3)/1.05 ss(4)/1.15]);
 
-clf
-ff = gcf;
-set(ff, 'Position', [100 100 900 600])
+% clf
+% ff = gcf;
+% set(ff, 'Position', [100 100 900 600])
 H=nan(M);
 for r=1:M
     for c=1:max(r,M*p.fullmatrix)
