@@ -10,7 +10,8 @@ function mcmc_info = mcmc_info_constgfp3v(modelObj, cpol, rkcp)
 % D__pol -> D + pol + protien (kc)
 %
 % This file fixes the ESPs at a particular value, and sets up the
-% estimation of the sole csp. 
+% estimation of the sole csp. It is used in the CORRECTION STEP 1 of the
+% demo file explore_corr_gfp3ii_w_and_wo_cov_stage2.m
 
 % Copyright (c) 2018, Vipul Singhal, Caltech
 % Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,14 +61,18 @@ fixedParams = [1 3 4]';
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
-paramMap = [1:length(masterVector)]';
+paramMap = [1:length(masterVector)]'; 
+% recall this maps the master vector to the namesUnord list in model_info
 
 paramRanges =  [masterVector(estParamsIx)-3 masterVector(estParamsIx)+3];
 
-dataIndices = [1];
+dataIndices = [1]; 
+% create a singleton dataset that was used in the constgfp3ii file. 
+
+
 
 %% next we define the dosing strategy.
-dosedNames = {dG'};
+dosedNames = {'dG'};
 dosedVals = [10 30 60];
 
 measuredSpecies = {{'pG'}};
@@ -75,12 +80,12 @@ msIx = 1; %
 
 
 %% setup the MCMC simulation parameters
-stdev = 1; % i have no idea what a good value is
+stdev = 2; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
 nW = 40; % actual: 200 - 600 ish
-stepsize = 3; % actual: 1.1 to 4 ish
-niter = 40; % actual: 2 - 30 ish,
-npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+stepsize = 2; % actual: 1.1 to 4 ish
+niter = 10; % actual: 2 - 30 ish,
+npoints = 4e3; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
 thinning = 10; % actual: 10 to 40 ish
 

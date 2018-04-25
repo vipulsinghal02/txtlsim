@@ -98,9 +98,6 @@ if isempty(p.support),p.support=nan(2,M);end
 ix=isnan(p.support(1,:)); p.support(1,ix)=p.range(3,ix)-rng(ix)/4;
 ix=isnan(p.support(2,:)); p.support(2,ix)=p.range(4,ix)+rng(ix)/4;
 
-
-
-
 for ii=length(p.names)+1:M
     p.names{ii}=sprintf('m_{%.0f}',ii);
 end

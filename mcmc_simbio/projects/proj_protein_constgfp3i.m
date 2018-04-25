@@ -37,7 +37,6 @@ di = data_artificial_v2({mobj}, {0:180:7200}, {mi.measuredSpecies}, ...
 da_extract1 = di(1).dataArray;
 da_extract2 = di(2).dataArray;
 tv = di(1).timeVector;
-%% convert this section into a data visualization function. 
 
 mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
 

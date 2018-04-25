@@ -79,6 +79,7 @@ p.addParameter('InitialDistribution', 'LHS', @ischar); % LHS, gaussian, unifrand
 p.addParameter('Width', 0.1, @isnumeric)
 p.addParameter('UserInitialize', [], @isnumeric)
 p.addParameter('FitOption', 'FitMedian', @ischar); % 'FitMean', 'FitAll'
+p.addParameter('pausemode', false, @islogical)
 
 p.addParameter('multiplier', 1, @isnumeric); % every 10 iterations, 
 % the stepsize is multiplied by this number. Set it to something like 2 or 4 
@@ -264,10 +265,13 @@ save([specificproj '/' fname]);
 
 % run the actual simuations, saving the data every iteration
 for i = 1:ri.nIter %
-    if ~mod(i, 4)
-        fprintf('Pausing for 5 minutes before starting run number %d. \n', i);
-        pause(300)        
+    if p.pausemode
+        if ~mod(i, 4)
+            fprintf('Pausing for 5 minutes before starting run number %d. \n', i);
+            pause(300)        
+        end
     end
+    
     
     if  i == 5 || ~mod(i, 10)
         ssize = p.multiplier*ri.stepSize;

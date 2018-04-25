@@ -154,8 +154,8 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
         'TXTL_RNAdeg_kc'                    0.0028      [1e-4 1]
         'RNase'                             100         [10 1000]}; 
     activeNames2 = {...
-        'TX_elong_glob'                     10.5       [0.5 30]     
-        'AGTPdeg_time'                      7200        [1800 18000]
+        'TX_elong_glob'                     10.5       [0.5 100]     
+        'AGTPdeg_time'                      7200        [1800 42000]
         'AGTPdeg_rate'                      0.0002      [1e-5 1e-2]
         'AGTPreg_ON'                        0.02        [0.005 0.2]
         'TXTL_P70_RNAPbound_Kd'             20          [10 1e6]
@@ -172,10 +172,10 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
         'RNase'                             100         [10 1000]
         'TL_elong_glob'                     20          [4 200]                 
         'TXTL_PROT_deGFP_MATURATION'        0.0023      [0.0002 0.02]
-        'TXTL_UTR_UTR1_Kd'                  20          [1 1e5]
+        'TXTL_UTR_UTR1_Kd'                  20          [0.05 1e5]
         'TXTL_UTR_UTR1_F'                   0.2         [1e-5 10]
         'TL_AA_Kd'                          100000      [10 1e8]
-        'TL_AA_F'                           0.001       [1e-5 1]
+        'TL_AA_F'                           0.001       [1e-5 20]
         'TL_AGTP_Kd'                        100000      [1e2 1e8]
         'TL_AGTP_F'                         1e-5        [1e-7 1]
         'TXTL_RIBOBOUND_TERMINATION_RATE'   40          [0.1 2000]
