@@ -215,9 +215,12 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
 
     dosedNames1 = {'RNA utr1--deGFP'};
     dosedVals1 = [37.5 75 150 200 600 700 800 900 1000];
+    dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
+    doseWeights1 = dtempvec/(sum(dtempvec));
     dosedNames2 = {'DNA p70--utr1--deGFP'};
     dosedVals2 = [0.5 2 5 20];
-
+    dtempvec = sqrt(dosedVals2(end)*(ones(size(dosedVals2))./dosedVals2)).*dosedVals2;
+    doseWeights2 = dtempvec/(sum(dtempvec));
 %% create the measured species cell array
 % remember to change this! esp the 2AGTP. 
 measuredSpecies1 = {{'[RNA utr1--deGFP]',...
@@ -250,7 +253,7 @@ stdev = 1; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
 nW = 50; % actual: 200 - 600 ish
 stepsize = 1.5; % actual: 1.1 to 4 ish
-niter = 20; % actual: 2 - 30 ish,
+niter = 22; % actual: 2 - 30 ish,
 npoints = 1e3; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of 
 %                        params is small)
 thinning = 2; % actual: 10 to 40 ish
@@ -264,7 +267,7 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', true);
+    'parallel', false);
 
 model_info = struct(...
     'circuitInfo',{circuitInfo1, circuitInfo2},...
@@ -275,10 +278,17 @@ model_info = struct(...
     'dosedNames', {dosedNames1, dosedNames2},... % cell arrays of species. cell array corresponds
      ...                               % to a model.
     'dosedVals', {dosedVals1, dosedVals2},...  % matrices of dose vals 
+    'doseWeighting', {doseWeights1, doseWeights2}, ... 
+                    ... % OPTIONAL FIELD. reweight the importance of the curves corresponding to the different doses. 
     'measuredSpecies', {measuredSpecies1, measuredSpecies2}, ... % cell array of cell arrays of 
                       ...                  % species names. the elements of the inner
                       ...                  % cell array get summed. 
     'measuredSpeciesIndex', {msIx1, msIx2},...  % maps measuredSpecies to the species in data array
+    'experimentWeighting', {0.1, 1}, ... 
+                        ... % relative importance of the different topologies. 
+                        ... %geometries in a given topology are weighted with 
+                        ...% the same level of importance for now. weight the rnadeg 
+                        ...% experiment to be 20% as important as the MGA-GFP experiment
     'dataToMapTo', {3,1}); % each dataToMapTo property within an element of the 
                             % model_info array is a vector of length # of geometries. 
     % data indices tell us which data set to use for each topology (model) - geometry pair

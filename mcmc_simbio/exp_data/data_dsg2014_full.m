@@ -22,7 +22,7 @@ function di = data_dsg2014_full
 
 
 
-%
+%%
 % define the doses: DNA at 0.5, 2, 5 and 20nM
 dosedNames = {'GFP DNA'};
 dv = [0.5, 2, 5, 20]; % dose vals of the dna in nM
@@ -38,7 +38,7 @@ tv = tmg;
 da = zeros(length(tv), 4, 2, 1);
 da(:, :, 1, 1) = ymg; % the mg aptameter data
 da(:, :, 2, 1) = ygfp; % the gfp data
-
+%%
 mn = {'MG aptamer', 'deGFP'};
 % final order is time x species x replicates x doses
 da = permute(da, [1, 3, 4, 2]); 

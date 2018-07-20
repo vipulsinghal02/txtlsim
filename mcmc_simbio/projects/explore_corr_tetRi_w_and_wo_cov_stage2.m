@@ -29,7 +29,7 @@ tstouse = ts6;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHANGE THIS (step 1 of 2) %%
-savestuffflag = true;
+savestuffflag = false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -53,34 +53,6 @@ di = data_info;
 marray = mcmc_get_walkers({tstouse}, {1:ri.nIter}, projdir);
 marray = marray(:, :, ceil(end/3):end);
 mstacked_calib = marray(:, :)';
-% mcmc_plot(marray([1 2 4], :,:), mai.estNames([1 2 4]),...
-%     'savematlabfig', false, 'savejpeg', savestuffflag,...
-%     'projdir', projdir, 'tstamp', tstouse,...
-%     'extrafignamestring', '_extract1');
-%
-% figure
-% mcmc_plot(marray([1 3 5], :,:), mai.estNames([1 3 5]),...
-%     'savematlabfig', false, 'savejpeg', savestuffflag,...
-%     'projdir', projdir, 'tstamp', tstouse,...
-%     'extrafignamestring', '_extract2');
-%
-% titls = {'E1 dG 10';'E1 dG 30';'E1 dG 60';};
-% lgds = {};
-% mvarray = masterVecArray(marray, mai);
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
-%     titls, lgds,...
-%     'SimMode', 'meanstd', 'savematlabfig', false, 'savejpeg', savestuffflag,...
-%     'projdir', projdir, 'tstamp', tstouse, 'extrafignamestring',...
-%     '_extract1');
-% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 2),:,:);
-% titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
-% fhandle = mcmc_trajectories(mi(1).emo, di(2), mi(1), marrayOrd,...
-%     titls, lgds,...
-%     'SimMode', 'meanstd', 'savematlabfig', false, 'savejpeg', savestuffflag,...
-%     'projdir', projdir, 'tstamp', tstouse, 'extrafignamestring',...
-%     '_extract2');
-
 
 %% Now we get an arbitrary point from E2 and use those to estimate the CSPs.
 % Actually we get 2 points: a truly arbitrary point (with a random seed fixed?),
@@ -90,7 +62,7 @@ mstacked_calib = marray(:, :)';
 % very different. This should lead to poor performance of the correction
 % algorithm.
 %
-% oh my god. I can think of a mean-variance tradeoff idea here? can try to
+% Can I think of a mean-variance tradeoff idea here? can try to
 % see if this is true. Basically if the ESPs are "far" so that the CSP values
 % are super different, then the ... nah. not a tradeoff. Thnk more about
 % this in the gym later.
@@ -277,7 +249,8 @@ marrayOrd_corr1 = mvarray_corr1(mi2_corr1(1).paramMaps(mi2_corr1(1).orderingIx, 
 %     ['_extract2' extrasavestr]);
 fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), marrayOrd_corr1,...
     titls, lgds,...
-    'SimMode', 'meanstd', 'subplot_arrangement', [3, 3], 'savematlabfig',savestuffflag, 'savejpeg', savestuffflag,...
+    'SimMode', 'meanstd', 'subplot_arrangement', [3, 3], 'savematlabfig',...
+    savestuffflag, 'savejpeg', savestuffflag,...
     'projdir', projdir_corr1, 'tstamp', tstamp_corr, 'extrafignamestring',...
     ['_extract2' extrasavestr]);
 
@@ -297,68 +270,6 @@ mstacked_corr1  = marray_corr1(:,:)';
 nptstotal = size(mstacked_corr1, 1);
 paramid2 = randperm(nptstotal, n); % extract 2 points
 % 
-% % CSP on the vertical axis to conform to schematics in presentations.
-% labellist = mai.estNames;
-% 
-% % Do extract 2 first, since this is the correction step 1
-% pToPlot2 = [3 5 1]; % index 1 is krdG, 
-% 
-% figure
-% XX2 = mstacked(1:end, pToPlot2(1,1));
-% YY2 = mstacked(1:end, pToPlot2(1,2));
-% ZZ2 = mstacked(1:end, pToPlot2(1,3));
-% scatter3(XX2,YY2,ZZ2, 10)
-% xlabel(labellist{pToPlot2(1,1)}, 'FontSize', 20)
-% ylabel(labellist{pToPlot2(1,2)}, 'FontSize', 20)
-% zlabel(labellist{pToPlot2(1,3)}, 'FontSize', 20)
-% title('Extract 2 Parameter Distribution', 'FontSize', 20)
-% hold on
-% 
-% % modify this part
-% XX21 = ones(n, 1)*log(rkcp2) ; 
-% YY21 = ones(n, 1)*log(cpol2); 
-% ZZ21 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from the estimation result
-% scatter3(XX21,YY21,ZZ21, 40, c('boston university red')) 
-% hold on
-% XX22 = log(rkcp2) ; % change to single point
-% YY22 = log(cpol2); % change to single point
-% ZZ22 = 0;
-% ax1 = scatter3(XX22,YY22,ZZ22, 100, c('boston university red'), 'filled');
-% 
-% hold on
-% 
-% % add the point on the floor - ie, the ESP coordinates. 
-% ax1 = scatter3(XX2,YY2,zeros(size(mstacked,1), 1), 10, 'blue', 'filled');
-% 
-% % draw a single line from the floor to the scatterpoints in 3D
-% line([XX21(1)';XX22'], [YY21(1)';YY22'], [ZZ21(1)';ZZ22'], 'LineStyle', '--',...
-%     'LineWidth', 2, 'color', 'k');
-% 
-% % fit a surface to the scatter data min(XX2)
-% [xq,yq] = meshgrid(-4.1:.2:max(XX2), min(YY2):.2:max(YY2));
-% vq = griddata(XX2,YY2,ZZ2,xq,yq);
-% s2 = surf(xq,yq,vq, 0.2*ones(size(vq)));
-% % make the surface translucent
-% s2.FaceAlpha = 0.2;
-% 
-% 
-% axlims = axis;
-% axis([-4.1, axlims(2:end)]);
-% 
-% view(250, 20)
-% 
-% %
-% saveas(gcf, [projdir_corr1 '/simdata_' tstamp_corr '/3dfig_ext2_'...
-%      tstamp_corr]);
-% % % take the whole thing and rotate - animate it and save the video
-% 
-% addpath(genpath('/Users/vipulsinghal/Dropbox/Documents/MATLAB/CaptureFigVid'));
-% OptionZ.FrameRate=10;OptionZ.Duration=5.5;OptionZ.Periodic=true;
-% CaptureFigVid(...
-%     ([-180:3:(-180+3*22) ;
-%    6:28]),...
-%     ['extract2_animation' extrasavestr],OptionZ)
-
 %% plot the trajectories corresponding to the n picked points
 mvarray_corr1 = masterVecArray(marray_corr1, mai_corr1);
 marrayOrd_corr1 = mvarray_corr1(mi2_corr1(1).paramMaps(mi2_corr1(1).orderingIx, 1),:,:);
@@ -368,12 +279,6 @@ titls = {'E2 dT 0.5 dG 10';'E2 dT 0.5 dG 30';'E2 dT 0.5 dG 60';
 'E2 dT 8 dG 10';'E2 dT 8 dG 30';'E2 dT 8 dG 60';};
 
 lgds = {};
-% fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), marrayOrd_corr1,...
-%     titls, lgds,...
-%     'SimMode', 'meanstd', 'savematlabfig', savestuffflag, 'savejpeg', savestuffflag,...
-%     'projdir', projdir_corr1, 'tstamp', tstamp_corr, 'extrafignamestring',...
-%     ['_extract2_resave' extrasavestr]);
-
 
 fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), marrayOrd_corr1,...
     titls, lgds,...
@@ -382,125 +287,8 @@ fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), mar
     'tstamp', tstamp_corr, 'extrafignamestring',...
     ['_extract2_resave' extrasavestr]);
 
-
-
- 
-% set(fhandle,'defaultLegendAutoUpdate','off')
-% get the axes to plot the additional points into
-% cc2 = get(fhandle, 'Children');
-% ax_d10 = cc2(4);
-% ax_d30 = cc2(2);
-% ax_d60 = cc2(1);
-% legend_obj = cc2(3);
-% set(legend_obj, 'AutoUpdate','off');
-% marrayOrd_stacked = marrayOrd_corr1(:,:)';
-% 
-% [da, idxnotused] = simulatecurves(mi2_corr1(1).emo,marrayOrd_stacked(paramid2,:), ...
-%     length(paramid2), mi2_corr1(1).dosedVals', data_info_corr1.timeVector,...
-%     mi2_corr1(1).measuredSpecies);
-% % plot into each of the axes
-% for i = 1:5%length(paramid2)
-%     plot(ax_d10, data_info_corr1.timeVector, da(:,1,i,1)...
-%         +randn(length(data_info_corr1.timeVector), 1)*50,...
-%         'k','LineStyle', ':', 'LineWidth', 0.02);
-%     axis(ax_d10,[0 7200 -500 10000])
-%     hold on
-%     plot(ax_d30, data_info_corr1.timeVector, da(:,1,i,2)...
-%         +randn(length(data_info_corr1.timeVector), 1)*100,...
-%         'k','LineStyle', ':', 'LineWidth', 0.02);
-%     axis(ax_d30,[0 7200 -500 10000])
-%     hold on
-%     
-%     plot(ax_d60, data_info_corr1.timeVector, da(:,1,i,3)...
-%         +randn(length(data_info_corr1.timeVector), 1)*200,...
-%         'k','LineStyle', ':', 'LineWidth', 0.02);
-%     axis(ax_d60,[0 7200 -500 10000])
-%     hold on
-%     
-% end
-
-
-
-
-%% Now we pick the Point in E1, and simulate the curves, and also plot 
-% the scatterplot. 
-
+%% Now we pick the Point in E1, and simulate the curves
 c = @cmucolors;
-
-
-
-mstacked = marray(:,:)';
-n = 40;
-mstacked_corr1  = marray_corr1(:,:)';
-nptstotal = size(mstacked_corr1, 1);
-paramid2 = randperm(nptstotal, n); % extract 2 points
-% 
-% % CSP on the vertical axis to conform to schematics in presentations.
-% labellist = mai.estNames;
-% 
-% % Do extract 2 first, since this is the correction step 1
-% pToPlot1 = [2 4 1]; % index 1 is krdG, 
-% 
-% figure
-% XX1 = mstacked(1:end, pToPlot1(1,1));
-% YY1 = mstacked(1:end, pToPlot1(1,2));
-% ZZ1 = mstacked(1:end, pToPlot1(1,3));
-% scatter3(XX1,YY1,ZZ1, 10)
-% xlabel(labellist{pToPlot1(1,1)}, 'FontSize', 20)
-% ylabel(labellist{pToPlot1(1,2)}, 'FontSize', 20)
-% zlabel(labellist{pToPlot1(1,3)}, 'FontSize', 20)
-% title('Extract 1 Parameter Distribution', 'FontSize', 20)
-% hold on
-% 
-% % modify this part
-% XX11 = ones(n, 1)*log(rkcp1) ; 
-% YY11 = ones(n, 1)*log(cpol1); 
-% % ZZ11 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from the estimation result
-% scatter3(XX11,YY11,ZZ21, 40, c('boston university red'), 'filled');
-% % ZZ21 here is important. need to use the point from corr step 1
-% 
-% hold on
-% XX12 = log(rkcp1) ; % change to single point
-% YY12 = log(cpol1); % change to single point
-% ZZ12 = 0;
-% ax1 = scatter3(XX12,YY12,ZZ12, 100, c('boston university red'), 'filled');
-% 
-% hold on
-% 
-% % add the point on the floor - ie, the ESP coordinates. 
-% ax1 = scatter3(XX1,YY1,zeros(size(mstacked,1), 1), 10, 'blue', 'filled');
-% hold on
-% % draw a single line from the floor to the scatterpoints in 3D
-% line([XX11(1)';XX12'], [YY11(1)';YY12'], [ZZ21(1)';ZZ12'], 'LineStyle', '--',...
-%     'LineWidth', 2, 'color', 'k');
-% % note we use ZZ21 and NOT ZZ11. These are the estimated CSP points in corr step 1, ie, in extract 2
-% hold on
-% % fit a surface to the scatter data 
-%     [xq,yq] = meshgrid(-5.25:.2:max(XX1), min(YY1):.2:max(YY1));
-%     vq = griddata(XX1,YY1,ZZ1,xq,yq);
-%     s1 = surf(xq,yq,vq, 0.2*ones(size(vq)));
-%     % make the surface translucent
-%     s1.FaceAlpha = 0.2;
-% 
-% 
-%     axlims = axis;
-%     axis([-5.25, axlims(2:end)]);
-% view(250, 20)
-% 
-% saveas(gcf, [projdir_corr1 '/simdata_' tstamp_corr '/3dfig_ext1_stage2_'...
-%    tstamp_corr]);
-%      % take the whole thing and rotate - animate it and save the video
-% 
-%     OptionZ.FrameRate=10;OptionZ.Duration=5.5;OptionZ.Periodic=true;
-%     veiw_angle_list = [-130:-10:-300 ;
-%    41*ones(1,18)];
-%     CaptureFigVid(...
-%         veiw_angle_list,...
-%         ['extract1_animation' extrasavestr],OptionZ)
-%     
-%%
-%%
-
 mcmc_info_corr2 = mcmc_info_tetR_1v(mobj_corr1, cpol1, rkcp1);
 ri_corr2 = mcmc_info_corr2.runsim_info;
 mai_corr2 = mcmc_info_corr2.master_info;
@@ -543,33 +331,3 @@ hold on
 cc1 = get(fhandle, 'Children');
 
 %
-%%
-% ax_d10 = cc1(4);
-% ax_d30 = cc1(2);
-% ax_d60 = cc1(1);
-% legend_obj = cc1(3);
-% set(legend_obj, 'AutoUpdate','off');
-% marrayOrd_stacked = marrayOrd_corr2(:,:)';
-% 
-% [da, idxnotused] = simulatecurves(mi2_corr1(1).emo,marrayOrd_stacked(paramid2,:), ...
-%     length(paramid2), mi2_corr1(1).dosedVals', di(1).timeVector, mi2_corr1(1).measuredSpecies);
-% %
-% % plot into each of the axes
-% for i = 1:5%length(paramid2)
-%     hold on
-%     plot(ax_d10, di(1).timeVector, da(:,1,i,1)+...
-%         randn(length(di(1).timeVector), 1)*50, 'k','LineStyle', ':', 'LineWidth', 0.02);
-%     axis(ax_d10, [0 7200 -500 4000])
-%     hold on
-%     plot(ax_d30, di(1).timeVector, da(:,1,i,2)+...
-%         randn(length(di(1).timeVector), 1)*100, 'k','LineStyle',':', 'LineWidth', 0.02);
-%     axis(ax_d30,[0 7200 -500 4000])
-%     hold on,
-%     
-%     pp = plot(ax_d60, di(1).timeVector, da(:,1,i,3)+...
-%         randn(length(di(1).timeVector), 1)*200, 'k','LineStyle',':', 'LineWidth', 0.02);
-%     axis(ax_d60, [0 7200 -500 40000])
-%     hold on
-%     
-% end
-

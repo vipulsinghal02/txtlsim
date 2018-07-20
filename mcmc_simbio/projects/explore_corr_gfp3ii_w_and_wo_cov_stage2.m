@@ -5,7 +5,7 @@
 %
 
 %% Actually before we conclude that this is not sufficiently nonidentifiable to
-% make the variance blow up point, lets try just picking an arbitrary point
+% make the "variance blow up" point, lets try just picking an arbitrary point
 % (just 1) from the E2 ESP, and then actually doing a CSP ESTIMATION. Then
 % these CSPs get used with an arbitrary point in E1. I
 % think in general that should cause a bad effect.
@@ -44,8 +44,7 @@ tstouse = ts6;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHANGE THIS (step 1 of 2) %%
-savestuffflag = true;
-
+savestuffflag = false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 specificprojdir = ['/Users/vipulsinghal/Dropbox/Documents/'...
@@ -105,13 +104,23 @@ mstacked_calib = marray(:, :)';
 % very different. This should lead to poor performance of the correction
 % algorithm.
 %
-% oh my god. I can think of a mean-variance tradeoff idea here? can try to
+% Can one think of a mean-variance tradeoff idea here? can try to
 % see if this is true. Basically if the ESPs are "far" so that the CSP values
 % are super different, then the ... nah. not a tradeoff. Thnk more about
 % this in the gym later.
 %
 %
 
+
+%% OKAY. So i clearly have too many possibilities here. the actual point i 
+% used to generate the figure in my thesis and in the presentation were: 
+% Firstly the data fitting to the model obviously generated the whole
+% manifold. 
+% For the case where there is no CSP fixing, I used the point 
+
+
+
+%%
 % Picking two truly arbitrary points
 % The data is in '20180402_160013'.
 RNGseed = rng(42);
@@ -201,7 +210,6 @@ describing_text = '';
 [tstamp_corr, projdir_corr1, st] = project_init;
 mobj_corr1 = model_protein3;
 
-
 mcmc_info_corr1 = mcmc_info_constgfp3v(mobj_corr1, cpol2, rkcp2);
 
 mi_corr1 = mcmc_info_corr1.model_info;
@@ -222,10 +230,8 @@ else
     tstamp_corr = tstamp_corr_to_use_if_no_sim;
 end
 
-
 %% Now we plot the 3D distribution of the parameters from the sims above, and
 % superimpose the newly computed CSPs on top in a second color.
-
 
 projdir_corr1 = ['/Users/vipulsinghal/Dropbox/Documents/toolbox/txtlsim_vsfork2017'...
 '/mcmc_simbio/projects/explore_corr_gfp3ii_w_and_wo_cov_stage2'];
@@ -243,8 +249,6 @@ ri_corr1 = mcmc_info.runsim_info;
 mai_corr1 = mcmc_info.master_info;
 data_info_corr1 = data_info;
 
-
-
 marray_corr1 = mcmc_get_walkers({tstamp_corr}, {1:ri_corr1.nIter}, projdir_corr1);
 marray_corr1 = marray_corr1(:, :, ceil(end/3):end); % take the last 1/3 of the walkers.
 % mcmc_plot(marray_corr1, mai.estNames,...
@@ -252,23 +256,24 @@ marray_corr1 = marray_corr1(:, :, ceil(end/3):end); % take the last 1/3 of the w
 %     'projdir', projdir, 'tstamp', tstamp_corr,...
 %     'extrafignamestring', '_extract1');
 
-titls = {'E1 dG 10';'E1 dG 30';'E1 dG 60';};
+titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
+
 lgds = {};
 mvarray_corr1 = masterVecArray(marray_corr1, mai_corr1);
 marrayOrd_corr1 = mvarray_corr1(mi2_corr1(1).paramMaps(mi2_corr1(1).orderingIx, 1),:,:);
-fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), marrayOrd_corr1,...
-    titls, lgds,...
+[fhandle, sda, ixnu] = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, ...
+    mi2_corr1(1), marrayOrd_corr1,titls, lgds,...
     'SimMode', 'meanstd', 'savematlabfig',savestuffflag, 'savejpeg', savestuffflag,...
     'projdir', projdir_corr1, 'tstamp', tstamp_corr, 'extrafignamestring',...
-    ['_extract2' extrasavestr]);
+    ['_extract2' extrasavestr]); % sim data array and indices not used 
+% are the other outputs. 
+
 
 %% plot the 3D fig, just like in
 % explore_corr_gfp3ii_w_and_wo_cov.m
 close all
 % CMU colors by John Kitchin https://github.com/jkitchin
 c = @cmucolors;
-
-
 
 mstacked = marray(:,:)';
 n = 40;
@@ -296,7 +301,8 @@ hold on
 % modify this part
 XX21 = ones(n, 1)*log(rkcp2) ; 
 YY21 = ones(n, 1)*log(cpol2); 
-ZZ21 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from the estimation result
+ZZ21 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from the 
+% estimation result
 scatter3(XX21,YY21,ZZ21, 40, c('boston university red')) 
 hold on
 XX22 = log(rkcp2) ; % change to single point
@@ -339,11 +345,13 @@ CaptureFigVid(...
     ['extract2_animation' extrasavestr],OptionZ)
 
 %% plot the trajectories corresponding to the n picked points
+close all
 mvarray_corr1 = masterVecArray(marray_corr1, mai_corr1);
 marrayOrd_corr1 = mvarray_corr1(mi2_corr1(1).paramMaps(mi2_corr1(1).orderingIx, 1),:,:);
 titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
 lgds = {};
-fhandle = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, mi2_corr1(1), marrayOrd_corr1,...
+[fhandle, sda, ixnu] = mcmc_trajectories(mi2_corr1(1).emo, data_info_corr1, ...
+    mi2_corr1(1), marrayOrd_corr1,...
     titls, lgds,...
     'SimMode', 'meanstd', 'savematlabfig', savestuffflag, 'savejpeg', savestuffflag,...
     'projdir', projdir_corr1, 'tstamp', tstamp_corr, 'extrafignamestring',...
@@ -361,28 +369,31 @@ marrayOrd_stacked = marrayOrd_corr1(:,:)';
 [da, idxnotused] = simulatecurves(mi2_corr1(1).emo,marrayOrd_stacked(paramid2,:), ...
     length(paramid2), mi2_corr1(1).dosedVals', data_info_corr1.timeVector,...
     mi2_corr1(1).measuredSpecies);
-% plot into each of the axes
+
+
+
+
+%% plot into each of the axes
 for i = 1:5%length(paramid2)
+    hold on
     plot(ax_d10, data_info_corr1.timeVector, da(:,1,i,1)...
         +randn(length(data_info_corr1.timeVector), 1)*50,...
-        'k','LineStyle', ':', 'LineWidth', 0.02);
+        'k','LineStyle', ':', 'LineWidth', 0.2);
     axis(ax_d10,[0 7200 -500 10000])
     hold on
     plot(ax_d30, data_info_corr1.timeVector, da(:,1,i,2)...
         +randn(length(data_info_corr1.timeVector), 1)*100,...
-        'k','LineStyle', ':', 'LineWidth', 0.02);
+        'k','LineStyle', ':', 'LineWidth', 0.2);
     axis(ax_d30,[0 7200 -500 10000])
     hold on
     
     plot(ax_d60, data_info_corr1.timeVector, da(:,1,i,3)...
         +randn(length(data_info_corr1.timeVector), 1)*200,...
-        'k','LineStyle', ':', 'LineWidth', 0.02);
+        'k','LineStyle', ':', 'LineWidth', 0.2);
     axis(ax_d60,[0 7200 -500 10000])
     hold on
     
 end
-
-
 
 
 %% Now we pick the Point in E1, and simulate the curves, and also plot 
@@ -418,7 +429,8 @@ hold on
 % modify this part
 XX11 = ones(n, 1)*log(rkcp1) ; 
 YY11 = ones(n, 1)*log(cpol1); 
-% ZZ11 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from the estimation result
+% ZZ11 = mstacked_corr1(paramid2, 1) + randn(n, 1)*0.05; % this is from 
+% the estimation result
 scatter3(XX11,YY11,ZZ21, 40, c('boston university red'), 'filled');
 % ZZ21 here is important. need to use the point from corr step 1
 
@@ -436,7 +448,8 @@ hold on
 % draw a single line from the floor to the scatterpoints in 3D
 line([XX11(1)';XX12'], [YY11(1)';YY12'], [ZZ21(1)';ZZ12'], 'LineStyle', '--',...
     'LineWidth', 2, 'color', 'k');
-% note we use ZZ21 and NOT ZZ11. These are the estimated CSP points in corr step 1, ie, in extract 2
+% note we use ZZ21 and NOT ZZ11. These are the estimated CSP points 
+% in corr step 1, ie, in extract 2
 hold on
 % fit a surface to the scatter data 
     [xq,yq] = meshgrid(-5.25:.2:max(XX1), min(YY1):.2:max(YY1));
@@ -505,7 +518,8 @@ set(legend_obj, 'AutoUpdate','off');
 marrayOrd_stacked = marrayOrd_corr2(:,:)';
 
 [da, idxnotused] = simulatecurves(mi2_corr1(1).emo,marrayOrd_stacked(paramid2,:), ...
-    length(paramid2), mi2_corr1(1).dosedVals', di(1).timeVector, mi2_corr1(1).measuredSpecies);
+    length(paramid2), mi2_corr1(1).dosedVals', di(1).timeVector, ...
+    mi2_corr1(1).measuredSpecies);
 %
 % plot into each of the axes
 for i = 1:5%length(paramid2)

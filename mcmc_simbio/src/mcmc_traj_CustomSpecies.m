@@ -1,5 +1,4 @@
-function [fighandle, varargout] = mcmc_trajectories(em, di, mi, marray,...
-    titl, lgds, varargin)
+function fighandle = mcmc_traj_CustomSpecies(em, mi, marray, titl, lgds, varargin)
 %
 % Plot the data time course trajectories and simulated model trajectories
 % for each dose and measured species. The doses are arranged in rows of a
@@ -24,14 +23,6 @@ function [fighandle, varargout] = mcmc_trajectories(em, di, mi, marray,...
 % The standard deviation is plotted as a shaded region. When the individual
 % curves are plotted, they are plotted as thin lines: solid for experimental
 % data and dotted for simulations.
-%
-% OUTPUTS: fighandle and tw optional outputs:
-% varargout{1} = data array of dimensions nTimepoints x nMeasuredSpecies x
-% nSimCurves x nDoseCombinations
-% varargout{2} = idxnotused. This is the set of indices of the third
-% (nSimCurves) dimension that have at least one dose that led to an error
-% during the simulation. The corresponding vector in the da array will have
-% all NaNs. 
 %
 % INPUTS
 % em: The exported simbiology model object that is to be simulated.
@@ -341,7 +332,7 @@ else
     %% Compute relevant statistics depending on what is specified in the inputs.
     % for the experimental data.
     [expsummst, expspreadst] = computeDataStats(di.dataArray, p.ExpMode);
-    [simsummst, simspreadst] = computeDataStats(da(:,:,pointstouse, :), p.SimMode);
+    [simsummst, simspreadst] = computeDataStats(da, p.SimMode);
     
     dimensionLabels = {'time points', 'measured species', 'replicates', 'doses'};
     expmax = computeMaxes(expsummst, expspreadst, p.ExpMode, dimensionLabels);
@@ -409,7 +400,7 @@ else
                 
                 linehandle2 = zeros(nICs, 1);
                 ptchhandle2 = zeros(nICs, 1);
-                % plot experimental data
+                
                 for i=1:nICs
                     [ax, linehandle] = ...
                         plotintoaxis(ax, p.ExpMode,...
@@ -423,7 +414,7 @@ else
                         'SpreadLineWidth', 0.5,...
                         'FaceAlpha', 0.25); % removed out arg: (doesnt work yet) , ptchhandle
                 end
-                % plot simulation data
+                
                 for i=1:nICs
                     [ax, linehandle2] = ...
                         plotintoaxis(ax, p.SimMode,...
@@ -656,15 +647,6 @@ else
     end
 end
 
-if nargout == 2
-    varargout{1} = da;
-elseif nargout == 3
-    varargout{1} = da;
-    varargout{2} = idxnotused;
-end
-
-
-
 
 
 end
@@ -754,7 +736,50 @@ end
 
 
 %!!
+function [summst, spreadst] = computeDataStats(dataArray, dispmode)
+% da: data array
+% datasummary: mean, median or none
+% dataspread: curves, std or none.
+% rD: replicates dimension
 
+switch dispmode
+    case 'mean'
+        summst = mean(dataArray, 3);
+    case 'median'
+        % sum over the time dimension
+        % tD MUST be 1 for this to work.. I tried being fully general,
+        % but what is the point? It's unnecessarily difficult.
+        % compute the indexes of the median (in terms of sum / integral)
+        % curves over the replicates
+        [ix, mdvals] = medianIndex(sum(dataArray, 1), 3);
+        % again, rD MUST be 3.
+        summst = medianReplicate(dataArray, ix);
+        % spreadstatistic is the empty vector
+        spreadst = [];
+    case 'meanstd'
+        summst = mean(dataArray, 3);
+        spreadst = std(dataArray, 0, 3);
+    case 'meancurves'
+        summst = mean(dataArray, 3);
+        spreadst = dataArray;
+    case 'medianstd'
+        [ix, mdvals] = medianIndex(sum(dataArray, 1), 3);
+        summst = medianReplicate(dataArray, ix);
+        spreadst = std(dataArray, 0, 3);
+    case 'mediancurves'
+        [ix, mdvals] = medianIndex(sum(dataArray, 1), 3);
+        summst = medianReplicate(dataArray, ix);
+        spreadst = allButMedianCurve(dataArray, ix);
+    case 'curves'
+        summst = [];
+        spreadst = dataArray;
+        
+    otherwise
+        error(['Invalid data display mode. Must be one of: ''mean'','...
+            ' ''median'' , ''meanstd'',''medianstd'', ''meancurves'','...
+            ' ''mediancurves'', ''curves''.'])
+end
+end
 
 
 

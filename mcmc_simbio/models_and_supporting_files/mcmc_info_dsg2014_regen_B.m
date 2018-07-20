@@ -73,7 +73,7 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_B(modelObj)
 %                 'TL_AGTP_F'
 %                 'TXTL_RIBOBOUND_TERMINATION_RATE'
 %                 'Ribo'};
-            
+
             % paramters to estimate: 
 %             'TX_elong_glob'
 %                 'AGTPdeg_time'

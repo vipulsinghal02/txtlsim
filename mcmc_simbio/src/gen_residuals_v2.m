@@ -56,11 +56,39 @@ fullMasterVec = fixedMasterVec;
 
     llike = 0;
     % for each topo
-    for kk = 1:length(mi)
+    for kk = 1:length(mi) 
+        
+        if isfield(mi(kk), 'experimentWeighting')
+            if ~isempty(mi(kk).experimentWeighting)
+                % The ralative importance of this topology is given by 
+                topoWeight = mi(kk).experimentWeighting;
+            else 
+                topoWeight = 1;
+            end
+            
+        else
+            topoWeight = 1;
+        end
+        
+        
         pmaps = mi(kk).paramMaps;
+        
         % ds = struct('names', {mi(kk).dosednames},...
         %          'dosematrix', mi(kk).dosedvals);
+        
         dv = mi(kk).dosedVals;
+        if isfield(mi(kk), 'doseWeighting')
+            if isequal(size(mi(kk).doseWeighting), [1 size(dv,2)])  
+                
+                % The ralative importance of this topology is given by
+                doseWeights = mi(kk).doseWeighting;
+            else
+                doseWeight = ones(1,size(dv,2));
+            end
+        else
+            doseWeight = ones(1,size(dv,2));
+        end
+        
         em = mi(kk).emo;
         mspecies = mi(kk).measuredSpecies;
         % for each geom
@@ -83,6 +111,7 @@ fullMasterVec = fixedMasterVec;
             CONC_temp = zeros(length(tv), length(mspecies), 1, size(dv,2));
            
             for ii = 1:size(dv,2)
+                
                 % pvec_tg needs to be in the ordered state, ie,
                 % mi(kk).namesOrd. 
                 sd = simulate(em, [exp(pvec_tg); dv(:,ii)]);
@@ -104,7 +133,10 @@ fullMasterVec = fixedMasterVec;
                     relWt_tiled = repmat(relWt(1,jj), size(CONC_temp,1), 1,  size(da,3));
                     replicatedsimdata = repmat(CONC_temp(:, jj,1, ii), [1, 1, size(da, 3)]);
                     residuals = relWt_tiled.*(replicatedsimdata - da(:, jj, :, ii));
-                    res = residuals(:);
+                    
+                    % multiply the residuals with the topology's relative
+                    % importance, and the dose's relative importance. 
+                    res = topoWeight*doseWeights(ii)*residuals(:);
                     llike = llike + sum(logresvec(res, stdev));
                 end
             end

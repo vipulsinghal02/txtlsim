@@ -8,7 +8,7 @@ function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms, varar
 	nICs = size(dose, 1);
 	nMS = length(ms);
 	kknotused = zeros(nSimCurves, 1);
-    da = zeros(length(tv), nMS, nSimCurves, nICs);
+    da = nan(length(tv), nMS, nSimCurves, nICs);
 	for i = 1:nICs
 	    for kk=1:nSimCurves
 	        try
@@ -28,7 +28,8 @@ function [da, idxnotused] = simulatecurves(em,m, nSimCurves, dose, tv, ms, varar
 	            ME.message
 	            kknotused(kk) = 1;
 	        end
-	    end
+        end
+        
 	end
 	idxnotused = find(kknotused);
     if p.sbioplot 
