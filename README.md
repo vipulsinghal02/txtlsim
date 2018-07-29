@@ -33,6 +33,7 @@ Next, run the mcmc_simbio estimation example `<mcmc_tutorial>` in the command wi
 * Number of steps: We recommend not going over 100k - 300k on smaller machines. For this initial test of whether everything was installed properly, we recommend just using the default of 10k steps, which should take at most a few minutes to run. 
 
 ## References
+
 More information can be found in the following references: 
 
 Z. A. Tuza, V. Singhal, J. Kim and R. M. Murray, "An in silico modeling toolbox for rapid prototyping of circuits in a biomolecular “breadboard” system," 52nd IEEE Conference on Decision and Control, Firenze, 2013, pp. 1404-1410.
