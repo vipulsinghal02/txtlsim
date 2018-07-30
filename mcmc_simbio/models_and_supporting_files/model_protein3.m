@@ -1,5 +1,5 @@
 function mobj = model_protein3(varargin)
-% model_protein Constitutive gene expression model using a single 
+% model_protein3 Constitutive gene expression model using a single 
 % enzymatic step. 
 %
 % ~~~ MODEL ~~~

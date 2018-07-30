@@ -28,7 +28,7 @@ Next, run the `negautoreg` example in the command line. Again, you should see a 
 
 Type in `edit TXTL_tutorial` into the command line to open the tutorial file. You can also use the MATLAB publisher button to publish this file, and look at it in the MATLAB help file markup. We recommend running through the examples in this file, and exploring the reactions, species, etc set up in this file. Familiarity with the MATLAB Simbiology command line is helpful here. To learn more about Simbiology, go to the [Getting Started Using the Simbiology Command Line](https://www.mathworks.com/help/simbio/gs/simbiology-command-line-tutorial.html) page. 
 
-Next, run the mcmc_simbio estimation example `<mcmc_tutorial>` in the command window. You can also publish this using the MATLAB publisher button to generate a easy to read HTML file. Before running the file, note that the parameters that you can change are: 
+Next, run the mcmc_simbio estimation example `proj_mcmc_tutorial` in the command window. You can also publish this using the MATLAB publisher button to generate a easy to read HTML file. Before running the file, note that the parameters that you can change are: 
 * Parallelization: true or false. 
 * Number of steps: We recommend not going over 100k - 300k on smaller machines. For this initial test of whether everything was installed properly, we recommend just using the default of 10k steps, which should take at most a few minutes to run. 
 
