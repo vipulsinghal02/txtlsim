@@ -3,7 +3,7 @@ fp = mfilename('fullpath');
 slashes = regexp(fp, '/');
 filedir = fp(1:slashes(end)-1);
 addpath(filedir);
-addpath([filedir '/auxiliary'])
+addpath(genpath([filedir '/auxiliary'])
 addpath([filedir '/components'])
 addpath([filedir '/config'])
 addpath([filedir '/core'])
