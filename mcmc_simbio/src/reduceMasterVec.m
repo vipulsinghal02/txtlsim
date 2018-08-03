@@ -1,4 +1,12 @@
 function [rmv, rpr, sgnames] = reduceMasterVec(master_info)
+	% in mcmc_info = mcmc_info_constgfp3ii(modelObj), we have the note: 
+	% semanticGroups = {1, [2 4] [3 5]}; % cant do this, then the points never
+% get differentiated at all. need some jitter. think about this actually.
+% 
+% 
+% return to that and try some things out. 
+% 
+% 
 	mv = master_info.masterVector;
 	estParamsIx = setdiff((1:length(mv))', master_info.fixedParams);
 	logp = mv(estParamsIx);

@@ -1,16 +1,23 @@
-%% Tutorial file for the mcmc_simbio package
+%% First tutorial file for the mcmc_simbio package
 % proj_mcmc_tutorial.m - Basic toturial of the mcmc_simbio package
 % demonstrating the estimation of parameters for a constitutive gene
 % expression circuit modeled as a single enzymatic reaction. 
 
 %% Initializing the toolbox
-% If you have not already initializes the txtlsim and mcmc_simbio
+% If you have not already initialized the txtlsim and mcmc_simbio
 % toolboxes, initialize them by running the txtl_init and mcmc_init
 % commands in the command line. You need your working directory to be the
 % main directory where the txtlsim toolbox is stored (i.e., the directory
-% in which directories like core, components, mcmc_simbio etc are stored). 
+% in which directories like core, components, mcmc_simbio etc are stored).
 
-%% Run project_init to create a folder where the results of the simulation will be stored. 
+%% Run project_init 
+% This creates a directory within the projects directory where 
+% the results of the simulation will be stored. The name of the directory
+% will be the same as the name of this file (proj_mcmc_tutorial, in this 
+% case). it also creates a timestamped subdirectory within this directory, 
+% where the actual results are stored. If the top level directory
+% (proj_mcmc_tutorial) already exists, then only the subdirectory is
+% created. 
 [tstamp, projdir, st] = project_init;
 
 %% Define the MATLAB Simbiology model 
@@ -20,8 +27,6 @@
 % 
 % dG + pol <-> dG_pol  (k_f, k_r) 
 % dG_pol -> dG + pol + pG (kc) 
-% 
-% 
 mobj = model_protein3;
 
 % The species of the model can be visualized as follows: 
@@ -30,7 +35,8 @@ mobj.species
 % The reactions may be visualized as
 mobj.reactions
 % For more on MATLAB Simbiology, see the Simbiology 
-% <https://www.mathworks.com/help/simbio/gs/simbiology-command-line-tutorial.html reference> page. 
+% <https://www.mathworks.com/help/simbio/gs/simbiology-command-line-tutorial.html
+% reference> page. 
 
 %% Defining the experiment / model arrangement. 
 % We can define the experimental setup and how it related to data, the
@@ -38,6 +44,9 @@ mobj.reactions
 % mcmc_info struct. For this example, we will be using an
 % mcmc_info_constgfp3i.m file to generate the mcmc_info struct that we need
 % to define our parameter inference problem. 
+% Please enter 'help mcmc_info' into the command window prompt to read more
+% about this struct. Also, open the mcmc_info_constgfp3i file (edit
+% mcmc_info_constgfp3i) to view how it is set up. 
 
 mcmc_info = mcmc_info_constgfp3i(mobj);
 
@@ -58,48 +67,46 @@ cpol1 = 100; % nM
 % Arrange the parameters in a log transformed vector. 
 masterVector = log([rkfdG 
                     rkrdG
-                    rkcp
-                    cpol]);
+                    rkcp1
+                    cpol1]);
 
 % Supply the experimental setup information to the data_artificial_v2 
 % function so that it can generate the data_info struct that contains the 
 % artificial data. 
+% type 'help data_artificial_v2' into the command window prompt to read
+% more about this function. For our purposes we simply note that we need to
+% specify our Simbiology model object, a set of timepoints to report the
+% output trajectories for, the list of measured species' names for our 
+% model, the list of dosed species' names, the matrix of dosed values, the
+% names of the species and parameters to set values for in the model
+% (namesUnord), and the non-log-transformed values as a vector. All of
+% these arguments must be encapsulated in cells. 
 
 di = data_artificial_v2({mobj}, {0:180:7200}, {mi.measuredSpecies}, ...
     {mi.dosedNames}, {mi.dosedVals}, {mi.namesUnord},...
     {exp(masterVector), [exp(masterVector(1:end-2)); 0.024; 200]});
 
 da_extract1 = di(1).dataArray;
-da_extract2 = di(2).dataArray;
 tv = di(1).timeVector;
 
+%% Plot the artificial data
+% we can plot the data using the mcmc_trajectories function. See its help
+% file for usage information. 
 mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
 
-
-%     Run the MCMC 
+%% Run the MCMC 
 ri = mcmc_info.runsim_info;
+
 mai = mcmc_info.master_info;
 
-% marray = mcmc_get_walkers({'20180311_223247'}, {10}, projdir);
-% marray_cut = mcmc_cut(marray, (1:10), flipud((mai.paramRanges)'));
-% if size(marray_cut, 2) < ri.nW
-%     error('too few initial points');
-% elseif size(marray_cut, 2) > ri.nW
-%     marray_cut = marray_cut(:,1:ri.nW, :);
-% end
-%%
-
-mi1 = mcmc_runsim_v2(tstamp1, projdir, di(1), mcmc_info,...
-   'InitialDistribution', 'LHS'); % 'InitialDistribution', 'gaussian'
-%  'UserInitialize', marray_cut(:,:,end)
+mi1 = mcmc_runsim_v2(tstamp, projdir, di(1), mcmc_info,...
+   'InitialDistribution', 'LHS', 'multiplier', 2); % 'InitialDistribution', 'gaussian'
 
 %%  plot stuff 
-tstamptouse = tstamp1; %'20180311_223247';
+tstamptouse = tstamp; 
 marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
 mcmc_plot(marray, mai.estNames, 'savematlabfig', true, 'savejpeg', true,...
     'projdir', projdir, 'tstamp', tstamptouse);
-% mcmc_plot(marray, mi1.namesUnord,'ks', true, 'scatter', false);
-% mcmc_plot(marray, mi1.namesUnord,'transparency', 0.05);
 titls = {'dna 10'; 'dna 30';'dna 60'};
 lgds = {};
 mvarray1 = masterVecArray(marray, mai);
@@ -107,66 +114,7 @@ marrayOrd = mvarray1(mi1.paramMaps(mi1.orderingIx, 1),:,:);
 fhandle = mcmc_trajectories(mi1.emo, di(1), mi1, marrayOrd, titls, lgds,...
     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
     'projdir', projdir, 'tstamp', tstamptouse);
-%% 3D plot
-pToPlot = [2 3 1];
-labellist = mai.estNames;
-for plotID = 1:size(pToPlot, 1)
-    mstacked = marray1(:,:)';
-    figure
-    XX = mstacked(1:2:end, [pToPlot(plotID,1)]);
-    YY = mstacked(1:2:end, [pToPlot(plotID,2)]);
-    ZZ = mstacked(1:2:end, [pToPlot(plotID,3)]);
-    scatter3(XX,YY,ZZ)
-    xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
-    ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)
-    zlabel(labellist{pToPlot(plotID,3)}, 'FontSize', 20)
-    title('covariation in Extract 1', 'FontSize', 20)
-    saveas(gcf, [projdir '/simdata_' tstamp1 '/3dfig_ext1_' num2str(plotID) '_' tstamp1]);
-end
-    
 
-mi2 = mcmc_runsim_v2(tstamp2, projdir, di(2), mcmc_info,...
-   'InitialDistribution', 'LHS'); % 'InitialDistribution', 'gaussian'
-%  'UserInitialize', marray_cut(:,:,end)
-
-%%  plot stuff 
-tstamptouse = tstamp2; %'20180311_223247';
-marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
-mcmc_plot(marray, mai.estNames, 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse);
-% mcmc_plot(marray, mi1.namesUnord,'ks', true, 'scatter', false);
-% mcmc_plot(marray, mi1.namesUnord,'transparency', 0.05);
-titls = {'dna 10'; 'dna 30';'dna 60'};
-lgds = {};
-mvarray1 = masterVecArray(marray, mai);
-marrayOrd = mvarray2(mi1.paramMaps(mi1.orderingIx, 1),:,:);
-fhandle = mcmc_trajectories(mi2.emo, di(2), mi2, marrayOrd, titls, lgds,...
-    'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse);
-%% 3D plot
-pToPlot = [2 3 1];
-labellist = mai.estNames;
-for plotID = 1:size(pToPlot, 1)
-    mstacked = marray2(:,:)';
-    figure
-    XX = mstacked(1:2:end, [pToPlot(plotID,1)]);
-    YY = mstacked(1:2:end, [pToPlot(plotID,2)]);
-    ZZ = mstacked(1:2:end, [pToPlot(plotID,3)]);
-    scatter3(XX,YY,ZZ)
-    xlabel(labellist{pToPlot(plotID,1)}, 'FontSize', 20)
-    ylabel(labellist{pToPlot(plotID,2)}, 'FontSize', 20)
-    zlabel(labellist{pToPlot(plotID,3)}, 'FontSize', 20)
-    title('covariation in Extract 2', 'FontSize', 20)
-    saveas(gcf, [projdir '/simdata_' tstamptouse '/3dfig_ext2_' num2str(plotID) '_' tstamptouse]);
-end
-    
-% marray = mcmc_get_walkers({'20180311_224651'}, {10}, projdir);
-% marray_cut = mcmc_cut(marray, (1:10), flipud((mai.paramRanges)'));
-% if size(marray_cut, 2) < ri.nW
-%     error('too few initial points');
-% elseif size(marray_cut, 2) > ri.nW
-%     marray_cut = marray_cut(:,1:ri.nW, :);
-% end
 
 %  Vipul Singhal, 
 %  California Institute of Technology

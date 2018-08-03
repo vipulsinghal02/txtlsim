@@ -232,14 +232,14 @@ function mcmc_info
 % For example, suppose the current model has three parameters, with name
 % strings 'k1', 'k2', and 'k3',
 % and we have three geometries: g1, g2 and g3. For simplicity, assume that
-% there is only one topology (with the obvious generalization to an
-% arbitrary number of topologies). 
-% Rename the master_vector with mv, and let it have 7 entries: 
+% there is only one topology (with the straightforward generalization to an
+% arbitrary number of topologies, see for example mcmc_info_tetR1i.m). 
+% Rename the master_vector to be mv, and let it have 7 entries: 
 % 
 % mv = [p1, p2, p3, ..., p7]';
 % 
-% where p1, ..., p7 are numerical values. Then a paramMaps matrix, defined
-% as paramMaps = [1  1  1 
+% where p1, ..., p7 are numerical values. Then if a paramMaps matrix is 
+% defined as paramMaps = [1  1  1 
 %                 2  4  6
 %                 3  5  7],
 % 
@@ -256,11 +256,24 @@ function mcmc_info
 %      k2       | mv(2)    mv(4)   mv(6)
 %      k3       | mv(3)    mv(5)   mv(7)
 % 
-% Overall, the MCMC algorithm will search a 7 dimensional space, and at
-% every point that is a proposal, distribute the 7 values into the three
-% geometries as described in this table, and simulate these models to
-% compute, using the dataset corresponding to each geometry, the residuals 
-% and the likelihood. 
+% The master vector mv has 7 entries, and these may be partitioned into
+% entries that are either fixed or to be estimated. For example, here we
+% might want to set mv(1) to be fixed, and mv(2:7) to be estimated. Then,
+% the value of mv(1) must be specified in the file that sets up the
+% mcmc_info struct, while the values of elements mv(2:7) are the values that 
+% are to be estimated, and are iteratively set each time the MCMC algorithm 
+% tries a new point in the 6-D parameter space being searched. Thus, these 
+% values do not matter at the time the mcmc_info stuct is specified, and
+% can be set to anything initially. See hte MCMC_INFO.MASTER_INFO section 
+% below, where this and all other specification related to the master 
+% vector are made. 
+% 
+% Overall, the MCMC algorithm will search a 6-dimensional space, and at
+% every point that is a proposal, distribute the 7 values (1 fixed, and the 
+% remaining 6 specified by the 'current' proposed point) 
+% into the three geometries as described in the table above, and simulate 
+% these models to compute, using the dataset corresponding to each geometry, 
+% the residuals and the likelihood. 
 % 
 % - dosedNames: A cell array of strings representing the names of the species
 % that are to be 'dosed'. Dosing here means that the initial values of these
@@ -300,6 +313,47 @@ function mcmc_info
 % length nGeometries, where recall that nGeometries is the number of 
 % geometries associated with the current topology, and defined by the columns 
 % of the paramMaps struct. 
+% 
+% 
+% MCMC_INFO.MASTER_INFO
+% 
+% The master_info struct is used to specify information about the
+% master_vector, the elements of the master vector that are to be
+% estimated, and other global information about the parameter inference
+% problem. It is a scalar struct, and has fields: 
+% 
+% estNames: cell array of strings specifying the names of the parameters or
+% species within the master vector that are to be estimated. You cannot
+% estimte species that are also being dosed (ie, are in the dosedNames
+% array in one of the elements in the mcmc_info.model_info struct array. 
+% 
+% masterVector: A numerical vector of parameter and species initial 
+% concentration values that are to be distributed to all the models (over
+% all the topologies and geometries) as specified by the various paramMaps
+% matrices in the elements of the mcmc_info.model_info struct array. These
+% values are log transformed, and range from -inf to +inf, even when the
+% parameter values and species concentration values are restricted to be
+% non-negative. Not all the values in master vector need to be estimated. 
+% The entries that are fixed are specified by the fixedParams field of 
+% this struct. 
+% 
+% paramRanges: This is a length(estParams) x 2 matrix array setting the
+% upper and lower bound on the (log transformed) values of the parameters
+% and species being estimated. 
+% 
+% - fixedParams: This is a vector of length 
+% length(masterVector) - length(estParams) that contains indices of the
+% elements of the master vector that are to be fixed. These elements of the
+% master vector must be specified in the file that sets up the mcmc_info 
+% struct. See mcmc_info_constgfp3i.m for an example. There, kf is set to a 
+% fixed value, and the remaining parameters are estimated. The fixedParams
+% vector is therefore just a scalar containing the index of the kf entry of
+% the master vector. 
+% 
+% - semanticGroups: This is an experimental feature (in the sense that "we 
+% are trying it out", rather than it "pertains to experimental data") that
+% could be useful. We will supply documentation on how to use it in future
+% versions. 
 % 
 % See the files mcmc_info_constgfp3i.m,  mcmc_info_constgfp3ii.m and 
 % mcmc_info_tetR1i.m for concrete functional examples of setting up an
@@ -404,6 +458,42 @@ function mcmc_info
 % % model is the same, but the fact that certain parameters can be different
 % % is analogous to the networks being geometrically different. 
 % 
+
+
+% In general, each estimation problem can have multiple experiment-model
+% pairs that inform some common set of parameters. For example, we might
+% have an estimtion problem where the tetR transcription factor shows up in
+% two different circuits, say, the incoherent feedforward loop and the
+% genetic toggle switch. Each circuit will have a different model and data 
+% associated with it, but the tetR dimerization rate parameters (for example) 
+% will show up in both models. In general, we do not want to estimate two
+% separate values (or *distributions* of values in the Bayesian parameter 
+% estimation scenario, especially when the parameters are non-identifiable)
+% from each model-data pair. Instead, we want to only estimate a single
+% value / distribution from both sets of information. We call models that
+% differ in the network topology (i.e., the set of chemical reactions
+% defining the model
+
+
+
+
+multiple different model
+% topologies, and each model topology might have multiple 'variants' of
+% that topology associated with it. We call these variants 'geometries', to
+% distinguish from the variation in models due to the topology of the
+% network itself. Here, there is only one network topology and geometry.
+% Type 'help mcmc_info' in the command line to learn more about the general
+% use case, and see the files mcmc_info_constgfp3tetR1 for an example of
+% the use of two distincti topologies in a single estimation problem. 
+
+
+Variations can For example, we might have different
+% fixed parameters associated with it. We will call these parameters
+% geometries associated with that model, since the network topology of the
+% model is the same, but the fact that certain parameters can be different
+% is analogous to the networks being geometrically different. 
+
+
 
 
 end

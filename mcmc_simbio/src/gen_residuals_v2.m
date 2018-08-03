@@ -81,7 +81,7 @@ fullMasterVec = fixedMasterVec;
             if isequal(size(mi(kk).doseWeighting), [1 size(dv,2)])  
                 
                 % The ralative importance of this topology is given by
-                doseWeights = mi(kk).doseWeighting;
+                doseWeight = mi(kk).doseWeighting;
             else
                 doseWeight = ones(1,size(dv,2));
             end
@@ -136,7 +136,7 @@ fullMasterVec = fixedMasterVec;
                     
                     % multiply the residuals with the topology's relative
                     % importance, and the dose's relative importance. 
-                    res = topoWeight*doseWeights(ii)*residuals(:);
+                    res = topoWeight*doseWeight(ii)*residuals(:);
                     llike = llike + sum(logresvec(res, stdev));
                 end
             end

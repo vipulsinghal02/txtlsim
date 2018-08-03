@@ -33,7 +33,7 @@ function [di] = data_artificial_v2(mobj, tv, measuredSpecies, ...
 % an now be a non singleton array of length nDatasets. The activeValues
 % input is now a cell array of numerical vectors. It has dimensions
 % nDatasets x 1 or 1 x nDatasets.
-%
+% 
 % mobj: A 1x1 cell containing a simbiology model object, or a row or column
 % cell array of length nDatasets containing model objects.
 %
