@@ -142,17 +142,25 @@ mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
    'InitialDistribution', 'LHS', 'multiplier', 2,...
    'pausemode', true); 
 % 'InitialDistribution', 'gaussian'
-%  'UserInitialize', marray_cut(:,:,end)
 % 
 %%  plot stuff 
+% 
+% These functions simply generate some standard plots from the data that is
+% saved in the timestamped subdirectory of the directory specified in
+% projdir. You can open that directory to view the results, including a log
+% file. 
+
 tstamptouse = tstamp; 
 marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
 
+% plot parameter distribution corner plot, and markov chains. 
 mcmc_plot(marray, mai.estNames,...
     'savematlabfig', true, 'savejpeg', true,...
     'projdir', projdir, 'tstamp', tstamptouse,...
     'extrafignamestring', '_tutorialIII');
 
+% plot individual trajectories of the data and the model fits for both
+% models. 
 titls = {'dG 10';'dG 30';'dG 60';};
 lgds = {};
 mvarray = masterVecArray(marray, mai);

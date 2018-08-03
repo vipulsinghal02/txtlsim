@@ -22,15 +22,16 @@ Lets call the directory where you cloned or downloaded the repository `trunk`, i
 
 Check if both the toolboxes are installed properly by running the follwoing examples:
 
+### txtlsim examples
 Start with typing in `geneexpr` into the command window. This should run a constitutive gene expression example in the toolbox, and you should see a plot with three subplots (protein; mRNA and DNA; and resource usage) appear. There should not be any error messages in the command window. 
 
 Next, run the `negautoreg` example in the command line. Again, you should see a plot of the species in the system, and no errors. This example simulates the negative autoregulation circuit. 
 
 Type in `edit TXTL_tutorial` into the command line to open the tutorial file. You can also use the MATLAB publisher button to publish this file, and look at it in the MATLAB help file markup. We recommend running through the examples in this file, and exploring the reactions, species, etc set up in this file. Familiarity with the MATLAB Simbiology command line is helpful here. To learn more about Simbiology, go to the [Getting Started Using the Simbiology Command Line](https://www.mathworks.com/help/simbio/gs/simbiology-command-line-tutorial.html) page. 
 
-Next, run the mcmc_simbio estimation example `proj_mcmc_tutorial` in the command window. You can also publish this using the MATLAB publisher button to generate a easy to read HTML file. Before running the file, note that the parameters that you can change are: 
-* Parallelization: true or false. 
-* Number of steps: We recommend not going over 100k - 300k on smaller machines. For this initial test of whether everything was installed properly, we recommend just using the default of 10k steps, which should take at most a few minutes to run. 
+### mcmc_simbio examples
+
+Next, open and explore the mcmc_simbio estimation examples given in the files `proj_mcmc_tutorial`, `proj_mcmc_tutorial_II`, and `proj_mcmc_tutorial_III` in the `trunk\mcmc_simbio\proj\` directory. We strongly recommend you skim through the `mcmc_info.m` and `data_info` files (`trunk\mcmc_simbio\models_and_supporting_files\` or type `help mcmc_info` and `help data_info` into the MATLAB command line) to gain an understanding of some of the key functionalities of the parameter inference toolbox. Along with the three tutorial files, the `mcmc_info.m` and the `data_info.m` files provide an initial idea of the capabilities of the toolbox. 
 
 ## References
 
