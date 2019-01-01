@@ -33,10 +33,25 @@ octave-workspace
 *.txt
 *.todo
 
+# Image files
+*.png
+*.tiff
+*.eps
+*.jpg
+*.svg
+*.fig
+
+
+# data files
+*.gc
+*.xlsx
+*.csv
+
 # movie files
 *.mp4
 
-
+youngha_data_conversion/
+html/
 
 # Compiled source #
 ###################
@@ -75,3 +90,7 @@ octave-workspace
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# MATLAB Crash Dumps #
+######################
+Crash_logs_*/
