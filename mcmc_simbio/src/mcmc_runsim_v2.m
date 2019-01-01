@@ -80,6 +80,7 @@ p.addParameter('Width', 0.1, @isnumeric)
 p.addParameter('UserInitialize', [], @isnumeric)
 p.addParameter('FitOption', 'FitMedian', @ischar); % 'FitMean', 'FitAll'
 p.addParameter('pausemode', false, @islogical)
+p.addParameter('DoseNormalization', false, @islogical)
 
 p.addParameter('multiplier', 1, @isnumeric); % every 10 iterations, 
 % the stepsize is multiplied by this number. Set it to something like 2 or 4 
@@ -94,6 +95,7 @@ mi = mcmc_info.model_info;
 mai = mcmc_info.master_info;
 
 [da, mi, tv] = exportmobj(mi, data_info, p.FitOption);
+di = data_info;
 % 
 % nTopo = length(mi);
 % nGeom = zeros(length(mi),1);
@@ -266,14 +268,14 @@ save([specificproj '/' fname]);
 % run the actual simuations, saving the data every iteration
 for i = 1:ri.nIter %
     if p.pausemode
-        if ~mod(i, 4)
-            fprintf('Pausing for 5 minutes before starting run number %d. \n', i);
-            pause(300)        
+        if ~mod(i, 1)
+            fprintf('Pausing for 2 minutes before starting run number %d. \n', i);
+            pause(120)        
         end
     end
     
     
-    if  i == 5 || ~mod(i, 10)
+    if  i == 3 || ~mod(i, 3)
         ssize = p.multiplier*ri.stepSize;
         fprintf('Mixup round! The step size for this iteration is set to \n %d * %d = %d.\n',...
             p.multiplier, ri.stepSize, ssize);

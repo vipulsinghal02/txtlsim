@@ -33,10 +33,20 @@ octave-workspace
 *.txt
 *.todo
 
+# Image files
+*.png
+*.tiff
+
+# data files
+*.gc
+*.xlsx
+*.csv
+
 # movie files
 *.mp4
 
-
+youngha_data_conversion/
+html/
 
 # Compiled source #
 ###################

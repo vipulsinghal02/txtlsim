@@ -44,7 +44,6 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     [~, rpr, ~] = reduceMasterVec(mai);
     nparam = size(rpr, 1);
 
-    
 
     npts = round(ri.nW*3); % can tolerate up to 66.7% non integrability.
     % Increase the factor here if you need to tolerate more.

@@ -12,7 +12,7 @@ function mcmc_info
 % 'sharing' pattern, and other information. 
 % 
 % 
-% PARAMETER CONCURRENCE, TOPOLOGIES AND GEOMETRIES
+% PARAMETER CONCURRENCE, TOPOLOGIES AND GEOMETRIES:
 % 
 % In general, each estimation problem can have multiple experiment-model
 % pairs that inform some common set of parameters. For example, we might
@@ -30,7 +30,7 @@ function mcmc_info
 % be specific to each model, and those will be estimated independently in
 % the two models. The parameters that are unique to models (ie not shared)
 % need not come from models of different circuits; they can be from models 
-% of the came circuits as well. For example, that there are two copies of 
+% of the same circuits as well. For example, that there are two copies of 
 % the toggle circuit, one in a fast growing strain, and the second in a 
 % slow growing stain, so that the dilution rate parameters (for instance) 
 % in the two models of toggle switch are expected to be different. In
@@ -38,7 +38,7 @@ function mcmc_info
 % models that differ in parameters whose values would otherwise be equal. 
 % 
 % In general, we will have an arbitrary number of models,
-% and an arbitrary patterns of paramter sharing/concurrence between the
+% and an arbitrary pattern of paramter sharing/concurrence between the
 % models. The mcmc_info file is used to specify the list of models, the
 % datasets these models correspond to, the pattern of parameter concurrence
 % in the parameter inference problem, the experimental setup (dosing
@@ -54,10 +54,10 @@ function mcmc_info
 % In the example above, there are two model
 % topologies, the IFFL topology and the genetic toggle switch topology.
 %
-% GEOMETRY: Models with the same topology can still differ if any parametrs
+% GEOMETRY: Models with the same topology can still differ if any parameters
 % are expected to have different values in different contexts. We say that
 % such models are geometrically different. An example of such a difference
-% was described in he example above when the genetic toggle was implemented
+% was described in the example above when the genetic toggle was implemented
 % in the two strains with different growth characteristics. The dilution
 % parameter in the models of the genetic toggle would be expected to be
 % different in the two strains. In this case we say that the genetic toggle
@@ -352,8 +352,10 @@ function mcmc_info
 % 
 % - semanticGroups: This is an experimental feature (in the sense that "we 
 % are trying it out", rather than it "pertains to experimental data") that
-% could be useful. We will supply documentation on how to use it in future
-% versions. 
+% could be useful. We will supply more complete documentation on how to 
+% use it in future versions. For now, the idea is that when the 
+% integrability of the initial spead of points is checked using 
+% integrableLHS_v2.m, we might want that 
 % 
 % See the files mcmc_info_constgfp3i.m,  mcmc_info_constgfp3ii.m and 
 % mcmc_info_tetR1i.m for concrete functional examples of setting up an

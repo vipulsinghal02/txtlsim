@@ -46,6 +46,7 @@ function llike = gen_residuals_v2(logp, estParamIx, fixedMasterVec, data_array,.
     %}
     
     % the unpacking happens in steps. (quite similar to integrableLHS_v2)
+    
 fixedMasterVec(estParamIx) = logp;
 fullMasterVec = fixedMasterVec;
 
@@ -55,17 +56,15 @@ fullMasterVec = fixedMasterVec;
 
 
     llike = 0;
-    % for each topo
-    for kk = 1:length(mi) 
-        
+    
+    for kk = 1:length(mi) % for each topo
         if isfield(mi(kk), 'experimentWeighting')
             if ~isempty(mi(kk).experimentWeighting)
-                % The ralative importance of this topology is given by 
-                topoWeight = mi(kk).experimentWeighting;
+                % The relative importance of this topology 
+                topoWeight = mi(kk).experimentWeighting; % a scalar number
             else 
                 topoWeight = 1;
             end
-            
         else
             topoWeight = 1;
         end
@@ -76,13 +75,17 @@ fullMasterVec = fixedMasterVec;
         % ds = struct('names', {mi(kk).dosednames},...
         %          'dosematrix', mi(kk).dosedvals);
         
-        dv = mi(kk).dosedVals;
+        dv = mi(kk).dosedVals; % can doses be reordered in the export process? 
+%         This is very important to check. 
         if isfield(mi(kk), 'doseWeighting')
+            % the dose weighting muse have size 1 by number of dose
+            % combintations. 
             if isequal(size(mi(kk).doseWeighting), [1 size(dv,2)])  
                 
                 % The ralative importance of this topology is given by
                 doseWeight = mi(kk).doseWeighting;
             else
+                % otherwise, all the doses are equally weighted. 
                 doseWeight = ones(1,size(dv,2));
             end
         else
