@@ -10,18 +10,8 @@ function mcmc_info = mcmc_info_vnprl2011_mrna(modelObj)
     % 
     % Finally there is a third file in this series that starts from all the
     % parameters estimated in both the first and second estimations, and
-    % tries to fit all the parameters to all the data simultaneously. 
-    %
-    % key differences with version 1: 
-    % model parameters specified now include the ones to be estimated and the 
-    % ones to keep fixed. 
-    % split the old mcmc_info struct into 3 structs: 
-    % runsim_info:  information on the mcmc algorithm parameters
-    % model_info:   array of models, and associated properties like parameters, 
-    %               and the matrices of indices from the master vector 
-    %               to the model parameters. 
-    % master_info:  contains the master vector, and a spec for which parameters
-    %               get estimated. 
+    % tries to fit all the parameters to all the data simultaneously within
+    % a relatively narrow range around the pre-fit parameters. 
     % 
     % Copyright (c) 2018, Vipul Singhal, Caltech
     % Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -51,12 +41,12 @@ function mcmc_info = mcmc_info_vnprl2011_mrna(modelObj)
     'mRNA can degrade and participate in translation. The former is \n'...
     'modeled as a enzymatic reaction involving every complex containing \n'...
     'mRNA. The latter involves binding to Ribosomes, followed by amino acids \n'...
-    'and ATP, and finally elongation and termination resulting in protein.']
+    'and ATP, and finally elongation and termination resulting in protein.'];
 
     circuitInfo2 = ...
     ['This is simple enzymatic rna degradation. Note that here mRNA can \n'...
     'to ribosomes and other species, but these offer no protection. '...
-    'from rna degradation. \n ']
+    'from rna degradation. \n '];
 
     
 
@@ -99,7 +89,7 @@ function mcmc_info = mcmc_info_vnprl2011_mrna(modelObj)
     % exported model 
     %%
     activeNames1 = {...
-        'TX_elong_glob'                      1          [0.5 10]     
+        'TX_elong_glob'                     1           [0.5 10]     
         'AGTPdeg_time'                      7200        [1800 18000]
         'AGTPdeg_rate'                      0.0002      [1e-5 1e-1]
         'TXTL_P70_RNAPbound_Kd'             12          [0.1 1000]
@@ -209,11 +199,11 @@ estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
 %% master parameter vector, param ranges, 
 master_info = struct(...
-    'estNames', {estParams},...
-    'masterVector', {masterVector},...
-    'paramRanges', {paramRanges},... % 
-    'fixedParams', {fixedParams},...   % indexes of the fixed params (withing master vector)
-    'semanticGroups', {semanticGroups}); % EITHER EMPTY OR
+    'estNames', {estParams},...         
+    'masterVector', {masterVector},...  
+    'paramRanges', {paramRanges},...    % 
+    'fixedParams', {fixedParams},...    % indexes of the fixed params (withing master vector)
+    'semanticGroups', {semanticGroups});% EITHER EMPTY OR
                                         % a cell array of vectors specifying parameter 
                                         % groupings. 
                                         % The vectors contain indices to the 

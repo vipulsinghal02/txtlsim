@@ -1,27 +1,12 @@
-%% VNPRL fitting
-% Vipul Singhal, California Institute of Technology
-% 2018
-% 
+%% proj_VNPRL_mrna.m
+% Fitting 
+%
 % We set up the estimation of the data from the PRL paper: 
 % Karzbrun, Eyal, Jonghyeon Shin, Roy H. Bar-Ziv, and Vincent Noireaux. 
 % "Coarse-Grained Dynamics of Protein Synthesis in a Cell-Free System." 
 % Physical Review Letters 106, no. 4 (January 24, 2011): 48104. 
 % https://doi.org/10.1103/PhysRevLett.106.048104.
 % 
-% This mcmc has two linked estimation problems: 
-% 1) transcription estimation 
-% 2) RNA degradation 
-% 
-% There is a second file in this series, mcmc_info_vnprl2011_protein,
-% that tries to fit the protein data, with the mRNA parameters fixed to
-% a few values found in this estimation. 
-% 
-% Finally there is a third file in this series that starts from all the
-% parameters estimated in both the first and second estimations, and
-% tries to fit all the parameters to all the data simultaneously. 
-%
-% It is not exactly the data from this paper, instead uses a modification
-% of the data from ACS DSG 2014. 
 % Some of the main conclusions of that paper were: 
 % - Transcriptional Elongation rate: 1 ntp/s
 % - Translational Elongation rate: >4 aa/s
@@ -35,14 +20,21 @@
 % - dp/dt|max is about 30 to 40 nM / min for proteins
 % - For 30 nM of DNA, mRNA steady state is 20 - 30 nM. 
 % 
-% The estimation uses the following fits: 
-% - mrna data from ACS DSG with the conc values all divided by 10 (the
-% original values in that paper seem unlikey, since they would use too many
-% nucleotides. 
-% - the rna degradation values just basically are exactly the same as in 
-% the ACS paper 
+% This mcmc has two linked estimation problems: 
+% 1) transcription estimation 
+% 2) RNA degradation 
 % 
-% We do the protein estimation in the file proj_VNPRL_protein.m
+% We rescale the mRNA data from the paper titled: 
+% Gene Circuit Performance Characterization and Resource Usage in a Cell-Free “Breadboard”
+% ACS Synth. Biol., 2014, 3 (6), pp 416–425, DOI: 10.1021/sb400203p, 
+% to make it compatible with the conclusions of the PRL paper (30nM peak
+% mRNA expression), and use this rescaled data as the data to fit our models to. 
+% In this sense, the ACS paper serves to give a "typical" shape of mRNA expression
+% and acts as a rough guide to estimate parameters for TXTL. 
+%
+% Vipul Singhal, California Institute of Technology
+% 2018
+
 
 
 %% initialize the directory where things are stored.
@@ -112,9 +104,20 @@ di(2).dataArray = da2;
 di(2).timeVector = tv2;
 
 
-%% construct simbiology model object(s)
+%% construct simbiology model object, and simulate with parameters 
+% to bring it close to what is expected from the PRL paper. 
+
+% define a parameter info struct
+
+
+
+
+
 mobj = model_dsg2014; % use the same model as dsg2014. (this is just 
 % the basic constitutive production model)
+
+
+
 
 %% %% setup the mcmc_info struct - capture all the mcmc information 
 % except the data and the model. 

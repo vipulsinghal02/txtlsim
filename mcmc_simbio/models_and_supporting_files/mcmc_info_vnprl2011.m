@@ -37,13 +37,13 @@ function mcmc_info = mcmc_info_vnprl2011(modelObj)
     % User readable description of the circuit. Will be used in the log file generated
     % from the MCMC inference procedure. 
     circuitInfo1 = ...
-    ['This is a simple constitutive gene expression model \n'...
-    'built using the TXTL modeling toolbox. It models DNA binding \n'...
-    'to RNAP and nucleotides, followed by transcription. The resulting\n'...
-    'mRNA can degrade and participate in translation. The former is \n'...
-    'modeled as a enzymatic reaction involving every complex containing \n'...
-    'mRNA. The latter involves binding to Ribosomes, followed by amino acids \n'...
-    'and ATP, and finally elongation and termination resulting in protein.']
+    ['This is a simple constitutive gene expression model \n '...
+    'built using the TXTL modeling toolbox. It models DNA binding \n '...
+    'to RNAP and nucleotides, followed by transcription. The resulting\n '...
+    'mRNA can degrade and participate in translation. The former is \n '...
+    'modeled as a enzymatic reaction involving every complex containing \n '...
+    'mRNA. The latter involves binding to Ribosomes, followed by amino acids \n '...
+    'and ATP, and finally elongation and termination resulting in protein.'];
 
     
 
@@ -138,7 +138,7 @@ estParams = {'TL_elong_glob'
     minit = minit(:,:); % nparam x npoints, nparam is the tx params, ie, 15. npoints is 10. 
 
     % fixedParams index vector
-    fixedParams = [1:numel(minit)]';
+    fixedParams = (1:numel(minit))';
 
     % master vector
     logp =  zeros(10,1);
@@ -157,7 +157,7 @@ estParams = {'TL_elong_glob'
     % 
     % 
 
-    TLparamIX = [(length(masterVector)-length(logp)+1) : length(masterVector)]';
+    TLparamIX = ((length(masterVector)-length(logp)+1) : length(masterVector))';
     paramMap = [reshape((1:numel(minit))', 15, numel(minit)/15); 
                 repmat(TLparamIX, 1, numel(minit)/15)];
 
@@ -195,16 +195,16 @@ estParams = {'TL_elong_glob'
 
 % New run '20180221_011619' started from 20180219_154541 but with the 
 % parameter intiial points constrained to:
-paramRanges = [3 8
-    -4 0
-    -2 8
-    -2 4
-    -2 8
-    -2 8
-    4 8
-    -3 2
-    -1.5 -0.5
-    3 9];
+% paramRanges = [3 8
+%     -4 0
+%     -2 8
+%     -2 4
+%     -2 8
+%     -2 8
+%     4 8
+%     -3 2
+%     -1.5 -0.5
+%     3 9];
 
 % New run _______ started from 20180221_011619 but with the 
 % parameter intiial points constrained to:
@@ -269,7 +269,7 @@ runsim_info = struct('stdev', {stdev}, ...
 % But the code will be written in a way such that multiple models can be used. 
 
 model_info = struct(...
-    'circuitInfo',{circuitInfo},...
+    'circuitInfo',{circuitInfo1},...
     'modelObj', {modelObj},... % array of model objects (different topologies)
     'modelName', {modelObj.name},...; % model names. 
     'namesUnord', {activeNames}, ... % names of parameters per model, unordered. 
