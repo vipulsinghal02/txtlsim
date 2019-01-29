@@ -32,7 +32,7 @@ else
 end
 
 
-parllel = false; % in the future enable this as an argument 
+parllel = true; % in the future enable this as an argument 
 
 if all(isfield(ds, {'species', 'concentrations'}))
 %     dstype = 1; % type 1 dosing strategy is the usual type we use in the top level file
@@ -102,7 +102,7 @@ for d = 1:ndc % d is the index for the dose concentrations
     % lot of cases: different step sizes, different atol, different rtols
     % etc. 
     if parllel == true
-        
+        disp(['Testing integrability for dose number ' num2str(d) '.']);
         parfor n = 1:N % n is the index for the number of total parameter combinations/points.
             cpv = pv(:,n); % current parameter values
             

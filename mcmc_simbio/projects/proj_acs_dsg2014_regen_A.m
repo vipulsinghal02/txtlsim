@@ -25,15 +25,15 @@ function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_A(varargin)
 
 p = inputParser;
 p.addParameter('prevtstamp', []); 
-p.addParameter('stepSize', []); 
-p.addParameter('nW', []); 
-p.addParameter('nPoints', []); 
-p.addParameter('thinning', []); 
-p.addParameter('nIter', []);
-p.addParameter('parallel', []);
-p.addParameter('stdev', []); 
+p.addParameter('stepSize', 1.4); 
+p.addParameter('nW', 1000); 
+p.addParameter('nPoints', 4e4); 
+p.addParameter('thinning', 4); 
+p.addParameter('nIter', 3);
+p.addParameter('parallel', true);
+p.addParameter('stdev', 1); 
 
-p.addParameter('multiplier', 1);
+p.addParameter('multiplier', 2);
 p.parse(varargin{:});
 p = p.Results;
 %% initialize the directory where things are stored.

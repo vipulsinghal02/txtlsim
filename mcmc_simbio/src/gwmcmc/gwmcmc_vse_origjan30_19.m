@@ -142,26 +142,15 @@ NPfun=numel(logPfuns);
 %calculate logP state initial pos of walkers
 % logP is the result of the function(s) evaluation(s) for all walkers, at all
 % timesteps we choose to keep
-logP=nan(NPfun,Nwalkers,Nkeep); 
+logP=nan(NPfun,Nwalkers,Nkeep);    
 
-disp(['Parallel compute of whether initial positions meet limit criteria using ' num2str(Nwalkers) ' walkers.']);
-fix = 1;
-currfun = logPfuns{fix};
 parfor wix=1:Nwalkers % walker index
-    %for fix=1:NPfun % function index
-    
+    for fix=1:NPfun % function index
         try
-            valv=currfun(minit(:,wix));
-            if valv
-                logP(fix,wix,1)= -1;
-            else
-                logP(fix,wix,1)= -Inf;
-            end
-            
-                
+            v=logPfuns{fix}(minit(:,wix));
         catch ME
             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
+                v = -Inf; % could potentially change this to something like -50, but then 
                 % if here integration tolerances are not met, an error is
                 % thrown. So we NEED integration tolerances to be met
                 % initially. This is because of the way things are compared
@@ -171,40 +160,14 @@ parfor wix=1:Nwalkers % walker index
                 % integration tol errors also get rejected. 
             end
         end
-%         if islogical(valv)
-%             %reformulate function so that false=-inf for logical constraints.
-%             v=-1/valv;currfun=@(m)-1/currfun(m);
-%             %experimental implementation of experimental feature
-%         end
-%         logP(fix,wix,1)=v;
-        
-    %end
-end
-disp(['Parallel compute of initial position residuals using ' num2str(Nwalkers) ' walkers.']);
-fix = 2;
-currfun = logPfuns{fix};
-parfor wix=1:Nwalkers % walker index
-    %for fix=1:NPfun % function index
-        try
-            logP(fix,wix,1)=currfun(minit(:,wix));
-        catch ME
-            if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
-                % if here integration tolerances are not met, an error is
-                % thrown. So we NEED integration tolerances to be met
-                % initially. This is because of the way things are compared
-                % in the future iterations, and accepted and rejected.
-                % Should be -Inf, but I have changed it to -20. in the
-                % later iterations, keep it at -Inf, so that any future
-                % integration tol errors also get rejected. 
-            end
+        if islogical(v)
+            %reformulate function so that false=-inf for logical constraints.
+            v=-1/v;logPfuns{fix}=@(m)-1/logPfuns{fix}(m);
+            %experimental implementation of experimental feature
         end
-        
-        
-    %end
+        logP(fix,wix,1)=v;
+    end
 end
-disp(['End of initial parallel computations, with exit code ' ...
-    num2str(~all(all(isfinite(logP(:,:,1)))))]);
 
 if ~all(all(isfinite(logP(:,:,1))))
     error('Starting points for all walkers must have finite logP')
@@ -218,10 +181,7 @@ totcount=Nwalkers;
 % preallocate matrix to store parameter values that could not get simulated
 % non_integrable_m = nan(M, Nwalkers, Nkeep*p.ThinChain);
 for row=1:Nkeep
-    disp(['Step ' num2str(row) ' of ' num2str(Nkeep) '.'])  
-           
     for jj=1:p.ThinChain
-        
         %generate proposals for all walkers
         %(done outside walker loop, in order to be compatible with parfor - some penalty for memory):
         %-Note it appears to give a slight performance boost for non-parallel.
@@ -232,7 +192,6 @@ for row=1:Nkeep
         logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor
         % logrand is what we compare our computed log likelihood to. 
         totalcount = (row-1)*p.ThinChain+jj;
-        
         if p.Parallel
             %parallel/non-parallel code is currently mirrored in
             %order to enable experimentation with separate optimization
