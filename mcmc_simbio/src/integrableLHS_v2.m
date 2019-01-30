@@ -46,11 +46,11 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
 
     
 
-    npts = round(ri.nW*3); % can tolerate up to 66.7% non integrability.
+    npts = round(ri.nW*5); % can tolerate up to 80% non integrability.
     % Increase the factor here if you need to tolerate more.
     
     % Compute the parameter sharing across all topologies and geometries for 
-    % initial walker estimation purposes. 
+    % initial walker estimation purposess. 
 
     % generate latin hyper cube distributed points to test for
     % integrability
