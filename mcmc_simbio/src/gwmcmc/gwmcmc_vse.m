@@ -146,6 +146,7 @@ logP=nan(NPfun,Nwalkers,Nkeep);
 
 disp(['Parallel compute of whether initial positions meet limit criteria using ' num2str(Nwalkers) ' walkers.']);
 fix = 1;
+tic
 currfun = logPfuns{fix};
 parfor wix=1:Nwalkers % walker index
     %for fix=1:NPfun % function index
@@ -180,12 +181,15 @@ parfor wix=1:Nwalkers % walker index
         
     %end
 end
+toc
+tic
 disp(['Parallel compute of initial position residuals using ' num2str(Nwalkers) ' walkers.']);
 fix = 2;
 currfun = logPfuns{fix};
 parfor wix=1:Nwalkers % walker index
     %for fix=1:NPfun % function index
         try
+           
             logP(fix,wix,1)=currfun(minit(:,wix));
         catch ME
             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
@@ -203,6 +207,7 @@ parfor wix=1:Nwalkers % walker index
         
     %end
 end
+toc
 disp(['End of initial parallel computations, with exit code ' ...
     num2str(~all(all(isfinite(logP(:,:,1)))))]);
 
