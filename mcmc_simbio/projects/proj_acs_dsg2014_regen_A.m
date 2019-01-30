@@ -32,7 +32,7 @@ p.addParameter('thinning', 4);
 p.addParameter('nIter', 3);
 p.addParameter('parallel', true);
 p.addParameter('stdev', 1); 
-
+p.addParameter('poolsize', []);
 p.addParameter('multiplier', 2);
 p.parse(varargin{:});
 p = p.Results;
@@ -57,6 +57,10 @@ di = data_dsg2014_full
 % di.dataInfo = ['Modified to only have mRNA data. \n',...
 % di.dataInfo];
 
+if ~isempty(p.poolsize)
+    delete(gcp('nocreate'))
+    parpool(p.poolsize)
+end
 
 %     Run the MCMC 
 if ~isempty(p.stepSize)
