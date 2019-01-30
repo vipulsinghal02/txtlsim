@@ -32,7 +32,7 @@ else
 end
 
 
-parllel = true; % in the future enable this as an argument 
+parllel = false; % in the future enable this as an argument 
 
 if all(isfield(ds, {'species', 'concentrations'}))
 %     dstype = 1; % type 1 dosing strategy is the usual type we use in the top level file

@@ -290,6 +290,10 @@ for row=1:Nkeep
                             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
 %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
+                                
+                            else
+                                disp('unknoen error')
+                                
                              end
 %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
 %                                 proposedlogP(fix) = -inf;
