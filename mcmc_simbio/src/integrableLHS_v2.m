@@ -153,6 +153,8 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     end
     IProw = IProw_old;
     numInt = sum(IProw==1);
+    disp([num2str(numInt) ' points out of ' num2str(size(minitTopoGeom,2)) ...
+        ' are integrable. Need ' num2str(ri.nW) ' walkers.'])
     intIx = find(IProw==1);
     if ri.nW >= numInt
         % not enough integrable points
