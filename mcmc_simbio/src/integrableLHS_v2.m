@@ -46,7 +46,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
 
     
 
-    npts = round(ri.nW*5); % can tolerate up to 80% non integrability.
+    npts = round(ri.nW*3); % can tolerate up to 67% non integrability.
     % Increase the factor here if you need to tolerate more.
     
     % Compute the parameter sharing across all topologies and geometries for 
@@ -62,7 +62,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
             
             minit= ...
                 lhsamp.*(repmat(rpr(:, 2), 1, npts)-...
-                    repmat(rpr(:, 1), 1, npts))+...
+                    repmat(rpr(:, 1), 1, npts))*0.5+...
                 repmat(rpr(:, 1), 1, npts);
             
         case 'gaussian'
