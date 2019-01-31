@@ -133,7 +133,7 @@ tv = di(1).timeVector;
 %% Plot the artificial data
 % we can plot the data using the mcmc_trajectories function. See its help
 % file for usage information. 
-mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
+%mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
 
 %% Run the MCMC 
 ri = mcmc_info.runsim_info;
