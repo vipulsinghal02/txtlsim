@@ -46,6 +46,8 @@
 % where the actual results are stored. If the top level directory
 % (proj_mcmc_tutorial_III) already exists, then only the subdirectory is
 % created. 
+delete(gcp('nocreate'));
+parpool(48);
 [tstamp, projdir, st] = project_init;
 
 %% Define the MATLAB Simbiology model 
