@@ -140,9 +140,40 @@ ri = mcmc_info.runsim_info;
 
 mai = mcmc_info.master_info;
 
+
+
+% get info from a previous run to initialize. 
+
+
+
+    specificprojdir = [projdir '/simdata_' '20190131_064508'];
+
+    % load mcmc_info    and the updated model_info
+    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+
+    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+        projdir); 
+    % assume the projdir where this data is stored is the same one as the
+    % one created at the start of this file
+    
+    
+    pID = 1:length(mai.estNames);
+    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+    if size(marray_cut, 2) < ri.nW
+        error('too few initial points');
+    elseif size(marray_cut, 2) > ri.nW
+        marray_cut = marray_cut(:,1:ri.nW, :);
+    end
+
+
+% now run the simulation. 
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'InitialDistribution', 'LHS', 'multiplier', 2,...
+   'UserInitialize', marray_cut(:,:,end), 'multiplier', 2,...
    'pausemode', true); 
+% 
+% mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+%    'InitialDistribution','UserInitialize', marray_cut(:,:,end), 2,...
+%    'pausemode', false); 
 % 'InitialDistribution', 'gaussian'
 % 
 %%  plot stuff 

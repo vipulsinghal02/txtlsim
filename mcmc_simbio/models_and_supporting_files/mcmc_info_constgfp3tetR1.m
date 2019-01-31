@@ -199,7 +199,7 @@ tightening = 1; % default is 1. Type in help mcmc_info for more information
 nW = 3200;% number of walkers. good values: 200 - 400
 stepsize = 1.3; % MCMC step size. try: 1.1 to 4. DO NOT USE 1.
 niter = 10; % try: 2 - 50. Number of times to loop the MCMC. "help mcmc_info"
-npoints = 3200*10*10; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+npoints = 3200*10*20; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
 thinning = 5; % good values: 10 to 40 ish. 
 % Number of steps to skip before recording positions of the walkers. 
