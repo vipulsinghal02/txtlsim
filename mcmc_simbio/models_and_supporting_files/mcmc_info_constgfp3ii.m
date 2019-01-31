@@ -133,13 +133,13 @@ stdev = 10; % the standard deviation in the likelihood function.
 
 tightening = 1; % default is 1. Type in help mcmc_info for more information 
 
-nW = 100;  % number of walkers. good values: 200 - 400
+nW = 3200;  % number of walkers. good values: 200 - 400
 
-stepsize = 1.1; % MCMC step size. try: 1.1 to 4 ish. DO NOT USE 1.
+stepsize = 1.3; % MCMC step size. try: 1.1 to 4 ish. DO NOT USE 1.
 
-niter = 10;  % try: 2 - 50. Number of times to loop the MCMC. "help mcmc_info"
+niter = 20;  % try: 2 - 50. Number of times to loop the MCMC. "help mcmc_info"
 
-npoints = 2e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+npoints = 3200*5*10; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
 
 thinning = 10;  % good values: 10 to 40 ish. 
@@ -155,7 +155,7 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', false);
+    'parallel', true);
 
 % for now we simply make the model_info have just one model (topology).
 % But the code will be written in a way such that multiple models can be used.

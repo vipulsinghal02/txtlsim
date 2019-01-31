@@ -76,7 +76,7 @@ function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 %
 % References:
 % Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. 
-% App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
+% App. Math. Comp. Sci., Vol. 5, No. 1, 65ï¿½80
 % Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 %
 % WebPage: https://github.com/grinsted/gwmcmc
@@ -144,8 +144,8 @@ NPfun=numel(logPfuns);
 % timesteps we choose to keep
 logP=nan(NPfun,Nwalkers,Nkeep);    
 
-for wix=1:Nwalkers % walker index
-    for fix=1:NPfun % function index
+wix = 1;
+for fix=1:NPfun % function index
         try
             v=logPfuns{fix}(minit(:,wix));
         catch ME
@@ -166,6 +166,30 @@ for wix=1:Nwalkers % walker index
             %experimental implementation of experimental feature
         end
         logP(fix,wix,1)=v;
+end
+
+
+
+
+
+for wix=2:Nwalkers % walker index
+    for fix=1:NPfun % function index
+        try
+            logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
+        catch ME
+            if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
+                logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
+                % if here integration tolerances are not met, an error is
+                % thrown. So we NEED integration tolerances to be met
+                % initially. This is because of the way things are compared
+                % in the future iterations, and accepted and rejected.
+                % Should be -Inf, but I have changed it to -20. in the
+                % later iterations, keep it at -Inf, so that any future
+                % integration tol errors also get rejected. 
+            else
+                error('what happened?')
+            end
+        end
     end
 end
 
@@ -305,7 +329,7 @@ if (cputime-lasttime>0.1)
 
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
     progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'*') ''];
-    %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'•') ''];
+    %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'ï¿½') ''];
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);

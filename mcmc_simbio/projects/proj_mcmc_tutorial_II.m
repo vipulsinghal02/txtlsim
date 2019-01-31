@@ -24,7 +24,8 @@
 % (proj_mcmc_tutorial_II) already exists, then only the subdirectory is
 % created. 
 [tstamp, projdir, st] = project_init;
-
+delete(gcp('nocreate'))
+parpool(16)
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. The reactions and species that it
@@ -104,54 +105,79 @@ tv = di(1).timeVector;
 %% Plot the artificial data
 % we can plot the data using the mcmc_trajectories function. See its help
 % file for usage information. 
-mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
+%mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
 
 %% Run the MCMC 
 ri = mcmc_info.runsim_info;
 
 mai = mcmc_info.master_info;
 
+    specificprojdir = [projdir '/simdata_' '20190131_050421'];
+
+    % load mcmc_info    and the updated model_info
+    SS = load([specificprojdir '/full_variable_set_20190131_050421'], 'mcmc_info');
+
+    marray = mcmc_get_walkers({'20190131_050421'}, {9},...
+        projdir); 
+    % assume the projdir where this data is stored is the same one as the
+    % one created at the start of this file
+    
+    
+    pID = 1:length(mai.estNames);
+    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+    if size(marray_cut, 2) < ri.nW
+        error('too few initial points');
+    elseif size(marray_cut, 2) > ri.nW
+        marray_cut = marray_cut(:,1:ri.nW, :);
+    end
+
+
+% now run the simulation. 
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'InitialDistribution', 'LHS', 'multiplier', 2,...
+   'UserInitialize', marray_cut(:,:,end), 'multiplier', 2,...
    'pausemode', false); 
+% 
+% mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+%    'InitialDistribution', 'LHS', 'multiplier', 2,...
+%    'pausemode', false); 
 % 'InitialDistribution', 'gaussian'
 %  'UserInitialize', marray_cut(:,:,end)
 
 %%  plot stuff 
 
-
-load([pwd '/mcmc_simbio/projects/proj_mcmc_tutorial_II/'...
-    'simdata_20180802_221756/full_variable_set_20180802_221756'])
-%%
-di = data_info
- tstamptouse = tstamp; 
-marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
-mcmc_plot(marray([1 2 4], :,:), mai.estNames([1 2 4]),...
-    'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse,...
-    'extrafignamestring', '_extract1');
-%
-figure
-mcmc_plot(marray([1 3 5], :,:), mai.estNames([1 3 5]),...
-    'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse,...
-    'extrafignamestring', '_extract2');
-titls = {'E1 dG 10';'E1 dG 30';'E1 dG 60';};
-lgds = {};
-mvarray = masterVecArray(marray, mai);
-marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'meanstd', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_extract1');
-marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 2),:,:);
-titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
-fhandle = mcmc_trajectories(mi(1).emo, di(2), mi(1), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'meanstd', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_extract2');
+% 
+% load([pwd '/mcmc_simbio/projects/proj_mcmc_tutorial_II/'...
+%     'simdata_20180802_221756/full_variable_set_20180802_221756'])
+% %%
+% di = data_info
+%  tstamptouse = tstamp; 
+% marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
+% mcmc_plot(marray([1 2 4], :,:), mai.estNames([1 2 4]),...
+%     'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse,...
+%     'extrafignamestring', '_extract1');
+% %
+% figure
+% mcmc_plot(marray([1 3 5], :,:), mai.estNames([1 3 5]),...
+%     'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse,...
+%     'extrafignamestring', '_extract2');
+% titls = {'E1 dG 10';'E1 dG 30';'E1 dG 60';};
+% lgds = {};
+% mvarray = masterVecArray(marray, mai);
+% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
+% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'meanstd', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_extract1');
+% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 2),:,:);
+% titls = {'E2 dG 10';'E2 dG 30';'E2 dG 60';};
+% fhandle = mcmc_trajectories(mi(1).emo, di(2), mi(1), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'meanstd', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_extract2');
 
 %  Vipul Singhal, 
 %  California Institute of Technology
