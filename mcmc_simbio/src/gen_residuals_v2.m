@@ -115,11 +115,11 @@ fullMasterVec = fixedMasterVec;
                 % pvec_tg needs to be in the ordered state, ie,
                 % mi(kk).namesOrd. 
 
-                try
+                %try
                     sd = simulate(em, [exp(pvec_tg); dv(:,ii)]);
-                catch ME
-                    disp(ME.identifier);
-                end
+                %catch ME
+                %    disp(ME.identifier);
+                %end
                 
                 sd = resample(sd, tv);
                 for jj = 1:length(mspecies)

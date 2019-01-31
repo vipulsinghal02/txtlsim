@@ -213,7 +213,7 @@ mai = mcmc_info.master_info;
 if isempty(p.UserInitialize)
     minit = integrableLHS_v2(mi, mai, ri, ...
         'distribution', p.InitialDistribution, ...
-        'width', p.Width);
+        'width', p.Width, 'Parallel', ri.parallel);
 
 else
     minit = p.UserInitialize;
