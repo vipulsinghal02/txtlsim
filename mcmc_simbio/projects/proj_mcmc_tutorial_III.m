@@ -149,9 +149,9 @@ mai = mcmc_info.master_info;
     specificprojdir = [projdir '/simdata_' '20190131_064508'];
 
     % load mcmc_info    and the updated model_info
-    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+    SS = load([specificprojdir '/full_variable_set_20190131_064508'], 'mcmc_info');
 
-    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+    marray = mcmc_get_walkers({'20190131_064508'}, {SS.mcmc_info.runsim_info.nIter},...
         projdir); 
     % assume the projdir where this data is stored is the same one as the
     % one created at the start of this file
