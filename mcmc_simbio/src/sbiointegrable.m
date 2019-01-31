@@ -102,7 +102,7 @@ for d = 1:ndc % d is the index for the dose concentrations
     % lot of cases: different step sizes, different atol, different rtols
     % etc. 
     if parllel == true
-        
+        disp(['Testing integrability for dose number ' num2str(d) '.']);
         parfor n = 1:N % n is the index for the number of total parameter combinations/points.
             cpv = pv(:,n); % current parameter values
             

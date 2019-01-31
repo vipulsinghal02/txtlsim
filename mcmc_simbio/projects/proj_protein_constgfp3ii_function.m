@@ -13,7 +13,7 @@ function [mi,mai, ri, tstamp, projdir, di]  = proj_protein_constgfp3ii_linux(var
 % clear all
 % clc
 p = inputParser;
-p.addParameter('prevtstamp', []); 
+p.addOptional('prevtstamp', []); 
 p.addParameter('stepSize', []); 
 p.addParameter('nW', []); 
 p.addParameter('nPoints', []); 

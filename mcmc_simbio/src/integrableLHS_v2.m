@@ -45,11 +45,11 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     nparam = size(rpr, 1);
 
 
-    npts = round(ri.nW*3); % can tolerate up to 66.7% non integrability.
+    npts = round(ri.nW*3); % can tolerate up to 67% non integrability.
     % Increase the factor here if you need to tolerate more.
     
     % Compute the parameter sharing across all topologies and geometries for 
-    % initial walker estimation purposes. 
+    % initial walker estimation purposess. 
 
     % generate latin hyper cube distributed points to test for
     % integrability
@@ -152,6 +152,8 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     end
     IProw = IProw_old;
     numInt = sum(IProw==1);
+    disp([num2str(numInt) ' points out of ' num2str(size(minitTopoGeom,2)) ...
+        ' are integrable. Need ' num2str(ri.nW) ' walkers.'])
     intIx = find(IProw==1);
     if ri.nW >= numInt
         % not enough integrable points

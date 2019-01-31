@@ -267,6 +267,7 @@ save([specificproj '/' fname]);
 
 % run the actual simuations, saving the data every iteration
 for i = 1:ri.nIter %
+    disp(['Iteration number ' num2str(i) '.']);
     if p.pausemode
         if ~mod(i, 1)
             fprintf('Pausing for 2 minutes before starting run number %d. \n', i);

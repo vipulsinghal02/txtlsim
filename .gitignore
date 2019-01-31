@@ -36,7 +36,10 @@ octave-workspace
 # Image files
 *.png
 *.tiff
-
+*.eps
+*.jpg
+*.svg
+*.fig
 # data files
 *.gc
 *.xlsx

@@ -117,7 +117,13 @@ fullMasterVec = fixedMasterVec;
                 
                 % pvec_tg needs to be in the ordered state, ie,
                 % mi(kk).namesOrd. 
-                sd = simulate(em, [exp(pvec_tg); dv(:,ii)]);
+
+                try
+                    sd = simulate(em, [exp(pvec_tg); dv(:,ii)]);
+                catch ME
+                    disp(ME.identifier);
+                end
+                
                 sd = resample(sd, tv);
                 for jj = 1:length(mspecies)
                     % COMPUTE THE SIMULATED TRAJECTORY
