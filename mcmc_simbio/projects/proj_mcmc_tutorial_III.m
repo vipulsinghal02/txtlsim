@@ -13,7 +13,7 @@
 % circuit with model 
 % 
 % D + pol <-> D__pol  (kfdG, krdG)
-% D__pol -> D + pol + protien (kcp)
+% D__pol -> D + pol + protien v(kcp)
 %
 % and the tetR repression circuit with model
 %
@@ -47,9 +47,10 @@
 % (proj_mcmc_tutorial_III) already exists, then only the subdirectory is
 % created. 
 [tstamp, projdir, st] = project_init;
-prevtstamp = '20190131_0645081'
+prevtstamp = '20190131_064508'
+
  delete(gcp('nocreate'))
- parpool(64)
+ parpool(60)
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. 
@@ -145,7 +146,8 @@ specificprojdir = [projdir '/simdata_' prevtstamp];
 % load mcmc_info    and the updated model_info
 SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
 
-marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+marray = mcmc_get_walkers({prevtstamp}, ...
+    {ceil((SS.mcmc_info.runsim_info.nIter)/4):(SS.mcmc_info.runsim_info.nIter)},...
     projdir);
 % assume the projdir where this data is stored is the same one as the
 % one created at the start of this file

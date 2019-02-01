@@ -194,7 +194,15 @@ msIx1 = 1; %
 msIx2 = 1;
 
 %% setup the MCMC simulation parameters
-stdev = 1000; % the standard deviation in the likelihood function.
+% 
+% >> (sum(di(1).dataArray(:)) + sum(di(2).dataArray(:)))/10
+% 
+% ans =
+% 
+%    1.6505e+04
+
+
+stdev = 1e4; % try this out. this could be great! or bad...
 tightening = 1; % default is 1. Type in help mcmc_info for more information 
 nW = 3200*32;% number of walkers. good values: 200 - 400
 stepsize = 1.3; % MCMC step size. try: 1.1 to 4. DO NOT USE 1.
@@ -214,7 +222,7 @@ runsim_info = struct('stdev', {stdev}, ...
     'nIter', {niter}, ...
     'nPoints', {npoints}, ...
     'thinning', {thinning}, ...
-    'parallel', false);
+    'parallel', true);
 
 % for now we simply make the model_info have just one model (topology).
 % But the code will be written in a way such that multiple models can be used.
