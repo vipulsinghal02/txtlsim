@@ -47,7 +47,9 @@
 % (proj_mcmc_tutorial_III) already exists, then only the subdirectory is
 % created. 
 [tstamp, projdir, st] = project_init;
-
+prevtstamp = '20190131_0645081'
+ delete(gcp('nocreate'))
+ parpool(64)
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. 
@@ -138,9 +140,41 @@ ri = mcmc_info.runsim_info;
 
 mai = mcmc_info.master_info;
 
+specificprojdir = [projdir '/simdata_' prevtstamp];
+
+% load mcmc_info    and the updated model_info
+SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
+
+marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+    projdir);
+% assume the projdir where this data is stored is the same one as the
+% one created at the start of this file
+
+%%
+pID = 1:length(mai.estNames);
+marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+if size(marray_cut, 2) < ri.nW
+    warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+    walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/4, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+    minit = marray_cut(:,:, walker_timepoints(1));
+    for i = 2:length(walker_timepoints)
+        minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
+    end
+    minit = minit(:, 1:ri.nW);
+else % there are enough points, just pick the number needed. 
+    minit = marray_cut(:,1:ri.nW,end);
+end
+
+%%
+
+% now run the simulation. 
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'InitialDistribution', 'LHS', 'multiplier', 2,...
-   'pausemode', true); 
+   'UserInitialize', minit, 'multiplier', 2,...
+   'pausemode', false); 
+
+% mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+%    'InitialDistribution', 'LHS', 'multiplier', 2,...
+%    'pausemode', true); 
 % 'InitialDistribution', 'gaussian'
 % 
 %%  plot stuff 
