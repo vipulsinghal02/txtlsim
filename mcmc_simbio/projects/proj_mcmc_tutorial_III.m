@@ -47,10 +47,10 @@
 % (proj_mcmc_tutorial_III) already exists, then only the subdirectory is
 % created. 
 [tstamp, projdir, st] = project_init;
-prevtstamp = '20190131_064508'
+prevtstamp = '20190201_170033'
 
  delete(gcp('nocreate'))
- parpool(60)
+ parpool(46)
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. 
@@ -134,7 +134,7 @@ tv = di(1).timeVector;
 %% Plot the artificial data
 % we can plot the data using the mcmc_trajectories function. See its help
 % file for usage information. 
-mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
+%mcmc_trajectories([], di, [], [], [], [], 'just_data_info', true);
 
 %% Run the MCMC 
 ri = mcmc_info.runsim_info;
@@ -185,35 +185,35 @@ mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
 % saved in the timestamped subdirectory of the directory specified in
 % projdir. You can open that directory to view the results, including a log
 % file. 
-
-tstamptouse = tstamp; 
-marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
-
-% plot parameter distribution corner plot, and markov chains. 
-mcmc_plot(marray, mai.estNames,...
-    'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse,...
-    'extrafignamestring', '_tutorialIII');
-
-% plot individual trajectories of the data and the model fits for both
-% models. 
-titls = {'dG 10';'dG 30';'dG 60';};
-lgds = {};
-mvarray = masterVecArray(marray, mai);
-marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_contgfp');
-marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
-titls = {'dG 10 dT 0.1';'dG 30 dT 0.1';'dG 10 dT 2';'dG 30 dT 2';...
-    'dG 10 dT 8';'dG 30 dT 8';};
-fhandle = mcmc_trajectories(mi(2).emo, di(2), mi(2), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_tetRrep');
+% 
+% tstamptouse = tstamp; 
+% marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
+% 
+% % plot parameter distribution corner plot, and markov chains. 
+% mcmc_plot(marray, mai.estNames,...
+%     'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse,...
+%     'extrafignamestring', '_tutorialIII');
+% 
+% % plot individual trajectories of the data and the model fits for both
+% % models. 
+% titls = {'dG 10';'dG 30';'dG 60';};
+% lgds = {};
+% mvarray = masterVecArray(marray, mai);
+% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
+% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_contgfp');
+% marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
+% titls = {'dG 10 dT 0.1';'dG 30 dT 0.1';'dG 10 dT 2';'dG 30 dT 2';...
+%     'dG 10 dT 8';'dG 30 dT 8';};
+% fhandle = mcmc_trajectories(mi(2).emo, di(2), mi(2), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_tetRrep');
 
 %  Vipul Singhal, 
 %  California Institute of Technology

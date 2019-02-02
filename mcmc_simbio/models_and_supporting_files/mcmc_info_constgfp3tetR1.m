@@ -200,9 +200,13 @@ msIx2 = 1;
 % ans =
 % 
 %    1.6505e+04
+% so overall we have 1.6 x 10^5 as the data number. stdev of 1e2 makes
+% a factor of 1000 or 0.1% as the noise model. 
+% lets try this. I tired 1x10^4, this led to extremely broad distributions
+% and loose fits. That is fine for a start -- high 'temperature'. 
 
 
-stdev = 1e4; % try this out. this could be great! or bad...
+stdev = 1e2; % try this out. this could be great! or bad...
 tightening = 1; % default is 1. Type in help mcmc_info for more information 
 nW = 3200*32;% number of walkers. good values: 200 - 400
 stepsize = 1.3; % MCMC step size. try: 1.1 to 4. DO NOT USE 1.
