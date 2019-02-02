@@ -194,7 +194,14 @@ msIx1 = 1; %
 msIx2 = 1;
 
 %% setup the MCMC simulation parameters
-
+<<<<<<< HEAD
+stdev = 1; % the standard deviation in the likelihood function.
+tightening = 1; % default is 1. Type in help mcmc_info for more information 
+nW = 3200;% number of walkers. good values: 200 - 400
+stepsize = 1.3; % MCMC step size. try: 1.1 to 4. DO NOT USE 1.
+niter = 10; % try: 2 - 50. Number of times to loop the MCMC. "help mcmc_info"
+npoints = 3200*10*20; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+=======
 % 
 % >> (sum(di(1).dataArray(:)) + sum(di(2).dataArray(:)))/10
 % 
@@ -209,13 +216,13 @@ msIx2 = 1;
 
 stdev = 1e2; % try this out. this could be great! or bad...
 tightening = 1; % default is 1. Type in help mcmc_info for more information 
-nW = 3200*16;% number of walkers. good values: 200 - 400
+nW = 3200*32;% number of walkers. good values: 200 - 400
 stepsize = 1.3; % MCMC step size. try: 1.1 to 4. DO NOT USE 1.
 niter = 10; % try: 2 - 50. Number of times to loop the MCMC. "help mcmc_info"
-npoints = 3200*32*10*10; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
-
+npoints = 3200*32*10*5; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+>>>>>>> minmcmcv4
 %                        params is small)
-thinning = 10; % good values: 10 to 40 ish. 
+thinning = 5; % good values: 10 to 40 ish. 
 % Number of steps to skip before recording positions of the walkers. 
 
 %% pull all this together into an output struct.

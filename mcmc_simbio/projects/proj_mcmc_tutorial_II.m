@@ -24,9 +24,9 @@
 % (proj_mcmc_tutorial_II) already exists, then only the subdirectory is
 % created. 
 delete(gcp('nocreate'))
-parpool(48)
+parpool(47)
 [tstamp, projdir, st] = project_init;
-
+prevtstamp = '20190131_181526'
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. The reactions and species that it
@@ -115,47 +115,53 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 
+specificprojdir = [projdir '/simdata_' prevtstamp];
 
-    specificprojdir = [projdir '/simdata_' '20190131_050421'];
+% load mcmc_info    and the updated model_info
+SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
 
-    % load mcmc_info    and the updated model_info
-    SS = load([specificprojdir '/full_variable_set_20190131_050421'], 'mcmc_info');
+marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+    projdir);
+% assume the projdir where this data is stored is the same one as the
+% one created at the start of this file
 
-    marray = mcmc_get_walkers({'20190131_050421'}, {9},...
-        projdir); 
-    % assume the projdir where this data is stored is the same one as the
-    % one created at the start of this file
-    
-    
-    pID = 1:length(mai.estNames);
-    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
-    if size(marray_cut, 2) < ri.nW
-        error('too few initial points');
-    elseif size(marray_cut, 2) > ri.nW
-        marray_cut = marray_cut(:,1:ri.nW, :);
+%%
+pID = 1:length(mai.estNames);
+marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+if size(marray_cut, 2) < ri.nW
+    warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+    walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+    minit = marray_cut(:,:, walker_timepoints(1));
+    for i = 2:length(walker_timepoints)
+        minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
     end
+    minit = minit(:, 1:ri.nW);
+else % there are enough points, just pick the number needed. 
+    minit = marray_cut(:,1:ri.nW,end);
+end
 
+%%
 
 % now run the simulation. 
-mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'UserInitialize', marray_cut(:,:,end), 'multiplier', 2,...
-   'pausemode', false); 
-
-
-
 
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'InitialDistribution', 'LHS', 'multiplier', 2,...
+   'UserInitialize', minit, 'multiplier', 2,...
    'pausemode', false); 
+% 
+% mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
+%    'InitialDistribution', 'LHS', 'multiplier', 2,...
+%    'pausemode', false); 
 % 'InitialDistribution', 'gaussian'
 %  'UserInitialize', marray_cut(:,:,end)
 
 %%  plot stuff 
 
 
+
 % load([pwd '/mcmc_simbio/projects/proj_mcmc_tutorial_II/'...
 %     'simdata_20180802_221756/full_variable_set_20180802_221756'])
 %%
+%  projdir = [pwd '/mcmc_simbio/projects/proj_mcmc_tutorial_II']
 % di = data_info
 %  tstamptouse = tstamp; 
 % marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
@@ -185,6 +191,12 @@ mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
 %     'SimMode', 'meanstd', 'savematlabfig', true, 'savejpeg', true,...
 %     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
 %     '_extract2');
+
+% 
+% load([pwd '/mcmc_simbio/projects/proj_mcmc_tutorial_II/'...
+%     'simdata_20190131_181526/full_variable_set_20190131_181526'])
+%%
+
 
 %  Vipul Singhal, 
 %  California Institute of Technology

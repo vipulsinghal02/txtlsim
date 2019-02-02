@@ -144,53 +144,38 @@ NPfun=numel(logPfuns);
 % timesteps we choose to keep
 logP=nan(NPfun,Nwalkers,Nkeep); 
 
-disp(['Parallel compute of whether initial positions meet limit criteria using ' num2str(Nwalkers) ' walkers.']);
-fix = 1;
-tic
-currfun = logPfuns{fix};
-parfor wix=1:Nwalkers % walker index
-    %for fix=1:NPfun % function index
-    
-        try
-            valv=currfun(minit(:,wix));
-            if valv
-                logP(fix,wix,1)= -1;
-            else
-                logP(fix,wix,1)= -Inf;
-            end
-            
-                
-        catch ME
-            if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
-                % if here integration tolerances are not met, an error is
-                % thrown. So we NEED integration tolerances to be met
-                % initially. This is because of the way things are compared
-                % in the future iterations, and accepted and rejected.
-                % Should be -Inf, but I have changed it to -20. in the
-                % later iterations, keep it at -Inf, so that any future
-                % integration tol errors also get rejected. 
-            end
+wix = 1;
+for fix=1:NPfun % function index
+    try
+        v=logPfuns{fix}(minit(:,wix));
+    catch ME
+        if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
+            v = -Inf; % could potentially change this to something like -50, but then
+            % if here integration tolerances are not met, an error is
+            % thrown. So we NEED integration tolerances to be met
+            % initially. This is because of the way things are compared
+            % in the future iterations, and accepted and rejected.
+            % Should be -Inf, but I have changed it to -20. in the
+            % later iterations, keep it at -Inf, so that any future
+            % integration tol errors also get rejected.
         end
-%         if islogical(valv)
-%             %reformulate function so that false=-inf for logical constraints.
-%             v=-1/valv;currfun=@(m)-1/currfun(m);
-%             %experimental implementation of experimental feature
-%         end
-%         logP(fix,wix,1)=v;
-        
-    %end
+    end
+    if islogical(v)
+        %reformulate function so that false=-inf for logical constraints.
+        v=-1/v;logPfuns{fix}=@(m)-1/logPfuns{fix}(m);
+        %experimental implementation of experimental feature
+    end
+    logP(fix,wix,1)=v;
 end
-toc
-tic
-disp(['Parallel compute of initial position residuals using ' num2str(Nwalkers) ' walkers.']);
-fix = 2;
-currfun = logPfuns{fix};
-parfor wix=1:Nwalkers % walker index
-    %for fix=1:NPfun % function index
+
+
+
+
+
+parfor wix=2:Nwalkers % walker index
+    for fix=1:NPfun % function index
         try
-           
-            logP(fix,wix,1)=currfun(minit(:,wix));
+            logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
         catch ME
             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
                 logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
@@ -201,11 +186,12 @@ parfor wix=1:Nwalkers % walker index
                 % Should be -Inf, but I have changed it to -20. in the
                 % later iterations, keep it at -Inf, so that any future
                 % integration tol errors also get rejected. 
+            else
+                error('what happened?')
             end
         end
-        
-        
-    %end
+
+    end
 end
 toc
 disp(['End of initial parallel computations, with exit code ' ...

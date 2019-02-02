@@ -13,7 +13,7 @@
 % circuit with model 
 % 
 % D + pol <-> D__pol  (kfdG, krdG)
-% D__pol -> D + pol + protien (kcp)
+% D__pol -> D + pol + protien v(kcp)
 %
 % and the tetR repression circuit with model
 %
@@ -46,10 +46,12 @@
 % where the actual results are stored. If the top level directory
 % (proj_mcmc_tutorial_III) already exists, then only the subdirectory is
 % created. 
-delete(gcp('nocreate'));
-parpool(48);
-[tstamp, projdir, st] = project_init;
 
+[tstamp, projdir, st] = project_init;
+prevtstamp = '20190201_170033'
+
+ delete(gcp('nocreate'))
+ parpool(46)
 %% Define the MATLAB Simbiology model 
 % We use the file model_protein3.m to define a constitutive gene expression 
 % model using a single enzymatic step. 
@@ -140,40 +142,43 @@ ri = mcmc_info.runsim_info;
 
 mai = mcmc_info.master_info;
 
+specificprojdir = [projdir '/simdata_' prevtstamp];
 
+% load mcmc_info    and the updated model_info
+SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
 
-% get info from a previous run to initialize. 
+marray = mcmc_get_walkers({prevtstamp}, ...
+    {ceil((SS.mcmc_info.runsim_info.nIter)/4):(SS.mcmc_info.runsim_info.nIter)},...
+    projdir);
+% assume the projdir where this data is stored is the same one as the
+% one created at the start of this file
 
-
-
-    specificprojdir = [projdir '/simdata_' '20190131_064508'];
-
-    % load mcmc_info    and the updated model_info
-    SS = load([specificprojdir '/full_variable_set_20190131_064508'], 'mcmc_info');
-
-    marray = mcmc_get_walkers({'20190131_064508'}, {SS.mcmc_info.runsim_info.nIter},...
-        projdir); 
-    % assume the projdir where this data is stored is the same one as the
-    % one created at the start of this file
-    
-    
-    pID = 1:length(mai.estNames);
-    marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
-    if size(marray_cut, 2) < ri.nW
-        error('too few initial points');
-    elseif size(marray_cut, 2) > ri.nW
-        marray_cut = marray_cut(:,1:ri.nW, :);
+%%
+pID = 1:length(mai.estNames);
+marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
+if size(marray_cut, 2) < ri.nW
+    warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+    walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/4, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+    minit = marray_cut(:,:, walker_timepoints(1));
+    for i = 2:length(walker_timepoints)
+        minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
     end
+    minit = minit(:, 1:ri.nW);
+else % there are enough points, just pick the number needed. 
+    minit = marray_cut(:,1:ri.nW,end);
+end
 
+%%
 
 % now run the simulation. 
 mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-   'UserInitialize', marray_cut(:,:,end), 'multiplier', 2,...
+   'UserInitialize', minit, 'multiplier', 2,...
    'pausemode', false); 
-% 
+
 % mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
-%    'InitialDistribution','UserInitialize', marray_cut(:,:,end), 2,...
-%    'pausemode', false); 
+%    'InitialDistribution', 'LHS', 'multiplier', 2,...
+%    'pausemode', true); 
+
 % 'InitialDistribution', 'gaussian'
 % 
 %%  plot stuff 
@@ -182,35 +187,35 @@ mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
 % saved in the timestamped subdirectory of the directory specified in
 % projdir. You can open that directory to view the results, including a log
 % file. 
-
-tstamptouse = tstamp; 
-marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
-
-% plot parameter distribution corner plot, and markov chains. 
-mcmc_plot(marray, mai.estNames,...
-    'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse,...
-    'extrafignamestring', '_tutorialIII');
-
-% plot individual trajectories of the data and the model fits for both
-% models. 
-titls = {'dG 10';'dG 30';'dG 60';};
-lgds = {};
-mvarray = masterVecArray(marray, mai);
-marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
-fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_contgfp');
-marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
-titls = {'dG 10 dT 0.1';'dG 30 dT 0.1';'dG 10 dT 2';'dG 30 dT 2';...
-    'dG 10 dT 8';'dG 30 dT 8';};
-fhandle = mcmc_trajectories(mi(2).emo, di(2), mi(2), marrayOrd,...
-    titls, lgds,...
-    'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
-    'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
-    '_tetRrep');
+% 
+% tstamptouse = tstamp; 
+% marray = mcmc_get_walkers({tstamptouse}, {1:ri.nIter}, projdir);
+% 
+% % plot parameter distribution corner plot, and markov chains. 
+% mcmc_plot(marray, mai.estNames,...
+%     'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse,...
+%     'extrafignamestring', '_tutorialIII');
+% 
+% % plot individual trajectories of the data and the model fits for both
+% % models. 
+% titls = {'dG 10';'dG 30';'dG 60';};
+% lgds = {};
+% mvarray = masterVecArray(marray, mai);
+% marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx, 1),:,:);
+% fhandle = mcmc_trajectories(mi(1).emo, di(1), mi(1), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_contgfp');
+% marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx, 1),:,:);
+% titls = {'dG 10 dT 0.1';'dG 30 dT 0.1';'dG 10 dT 2';'dG 30 dT 2';...
+%     'dG 10 dT 8';'dG 30 dT 8';};
+% fhandle = mcmc_trajectories(mi(2).emo, di(2), mi(2), marrayOrd,...
+%     titls, lgds,...
+%     'SimMode', 'curves', 'savematlabfig', true, 'savejpeg', true,...
+%     'projdir', projdir, 'tstamp', tstamptouse, 'extrafignamestring',...
+%     '_tetRrep');
 
 %  Vipul Singhal, 
 %  California Institute of Technology
