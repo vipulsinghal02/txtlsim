@@ -1,4 +1,4 @@
-function IP = sbiointegrable(m, pv, pn, ds)
+function IP = sbiointegrable(m, pv, pn, ds, parllel)
 %SBIOINTEGRABLE Check integrability of model on a list of specified parameter
 %points
 %
@@ -32,7 +32,7 @@ else
 end
 
 
-parllel = false; % in the future enable this as an argument 
+% parllel = false; % in the future enable this as an argument 
 
 if all(isfield(ds, {'species', 'concentrations'}))
 %     dstype = 1; % type 1 dosing strategy is the usual type we use in the top level file

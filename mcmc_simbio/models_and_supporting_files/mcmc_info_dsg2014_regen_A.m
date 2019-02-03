@@ -191,6 +191,9 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
     % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
     % fixedParams vector
     fixedParamsIX =  setdiff((1:26)', estParamsIX);
+    
+    % since activeNames2 is a superset of activeNames1, we can just use
+    % activeNames2 as the master vector. 
     masterVector = zeros(length(activeNames2), 1); % log transformed. 
     
     % paramMap is a matrix mapping the parameters in the master vector to the 

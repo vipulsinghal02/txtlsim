@@ -37,7 +37,8 @@ tstamp = datestr(now, 'yyyymmdd_HHMMSS');
 
 % get the optional input (the name of the directory where things will be stored)
 p = inputParser;
-addOptional(p, 'proj', projname, @ischar); % 
+addParameter(p, 'proj', projname, @ischar); % 
+addParameter(p, 'saveStr', tstamp, @ischar); % 
 p.parse(varargin{:});
 p=p.Results;
 specificprojdir = [projdir '/' p.proj];
@@ -52,20 +53,20 @@ disp(sprintf('Timestamp for this run (yyyymmdd_HHMMSS): \n ''%s'' \n', tstamp))
 % check if the project directory already exists, and create it if it doesnt. 
 if exist( specificprojdir ,'dir')
     disp(sprintf(['Project directory already exists, using this to store data\n' ...
-     ' (in a subdirectory named ''%s''). \n'], ['simdata_' tstamp]));
+     ' (in a subdirectory named ''%s''). \n'], ['simdata_' p.saveStr]));
     
     addpath(specificprojdir);
     addpath(genpath(specificprojdir)); 
     rmpath(genpath(specificprojdir));
-    mkdir([specificprojdir '/simdata_' tstamp]);
-    addpath([specificprojdir '/simdata_' tstamp]);
+    mkdir([specificprojdir '/simdata_' p.saveStr]);
+    addpath([specificprojdir '/simdata_' p.saveStr]);
 else
     mkdir(specificprojdir);
-    mkdir([specificprojdir '/simdata_' tstamp]);
-    addpath([specificprojdir '/simdata_' tstamp]);
+    mkdir([specificprojdir '/simdata_' p.saveStr]);
+    addpath([specificprojdir '/simdata_' p.saveStr]);
     disp(sprintf(['Project directory does not exist. Creating it,' ...
     ' and using this to store data\n' ...
-     ' (in a subdirectory named ''%s''). \n'], ['simdata_' tstamp]));
+     ' (in a subdirectory named ''%s''). \n'], ['simdata_' p.saveStr]));
 
 end
 disp(sprintf('############################################ \n'))

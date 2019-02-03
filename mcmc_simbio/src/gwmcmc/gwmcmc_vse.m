@@ -144,7 +144,7 @@ NPfun=numel(logPfuns);
 % timesteps we choose to keep
 logP=nan(NPfun,Nwalkers,Nkeep);    
 
-<<<<<<< HEAD
+
 wix = 1;
 for fix=1:NPfun % function index
     try

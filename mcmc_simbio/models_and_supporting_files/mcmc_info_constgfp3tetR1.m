@@ -201,7 +201,8 @@ msIx2 = 1;
 % ans =
 % 
 %    1.6505e+04
-% so overall we have 1.6 x 10^5 as the data number. stdev of 1e2 makes
+% so overall we have 1.6 x 10^5 as the full signal magnitude (this is assuming 
+% no dose or topology reweighting). stdev of 1e2 makes
 % a factor of 1000 or 0.1% as the noise model. 
 % lets try this. I tired 1x10^4, this led to extremely broad distributions
 % and loose fits. That is fine for a start -- high 'temperature'. 

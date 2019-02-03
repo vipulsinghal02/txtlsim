@@ -27,7 +27,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     p.addParameter('distribution', 'LHS', @ischar)
     p.addParameter('width', .001, @isnumeric)
 
-    p.addParameter('Parallel',false,@islogical);
+    p.addParameter('Parallel',true,@islogical);
     p.parse(varargin{:});
 
     p = p.Results;
@@ -140,7 +140,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
             % 2 = unknown error. 
             % 
             tic
-            IP = sbiointegrable(mi(i).emo, minitTopoGeom, mi(i).namesOrd, ds);
+            IP = sbiointegrable(mi(i).emo, minitTopoGeom, mi(i).namesOrd, ds, p.Parallel);
             toc
             IP = IP'; % make IP nDoses x npts 
 
