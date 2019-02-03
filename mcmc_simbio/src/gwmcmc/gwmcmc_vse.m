@@ -76,7 +76,7 @@ function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 %
 % References:
 % Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. 
-% App. Math. Comp. Sci., Vol. 5, No. 1, 65ï¿½80
+% App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
 % Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 %
 % WebPage: https://github.com/grinsted/gwmcmc
@@ -142,8 +142,9 @@ NPfun=numel(logPfuns);
 %calculate logP state initial pos of walkers
 % logP is the result of the function(s) evaluation(s) for all walkers, at all
 % timesteps we choose to keep
-logP=nan(NPfun,Nwalkers,Nkeep); 
+logP=nan(NPfun,Nwalkers,Nkeep);    
 
+<<<<<<< HEAD
 wix = 1;
 for fix=1:NPfun % function index
     try
@@ -190,12 +191,8 @@ parfor wix=2:Nwalkers % walker index
                 error('what happened?')
             end
         end
-
     end
 end
-toc
-disp(['End of initial parallel computations, with exit code ' ...
-    num2str(~all(all(isfinite(logP(:,:,1)))))]);
 
 if ~all(all(isfinite(logP(:,:,1))))
     error('Starting points for all walkers must have finite logP')
@@ -209,10 +206,7 @@ totcount=Nwalkers;
 % preallocate matrix to store parameter values that could not get simulated
 % non_integrable_m = nan(M, Nwalkers, Nkeep*p.ThinChain);
 for row=1:Nkeep
-    disp(['Step ' num2str(row) ' of ' num2str(Nkeep) '.'])  
-           
     for jj=1:p.ThinChain
-        
         %generate proposals for all walkers
         %(done outside walker loop, in order to be compatible with parfor - some penalty for memory):
         %-Note it appears to give a slight performance boost for non-parallel.
@@ -223,7 +217,6 @@ for row=1:Nkeep
         logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor
         % logrand is what we compare our computed log likelihood to. 
         totalcount = (row-1)*p.ThinChain+jj;
-        
         if p.Parallel
             %parallel/non-parallel code is currently mirrored in
             %order to enable experimentation with separate optimization
@@ -276,10 +269,6 @@ for row=1:Nkeep
                             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
 %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
-                                
-                            else
-                                disp('unknoen error')
-                                
                              end
 %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
 %                                 proposedlogP(fix) = -inf;
@@ -341,7 +330,7 @@ if (cputime-lasttime>0.1)
 
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
     progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'*') ''];
-    %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'ï¿½') ''];
+    %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'•') ''];
     %progressmsg=[uint8((1:40)<=(pct*40)).*'#' ''];
     curmtxt=sprintf('% 9.3g\n',curm(1:min(end,20),1));
     %curmtxt=mat2str(curm);

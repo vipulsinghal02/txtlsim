@@ -39,6 +39,7 @@ p = p.Results;
 %% initialize the directory where things are stored.
 [tstamp, projdir, st] = project_init;
 % data_init
+% proj_acs_dsg2014_regen_A('nW', 50, 'nPoints', 50*10*5, 'nIter', 5, 'parallel', false, 'multiplier', 2, 'thinning', 10)
 % proj_acs_dsg2014_regen_A('nW', 6400, 'nPoints', 6400*10*20, 'nIter', 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
 %% construct simbiology model object(s)
 mobj = model_dsg2014_regen;

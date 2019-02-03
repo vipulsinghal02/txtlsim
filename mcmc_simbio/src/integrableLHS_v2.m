@@ -27,6 +27,7 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     p.addParameter('distribution', 'LHS', @ischar)
     p.addParameter('width', .001, @isnumeric)
 
+    p.addParameter('Parallel',false,@islogical);
     p.parse(varargin{:});
 
     p = p.Results;
@@ -58,6 +59,9 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
         case 'LHS'
             lhsamp = lhsdesign(npts, nparam);
             lhsamp = lhsamp'; % nparam by npts matrix of LHS points
+            % Note that this is a npts dimensional hypercube, with sides
+            % from 0 to 1, excluding the edges. 
+            
             
             minit= ...
                 lhsamp.*(repmat(rpr(:, 2), 1, npts)-...
