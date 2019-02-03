@@ -179,14 +179,15 @@ else
     disp('Using temperature ladder for MCMC at the following temperatures.');
     tladder = tsig*[0.1 0.001, 0.00001]
     
-    percentLadder = {'10pct_', 'p1pct_', 'pt001pct_'};
+    percentLadder = {'10pct_', 'pt1pct_', 'pt001pct_'};
+    tstamp = datestr(now, 'yyyymmdd_HHMMSS');
     for ll = 1:length(tladder)
         %         tLaddStr = num2str(tladder(ll));
         %         if ~isempty(regexp(tLaddStr, '\.', 'ONCE'))
         %             dotLoc = regexp(tLaddStr, '\.');
         %             tLaddStr(dotLoc) = 'p';
         %         end
-        tstamp = datestr(now, 'yyyymmdd_HHMMSS');
+        
         tstamp_appended = [percentLadder{ll} tstamp];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
