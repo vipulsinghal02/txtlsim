@@ -252,14 +252,14 @@ msIx1 = 1; % this is the index of the measured species in the data array
 msIx2 = [1,2];
 
 %% setup the MCMC simulation parameters
-stdev = 1; % i have no idea what a good value is
+stdev = 100; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 50; % actual: 200 - 600 ish
+nW = 300; % actual: 200 - 600 ish
 stepsize = 1.5; % actual: 1.1 to 4 ish
-niter = 22; % actual: 2 - 30 ish,
-npoints = 1e3; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of 
+niter = 10; % actual: 2 - 30 ish,
+npoints = 1e4; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of 
 %                        params is small)
-thinning = 2; % actual: 10 to 40 ish
+thinning = 10; % actual: 10 to 40 ish
 
 %% pull all this together into an output struct. 
 

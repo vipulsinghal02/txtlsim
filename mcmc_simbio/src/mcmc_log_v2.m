@@ -1,4 +1,4 @@
-function mcmc_log_v2(tstamp,projdir,  savedir, mcmc_info, di, initialization_used)
+function mcmc_log_v2(tstamp,projdir,  savedir, mcmc_info, di, initialization_used, stepMultipliers, prevtstamp, temperature)
 % mcmc_log generate mcmc log text file. 
 %   This function generates a log file describing the mcmc run used to call
 %   it. Inputs are the timestamp string: tstamp, the savedir string, ie, which 
@@ -44,7 +44,8 @@ fprintf(fileID,'tightening: %4.2f \n', ri.tightening);
 fprintf(fileID,'number of repeats: %d \n', ri.nIter);
 fprintf(fileID,'thinning: %d \n', ri.thinning);
 fprintf(fileID,'points per iter: %d \n', ri.nPoints);
-
+fprintf(fileID,['step size ladder was: ' num2str(stepMultipliers) '\n']);
+fprintf(fileID,'prevtstamp: %s \n', prevtstamp);
 
 for i = 1:length(mi)
     %% Circuit description
