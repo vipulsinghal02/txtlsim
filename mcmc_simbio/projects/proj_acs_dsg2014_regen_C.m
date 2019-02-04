@@ -1,9 +1,12 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_A(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_C(varargin)
 % proj_acs_dsg2014
 % In this project, we fit RNA degradation and mRNA expression to data from
 % the paper
 % Gene Circuit Performance Characterization and Resource Usage in a Cell-Free “Breadboard”
 % ACS Synth. Biol., 2014, 3 (6), pp 416–425, DOI: 10.1021/sb400203p,
+% 
+% This file differs from proj_acs_dsg2014_regen_A in that the forward rate
+% parameters are all fixed. 
 
 % Vipul Singhal,
 % California Institute of Technology
@@ -20,7 +23,7 @@ p.addParameter('parallel', true);
 p.addParameter('stdev', 1);
 p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multipliers for the 
+p.addParameter('stepLadder', linspace(1.5, 1, 3), @isnumeric); % A vector of multipliers for the 
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed. 
 % if stepLadder is specified, the multiplier is automatically set to 1. 
@@ -32,13 +35,13 @@ p.parse(varargin{:});
 p = p.Results;
 
 % data_init
-% proj_acs_dsg2014_regen_A('nW', 50, 'nPoints', 50*10*5, 'nIter', 5, 'parallel', false, 'multiplier', 2, 'thinning', 10)
-% proj_acs_dsg2014_regen_A('nW', 6400, 'nPoints', 6400*10*20, 'nIter', 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
+% proj_acs_dsg2014_regen_C('nW', 50, 'nPoints', 50*10*5, 'nIter', 5, 'parallel', false, 'multiplier', 2, 'thinning', 10)
+% proj_acs_dsg2014_regen_C('nW', 6400, 'nPoints', 6400*10*20, 'nIter', 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
 %% construct simbiology model object(s)
 mobj = model_dsg2014_regen;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_dsg2014_regen_A(mobj);
+mcmc_info = mcmc_info_dsg2014_regen_C(mobj);
 
 mi = mcmc_info.model_info;
 
@@ -164,7 +167,7 @@ if islogical(p.temperatureLadder)
         if isempty(p.prevtstamp)
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                    'stepLadder', p.stepLadder);
+                'stepLadder', p.stepLadder);
         else
             specificprojdir = [projdir '/simdata_' p.prevtstamp];
             SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
@@ -217,7 +220,7 @@ if islogical(p.temperatureLadder)
                 if isempty(p.prevtstamp)
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                    'stepLadder', p.stepLadder);
+                        'stepLadder', p.stepLadder);
                 else
                     specificprojdir = [projdir '/simdata_' p.prevtstamp];
                     SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
@@ -357,21 +360,21 @@ end
 
 % copy paste into the terminal if using matlab with no display.
 % make sure these stay commented!!!
-% proj_acs_dsg2014_regen_A('stepSize', 1.3, 'nW', 1000, 'nPoints', 100*1000,...
+% proj_acs_dsg2014_regen_C('stepSize', 1.3, 'nW', 1000, 'nPoints', 100*1000,...
 %     'thinning', 2, 'nIter', 2, 'parallel', true, 'poolsize', 4, 'temperatureLadder', true)
 %
-% proj_acs_dsg2014_regen_A('stepSize', 1.4, 'nW', 16*3200, 'nPoints', ...
+% proj_acs_dsg2014_regen_C('stepSize', 1.4, 'nW', 16*3200, 'nPoints', ...
 %     16*3200*10*10, 'thinning', 1, 'nIter', 5, 'parallel', true, ...
 %     'poolsize', 48, 'temperatureLadder', true)
 
-% proj_acs_dsg2014_regen_A('stepSize', 1.2, 'nW', 800, 'nPoints', ...
+% proj_acs_dsg2014_regen_C('stepSize', 1.2, 'nW', 800, 'nPoints', ...
 %     800*10*20, 'thinning', 1, 'nIter', 10, 'parallel', true, ...
 %     'poolsize', 23, 'temperatureLadder', [0.5, 0.005 0.05 0.0005 0.005 0.00005],...
 %     'stepLadder', linspace(2, 1, 5))
 % 
-% proj_acs_dsg2014_regen_A('stepSize', 1.2,...
+% proj_acs_dsg2014_regen_C('stepSize', 1.2,...
 %     'nW', 50,...
-%     'nPoints', 10*3,...
+%     'nPoints', 10*50,...
 %     'thinning', 1,...
 %     'nIter', 4,...
 %     'parallel', true, ...
