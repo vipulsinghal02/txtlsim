@@ -154,39 +154,42 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_C(modelObj)
     % setting the rna deg parameters. 
     %%
     
-    activeNames1 = {...
-        'TXTL_RNAdeg_Kd'                    2000        [100 10000]
-        'TXTL_RNAdeg_F'                     0.02        [0.01 100]
-        'TXTL_RNAdeg_kc'                    0.0028      [1e-4 1]
-        'RNase'                             100         [10 1000]}; 
+
     activeNames2 = {...
         'TX_elong_glob'                     10.5       [0.5 100]     %1
         'AGTPdeg_time'                      7200        [1800 42000]
         'AGTPdeg_rate'                      0.0002      [1e-5 1e-2]
         'AGTPreg_ON'                        0.02        [0.005 0.2]   %4
         'TXTL_P70_RNAPbound_Kd'             20          [10 1e6]
-        'TXTL_P70_RNAPbound_F'              20          [1e-5 100]
+        'TXTL_P70_RNAPbound_F'              20          [1e-3 100]
         'TXTL_RNAPBOUND_TERMINATION_RATE'   0.15        [1e-4 10]    %7
         'TXTL_NTP_RNAP_1_Kd'                100000      [10 1e8]
-        'TXTL_NTP_RNAP_1_F'                 0.0001      [1e-7 10]
+        'TXTL_NTP_RNAP_1_F'                 5      [1e-3 100]
         'TXTL_NTP_RNAP_2_Kd'                1e6         [10 1e8]     %10
-        'TXTL_NTP_RNAP_2_F'                 1e-5        [1e-7 10]
+        'TXTL_NTP_RNAP_2_F'                 5        [1e-3 100]
         'TXTL_RNAdeg_Kd'                    2000        [100 10000]
-        'TXTL_RNAdeg_F'                     0.01        [0.1 1000]
+        'TXTL_RNAdeg_F'                     5        [0.1 100]
         'TXTL_RNAdeg_kc'                    0.0028      [1e-4 1]    %14
         'RNAP'                              100         [5 500]
         'RNase'                             100         [10 1000]
         'TL_elong_glob'                     20          [4 200]        %17         
         'TXTL_PROT_deGFP_MATURATION'        0.0023      [0.0002 0.02]
         'TXTL_UTR_UTR1_Kd'                  20          [0.05 1e5]
-        'TXTL_UTR_UTR1_F'                   0.2         [1e-5 10]     %20
+        'TXTL_UTR_UTR1_F'                   5         [1e-3 100]     %20
         'TL_AA_Kd'                          100000      [10 1e8]      
-        'TL_AA_F'                           0.001       [1e-5 20]
+        'TL_AA_F'                           5       [1e-3 100]
         'TL_AGTP_Kd'                        100000      [1e2 1e8]   %23
-        'TL_AGTP_F'                         1e-5        [1e-7 1]
+        'TL_AGTP_F'                         5        [1e-3 100]
         'TXTL_RIBOBOUND_TERMINATION_RATE'   40          [0.1 2000]
         'Ribo'                              30          [5 1000]}; 
-        
+    activeNames1 = activeNames2([12:14 16],:)
+    
+    
+%     {...
+%         'TXTL_RNAdeg_Kd'                    2000        [100 10000]
+%         'TXTL_RNAdeg_F'                     0.01        [0.01 100]
+%         'TXTL_RNAdeg_kc'                    0.0028      [1e-4 1]
+%         'RNase'                             100         [10 1000]};         
         
         
                 
