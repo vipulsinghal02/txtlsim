@@ -1,3 +1,7 @@
+% Explore all the data collected on AWS (m5, c5 instances, usually 4x, 
+% 12x and 24x large) and on the local machine (Mac Book Pro, mid 2015, 
+% quad core 15 inch, academic individual license)
+
 %% Sim set 1: 24 core machine (m5.12xlarge)
 % Explore the simulations from the 24 core machine, where we used 3200
 % walkers.
@@ -7,9 +11,6 @@ projdir = [pwd '/mcmc_simbio/projects/proj_acs_dsg2014_regen_A'];
 marray = mcmc_get_walkers({tstamptouse1, tstamptouse2}, {1:16, 1:13}, projdir);
 
 msubsamp = marray(:, 1:100:end, :);
-
-
-
 % 
 % load([projdir...
 %     '/simdata_' tstamptouse1 '/full_variable_set_' tstamptouse1], 'mi',...
@@ -45,7 +46,6 @@ parnames = ...
 mcmc_plot(msubsamp(1:10, :,:), parnames(1:10),...
     'savematlabfig', false, 'savejpeg', false,...
     'projdir', projdir, 'tstamp', ['20190203_173126']);
-
 
 %% 
 mfinal = marray(:,1:10:end,(end-20):end);
