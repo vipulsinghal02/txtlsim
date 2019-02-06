@@ -81,7 +81,7 @@ p.addParameter('UserInitialize', [], @isnumeric)
 p.addParameter('FitOption', 'FitMedian', @ischar); % 'FitMean', 'FitAll'
 p.addParameter('pausemode', false, @islogical)
 p.addParameter('DoseNormalization', false, @islogical)
-p.addParameter('stepLadder', linspace(2, 1, 4), @(x) isnumeric(x) && isvector(x)); % A vector of multipliers for the
+p.addParameter('stepLadder', []); % A vector of multipliers for the
 % step size.
 % stepLadder: first half of the nIter get divided into sets of iterations
 % with
