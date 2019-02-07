@@ -11,6 +11,7 @@ function [mi,mai, ri, tstamp, projdir, di]  = proj_acs_dsg2014_regen_A(varargin)
 
 p = inputParser;
 p.addParameter('prevtstamp', []);
+p.addParameter('prevtstampID', []);
 p.addParameter('stepSize', 1.2);
 p.addParameter('nW', 800);
 p.addParameter('nPoints', 800*200);
@@ -168,8 +169,14 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
         else
             specificprojdir = [projdir '/simdata_' p.prevtstamp];
             SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
-            marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
-                projdir);
+            if isempty(p.prevtstampID)
+                marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+                    projdir);
+            else
+                marray = mcmc_get_walkers({p.prevtstamp}, {p.prevtstampID},...
+                    projdir);
+            end
+            
             % assume the projdir where this data is stored is the same one as the
             % one created at the start of this file
             
@@ -221,8 +228,13 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 else
                     specificprojdir = [projdir '/simdata_' p.prevtstamp];
                     SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
-                    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
-                        projdir);
+                    if isempty(p.prevtstampID)
+                        marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+                            projdir);
+                    else
+                        marray = mcmc_get_walkers({p.prevtstamp}, {p.prevtstampID},...
+                            projdir);
+                    end
                     % assume the projdir where this data is stored is the same one as the
                     % one created at the start of this file
                     
@@ -248,8 +260,10 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 %                 prevtstamp = [percentLadder{ll-1} tstamp];
                 specificprojdir = [projdir '/simdata_' prevtstamp];
                 SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
-                marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+                
+                marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                     projdir);
+                
                 % assume the projdir where this data is stored is the same one as the
                 % one created at the start of this file
                 
@@ -305,8 +319,17 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 % directory as the projdir for this project.
                 specificprojdir = [projdir '/simdata_' p.prevtstamp];
                 SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
-                marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
-                    projdir);
+                if isempty(p.prevtstampID)
+                    marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+                        projdir);
+                else
+                    marray = mcmc_get_walkers({p.prevtstamp}, {p.prevtstampID},...
+                        projdir);
+                end
+                
+                
+%                 marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
+%                     projdir);
                 pID = 1:length(mai.estNames);
                 marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
                 if size(marray_cut, 2) < ri.nW
