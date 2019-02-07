@@ -71,6 +71,8 @@ end
 if ~isempty(p.parallel)
     mcmc_info.runsim_info.parallel = p.parallel;
 end
+
+
 if mcmc_info.runsim_info.parallel
     if ~isempty(p.poolsize)
         delete(gcp('nocreate'))

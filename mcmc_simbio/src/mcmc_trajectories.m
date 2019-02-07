@@ -719,7 +719,6 @@ end
 
 end
 
-
 function datamax = computeMaxes(summst, spreadst, dispmode, dimensionLabels)
 [tD, mD, dD, rD] = dimensionLabelMaps(dimensionLabels);
 

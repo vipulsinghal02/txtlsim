@@ -80,7 +80,7 @@ tube1 = txtl_extract('Emcmc2018');
 tube2 = txtl_buffer('Emcmc2018');
 tube3 = txtl_newtube('gene_expression');
 txtl_add_dna(tube3, ...
-  'p70(50)', 'utr1(20)', 'deGFP(1000)', 20, 'plasmid');	
+  'p70(50)', 'utr1(20)', 'deGFP(1000)', 0, 'plasmid');	
 m = txtl_combine([tube1, tube2, tube3]);
 m.UserData.energymode = 'regeneration';
 %% MOST LIKELY YOU WILL NOT NEED TO TOUCH THIS SECTION
