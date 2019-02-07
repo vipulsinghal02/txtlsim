@@ -25,7 +25,7 @@ p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multi
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 
-p.addParameter('temperatureLadder', [0.5, 0.005 0.05 0.0005 0.005 0.00005]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.1 0.01]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
