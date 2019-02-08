@@ -25,7 +25,7 @@ p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multi
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
-
+p.addParameter('literalStepLadder', false)
 p.addParameter('temperatureLadder', [0.1 0.01]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
@@ -167,7 +167,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
         if isempty(p.prevtstamp)
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                'stepLadder', p.stepLadder);
+                'stepLadder', p.stepLadder,...
+                'literalStepLadder', p.literalStepLadder);
         else
             specificprojdir = [projdir '/simdata_' p.prevtstamp];
             SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
@@ -199,7 +200,9 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 2,...
-                'pausemode', false, 'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp);
+                'pausemode', false, 'stepLadder', p.stepLadder,...
+                'prevtstamp', p.prevtstamp,...
+                'literalStepLadder', p.literalStepLadder);
         end
     else % if p.temperatureLadder is true
         % begin temperature ladder: Initial temp is 10% of the total signal
@@ -226,7 +229,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 if isempty(p.prevtstamp)
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                        'stepLadder', p.stepLadder);
+                        'stepLadder', p.stepLadder,...
+                        'literalStepLadder', p.literalStepLadder);
                 else
                     specificprojdir = [projdir '/simdata_' p.prevtstamp];
                     SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
@@ -256,7 +260,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     % now run the simulation.
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'UserInitialize', minit, 'multiplier', 1, ...
-                        'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp);
+                        'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
+                        'literalStepLadder', p.literalStepLadder);
                 end
             else % subsequent temperatures. 
                 %                 prevtstamp = [percentLadder{ll-1} tstamp];
@@ -275,7 +280,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp);
+                    'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
+                    'literalStepLadder', p.literalStepLadder);
             end
             % define tstamp for the next iter.
             prevtstamp = tstamp_appended;
@@ -314,7 +320,8 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
             if isempty(p.prevtstamp)
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                    'stepLadder', p.stepLadder);
+                    'stepLadder', p.stepLadder,...
+                    'literalStepLadder', p.literalStepLadder);
             else
                 % a previous time stamp IS provided, use it as a starting
                 % point. The data for that time stamp must be in the same
@@ -348,7 +355,8 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp);
+                    'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
+                    'literalStepLadder', p.literalStepLadder);
             end
         else
             % get the final location of the walkers from the previous
@@ -366,7 +374,8 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
             % now run the simulation.
             mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 1,...
-                'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp);
+                'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
+                'literalStepLadder', p.literalStepLadder);
         end
         % define tstamp for the next iter.
         prevtstamp = tstamp_appended;

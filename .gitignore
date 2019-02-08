@@ -92,3 +92,4 @@ Thumbs.db
 # MATLAB Crash Dumps #
 ######################
 Crash_logs_*/
+manual_txtlsim_parameters.m

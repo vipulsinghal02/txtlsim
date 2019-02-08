@@ -86,6 +86,7 @@ p.addParameter('stepLadder', []); % A vector of multipliers for the
 % stepLadder: first half of the nIter get divided into sets of iterations
 % with
 % if stepLadder is specified, the multiplier is automatically set to 1.
+p.addParameter('literalStepLadder', true)
 p.addParameter('multiplier', 1, @isnumeric); % every 10 iterations,
 % the stepsize is multiplied by this number. Set it to something like 2 or 4
 % in the hope that the walkers
@@ -283,11 +284,16 @@ save([specificproj '/' fname]);
 % run the actual simuations, saving the data every iteration
 stepMultipliers = ones(1, ri.nIter);
 if ~isempty(p.stepLadder)
-    numItersPerStep = round(ri.nIter/(2*length(p.stepLadder)));
-    for ii = 1:length(p.stepLadder)
-        ixToSet = (((ii-1)*numItersPerStep)+1):(ii*numItersPerStep);
-        stepMultipliers(ixToSet) = p.stepLadder(ii);
+    if p.literalStepLadder
+        stepMultipliers = p.stepLadder;
+    else
+        numItersPerStep = round(ri.nIter/(2*length(p.stepLadder)));
+        for ii = 1:length(p.stepLadder)
+            ixToSet = (((ii-1)*numItersPerStep)+1):(ii*numItersPerStep);
+            stepMultipliers(ixToSet) = p.stepLadder(ii);
+        end
     end
+
 end
 
 
