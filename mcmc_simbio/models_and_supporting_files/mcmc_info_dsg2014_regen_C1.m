@@ -234,11 +234,11 @@ circuitInfo2 = ...
     dosedNames1 = {'RNA utr1--deGFP'};
     dosedVals1 = [37.5 75 150 200 600 700 800 900 1000];
 %     dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
-    doseWeights1 = ones(seze(dosedVals1)); %dtempvec/(sum(dtempvec));
+    doseWeights1 = ones(size(dosedVals1)); %dtempvec/(sum(dtempvec));
     dosedNames2 = {'DNA p70--utr1--deGFP'};
     dosedVals2 = [0.5 2 5 20];
 %     dtempvec = sqrt(dosedVals2(end)*(ones(size(dosedVals2))./dosedVals2)).*dosedVals2;
-    doseWeights2 = ones(seze(dosedVals2)); %dtempvec/(sum(dtempvec));
+    doseWeights2 = ones(size(dosedVals2)); %dtempvec/(sum(dtempvec));
     %% create the measured species cell array
     % remember to change this! esp the 2AGTP.
     measuredSpecies1 = {{'[RNA utr1--deGFP]',...
