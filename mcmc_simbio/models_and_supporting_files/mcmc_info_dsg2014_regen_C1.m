@@ -165,7 +165,7 @@ circuitInfo2 = ...
     activeNames2 = {... % changes made to ranges on feb 8, 2019. setting parameters based on 
         ...% posterior plots. 
         'TX_elong_glob'                     10.5       [0.5 300]        % 1
-        'AGTPdeg_time'                      exp(9.57)   [1800 42000] % set to exp(9.57)
+        'AGTPdeg_time'                      exp(9.57)   [1800 42000] % DO NOT FIX THIS. 
         'AGTPdeg_rate'                      0.0002      [1e-5 1e-2] % set from before
         'AGTPreg_ON'                        0.02        [0.005 0.2]        %4 % set from before
         'TXTL_P70_RNAPbound_Kd'             200         [0.1 1e6]  % 
@@ -196,7 +196,7 @@ circuitInfo2 = ...
     
     %%
     % Names of parameters and species to actually estimate.
-    estParamsIX = [1 5 7 8 10 12 15 16 17 19 21 23 25 26]';
+    estParamsIX = [1 2 5 7 8 10 12 15 16 17 19 21 23 25 26]';
     estParams = activeNames2(estParamsIX,1);
     % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
     % fixedParams vector
