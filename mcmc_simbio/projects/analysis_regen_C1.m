@@ -380,29 +380,30 @@ found1 = [       5.5354
 %     {'TL_AA_Kd'                       }
 %     {'TL_AA_F'                        }  
 %     {'TL_AGTP_Kd'                     }
-%     {'TL_AGTP_F'                      }    
+%     {'TL_AGTP_F'                      }  
+%     {'TXTL_PROT_deGFP_MATURATION'     }
 % are fixed at the values above. 
 
 % 1. The minimal sim (regen_D) 
-% also fix the remaining rna deg params
+% also fix:
 %     {'TXTL_RNAdeg_Kd'                 }
-%     {'TXTL_RNAdeg_kc'                 }
-%     {'RNase'                          }
 % and the AGTP params:
 %     {'AGTPdeg_time'                   }
 %     {'AGTPdeg_rate'                   }
 % leaving only 
 
+
+%     {'TXTL_RNAdeg_kc'                 }
+%     {'RNase'                          }
 %     {'TX_elong_glob'                  }
 %     {'TXTL_P70_RNAPbound_Kd'          }
 %     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
 %     {'RNAP'                           }
 %     {'TL_elong_glob'                  }
-%     {'TXTL_PROT_deGFP_MATURATION'     }
 %     {'TXTL_UTR_UTR1_Kd'               }
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
-% 9 parameters to estimate. THIS. could be beautiful. 
+% 10 parameters to estimate. 
 % can do this for both acsdsg and vnprl (vnprl has only 30nM ish for rna
 % production. everything else is about the same, maybe use the figure in
 % that paper to also scale the protein production levels by the one hour
@@ -419,14 +420,13 @@ found1 = [       5.5354
 %     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
 %     {'RNAP'                           }
 %     {'TL_elong_glob'                  }
-%     {'TXTL_PROT_deGFP_MATURATION'     }
 %     {'TXTL_UTR_UTR1_Kd'               }
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
 %     {'TXTL_RNAdeg_Kd'                 }
 %     {'TXTL_RNAdeg_kc'                 }
 %     {'RNase'                          }
-% 12 parameters to estimate. RNA deg here allows the algorithm to tune the RNA timescale.  
+% 11 parameters to estimate. RNA deg here allows the algorithm to tune the RNA timescale.  
 
 % 3. regen_F:
 % estimate all 14 remaining params:
@@ -437,14 +437,21 @@ found1 = [       5.5354
 %     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
 %     {'RNAP'                           }
 %     {'TL_elong_glob'                  }
-%     {'TXTL_PROT_deGFP_MATURATION'     }
 %     {'TXTL_UTR_UTR1_Kd'               }
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
 %     {'TXTL_RNAdeg_Kd'                 }
 %     {'TXTL_RNAdeg_kc'                 }
 %     {'RNase'                          }
-% 12 parameters to estimate. RNA deg here allows the algorithm to tune the RNA timescale.  
+
+
+% regen_G: (rna deg topology removed. 
+%     {'TX_elong_glob'                  }
+%     {'TXTL_P70_RNAPbound_Kd'          }
+%     {'RNAP'                           }
+%     {'TL_elong_glob'                  }
+%     {'TXTL_UTR_UTR1_Kd'               }
+%     {'Ribo'                           }
 
 % Do all of these at c5.9xlarge or m5.24xlarge, with step 1.18, temperature 0.001, 1200
 % walkers, and 20 iter at 100*1200 points per iter. 

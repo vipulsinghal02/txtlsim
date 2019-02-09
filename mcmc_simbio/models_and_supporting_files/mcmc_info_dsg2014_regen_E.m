@@ -1,4 +1,4 @@
-function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_D(modelObj)
+function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_E(modelObj)
 % from regen_A1, with the parameters with posterior distributions that are
 % very flat set to some value in that flat distribution. The psoterior
 % distirbutions used are from the parameter set "case 4" in
@@ -156,29 +156,28 @@ circuitInfo2 = ...
 %     {'TXTL_PROT_deGFP_MATURATION'     }
 % are fixed at the values above. 
 
-% 1. The minimal sim (regen_D) 
-% also fix:
-%     {'TXTL_RNAdeg_Kd'                 }
-% and the AGTP params:
+% 2. regen_E:
+% fix the AGTP params:
 %     {'AGTPdeg_time'                   }
 %     {'AGTPdeg_rate'                   }
 % leaving only 
 
-
-%     {'TXTL_RNAdeg_kc'                 }
-%     {'RNase'                          }
 %     {'TX_elong_glob'                  }
 %     {'TXTL_P70_RNAPbound_Kd'          }
 %     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
+%     {'TXTL_RNAdeg_Kd'                 }
+%     {'TXTL_RNAdeg_kc'                 }
+%     {'RNase'                          }
 %     {'RNAP'                           }
 %     {'TL_elong_glob'                  }
 %     {'TXTL_UTR_UTR1_Kd'               }
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
-% 10 parameters to estimate.
+% 11 parameters to estimate. RNA deg here allows the algorithm to tune the RNA timescale.  
+
     %%
     % Names of parameters and species to actually estimate.
-    estParamsIX = [1 5 7 14 15 16 17 19 25 26]';
+    estParamsIX = [1 5 7 12 14 15 16 17 19 25 26]';
     estParams = activeNames2(estParamsIX,1);
     % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
     % fixedParams vector
