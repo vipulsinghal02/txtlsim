@@ -218,17 +218,16 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
     % vector)
     paramRanges = log(cell2mat(activeNames2(estParamsIX,3)));
     
-    
 %% next we define the dosing strategy. 
 
     dosedNames1 = {'RNA utr1--deGFP'};
     dosedVals1 = [37.5 75 150 200 600 700 800 900 1000];
-    dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
-    doseWeights1 = dtempvec/(sum(dtempvec));
+%     dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
+    doseWeights1 = ones(size(dosedVals1));%dtempvec/(sum(dtempvec));
     dosedNames2 = {'DNA p70--utr1--deGFP'};
     dosedVals2 = [0.5 2 5 20];
-    dtempvec = sqrt(dosedVals2(end)*(ones(size(dosedVals2))./dosedVals2)).*dosedVals2;
-    doseWeights2 = dtempvec/(sum(dtempvec));
+%     dtempvec = sqrt(dosedVals2(end)*(ones(size(dosedVals2))./dosedVals2)).*dosedVals2;
+    doseWeights2 = ones(size(dosedVals2));%dtempvec/(sum(dtempvec));
 %% create the measured species cell array
 % remember to change this! esp the 2AGTP. 
 measuredSpecies1 = {{'[RNA utr1--deGFP]',...
@@ -292,7 +291,7 @@ model_info = struct(...
                       ...                  % species names. the elements of the inner
                       ...                  % cell array get summed. 
     'measuredSpeciesIndex', {msIx1, msIx2},...  % maps measuredSpecies to the species in data array
-    'experimentWeighting', {0.1, 1}, ... 
+    'experimentWeighting', {1 0.01}, ... 
                         ... % relative importance of the different topologies. 
                         ... %geometries in a given topology are weighted with 
                         ...% the same level of importance for now. weight the rnadeg 

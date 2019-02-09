@@ -210,7 +210,7 @@ p.addParameter('extrafignamestring', [], @ischar);
 p.parse(varargin{:})
 p = p.Results;
 
-if p.separateExpSim && (p.ExpMode == 'none' || p.SimMode == 'none')
+if p.separateExpSim && (strcmp(p.ExpMode,'none') || strcmp(p.SimMode, 'none'))
     error(['Cant have unspecified Experimental data or Simulation Data '...
         'if the separateExpSim is set to true'])
 end
