@@ -194,7 +194,12 @@ function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_A(modelObj)
     
     % since activeNames2 is a superset of activeNames1, we can just use
     % activeNames2 as the master vector. 
-    masterVector = zeros(length(activeNames2), 1); % log transformed. 
+    % !!!!!!! this is a huge mistake. god dammit. ugh. 
+    % master vector is NOT zeros!!!!! the fixed species end up bein
+    % zeros!!!!
+    % jesus. I just wasted 100 bucks doing simulations what turned out to
+    % be bogus because of this bug. 
+    masterVector = log(cell2mat(activeNames2(:,2))); % log transformed. 
     
     % paramMap is a matrix mapping the parameters in the master vector to the 
     % (unordered) list of parameters in the model. (obvioulsy within the code 

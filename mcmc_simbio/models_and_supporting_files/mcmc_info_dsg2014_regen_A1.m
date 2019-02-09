@@ -196,7 +196,7 @@ circuitInfo2 = ...
     
     % since activeNames2 is a superset of activeNames1, we can just use
     % activeNames2 as the master vector.
-    masterVector = zeros(length(activeNames2), 1); % log transformed.
+    masterVector = log(cell2mat(activeNames2(:,2))); % log transformed.
     
     % paramMap is a matrix mapping the parameters in the master vector to the
     % (unordered) list of parameters in the model. (obvioulsy within the code
@@ -330,8 +330,7 @@ circuitInfo2 = ...
     % that group. If the semanticGroups field is empty,
     % then all parameters are assumed to be in their
     % distinct groups.
-    
-    
+
     % how the parameter distribution flow works:
     % WALKER INITIALIZATION
     % reduced master vector -- semanticGroups -->

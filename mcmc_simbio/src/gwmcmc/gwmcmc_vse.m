@@ -12,7 +12,7 @@ function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 % truly deserves to be called the MCMC hammer.
 %
 % (This code uses a cascaded variant of the Goodman and Weare algorithm).
-% 
+%
 % USAGE:
 %  [models,logP]=gwmcmc(minit,logPfuns,mccount,[Parameter,Value,Parameter,Value]);
 %
@@ -75,7 +75,7 @@ function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 %
 %
 % References:
-% Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm. 
+% Goodman & Weare (2010), Ensemble Samplers With Affine Invariance, Comm.
 % App. Math. Comp. Sci., Vol. 5, No. 1, 65–80
 % Foreman-Mackey, Hogg, Lang, Goodman (2013), emcee: The MCMC Hammer, arXiv:1202.3665
 %
@@ -84,9 +84,9 @@ function [models,logP, rejProp]=gwmcmc_vse(minit,logPfuns,mccount,varargin)
 % -Aslak Grinsted 2015
 
 
-persistent isoctave;  
+persistent isoctave;
 if isempty(isoctave)
-	isoctave = (exist ('OCTAVE_VERSION', 'builtin') > 0);
+    isoctave = (exist ('OCTAVE_VERSION', 'builtin') > 0);
 end
 
 if nargin<3
@@ -100,7 +100,7 @@ end
 
 p=inputParser;
 if isoctave
-    p=p.addParamValue('StepSize',2,@isnumeric); 
+    p=p.addParamValue('StepSize',2,@isnumeric);
     %addParamValue is chose for compatibility with octave. Still Untested.
     p=p.addParamValue('ThinChain',10,@isnumeric);
     p=p.addParamValue('ProgressBar',true,@islogical);
@@ -108,7 +108,7 @@ if isoctave
     p=p.addParamValue('BurnIn',0,@(x)(x>=0)&&(x<1));
     p=p.parse(varargin{:});
 else
-    p.addParameter('StepSize',2,@isnumeric); 
+    p.addParameter('StepSize',2,@isnumeric);
     %addParamValue is chose for compatibility with octave. Still Untested.
     p.addParameter('ThinChain',10,@isnumeric);
     p.addParameter('ProgressBar',true,@islogical);
@@ -142,7 +142,7 @@ NPfun=numel(logPfuns);
 %calculate logP state initial pos of walkers
 % logP is the result of the function(s) evaluation(s) for all walkers, at all
 % timesteps we choose to keep
-logP=nan(NPfun,Nwalkers,Nkeep);    
+logP=nan(NPfun,Nwalkers,Nkeep);
 
 
 wix = 1;
@@ -172,27 +172,53 @@ end
 
 
 
-
-parfor wix=2:Nwalkers % walker index
-    for fix=1:NPfun % function index
-        try
-            logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
-        catch ME
-            if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-                logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then 
-                % if here integration tolerances are not met, an error is
-                % thrown. So we NEED integration tolerances to be met
-                % initially. This is because of the way things are compared
-                % in the future iterations, and accepted and rejected.
-                % Should be -Inf, but I have changed it to -20. in the
-                % later iterations, keep it at -Inf, so that any future
-                % integration tol errors also get rejected. 
-            else
-                error('what happened?')
+if p.Parallel
+    parfor wix=2:Nwalkers % walker index
+        for fix=1:NPfun % function index
+            try
+                logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
+            catch ME
+                if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
+                    logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then
+                    % if here integration tolerances are not met, an error is
+                    % thrown. So we NEED integration tolerances to be met
+                    % initially. This is because of the way things are compared
+                    % in the future iterations, and accepted and rejected.
+                    % Should be -Inf, but I have changed it to -20. in the
+                    % later iterations, keep it at -Inf, so that any future
+                    % integration tol errors also get rejected.
+                else
+                    error('what happened?')
+                end
             end
         end
     end
+    
+else
+    for wix=2:Nwalkers % walker index
+        for fix=1:NPfun % function index
+            try
+                logP(fix,wix,1)=logPfuns{fix}(minit(:,wix));
+            catch ME
+                if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
+                    logP(fix,wix,1) = -Inf; % could potentially change this to something like -50, but then
+                    % if here integration tolerances are not met, an error is
+                    % thrown. So we NEED integration tolerances to be met
+                    % initially. This is because of the way things are compared
+                    % in the future iterations, and accepted and rejected.
+                    % Should be -Inf, but I have changed it to -20. in the
+                    % later iterations, keep it at -Inf, so that any future
+                    % integration tol errors also get rejected.
+                else
+                    error('what happened?')
+                end
+            end
+        end
+    end
+    
 end
+
+
 
 if ~all(all(isfinite(logP(:,:,1))))
     error('Starting points for all walkers must have finite logP')
@@ -200,7 +226,7 @@ end
 reject=zeros(Nwalkers,1);
 rejProp = nan(1,Nkeep);
 curm=models(:,:,1); % current model, all walkers
-curlogP=logP(:,:,1); 
+curlogP=logP(:,:,1);
 progress(0,0,0)
 totcount=Nwalkers;
 % preallocate matrix to store parameter values that could not get simulated
@@ -211,11 +237,11 @@ for row=1:Nkeep
         %(done outside walker loop, in order to be compatible with parfor - some penalty for memory):
         %-Note it appears to give a slight performance boost for non-parallel.
         rix=mod((1:Nwalkers)+floor(rand*(Nwalkers-1)),Nwalkers)+1; %pick a random partner
-        zz=((p.StepSize - 1)*rand(1,Nwalkers) + 1).^2/p.StepSize; 
+        zz=((p.StepSize - 1)*rand(1,Nwalkers) + 1).^2/p.StepSize;
         %VSE: whu -1 here? this is what makes the system fail at 1
         proposedm=curm(:,rix) - bsxfun(@times,(curm(:,rix)-curm),zz);
         logrand=log(rand(NPfun+1,Nwalkers)); %moved outside because rand is slow inside parfor
-        % logrand is what we compare our computed log likelihood to. 
+        % logrand is what we compare our computed log likelihood to.
         totalcount = (row-1)*p.ThinChain+jj;
         if p.Parallel
             %parallel/non-parallel code is currently mirrored in
@@ -232,18 +258,18 @@ for row=1:Nkeep
                 if lr(1)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         try
-                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix)); 
-                        %have tested workerobjwrapper but that is slower.
+                            proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
+                            %have tested workerobjwrapper but that is slower.
                         catch ME
-                             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-%                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
+                            if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
+                                %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
-                             end
+                            end
                         end
                         
                         if lr(fix+1)>proposedlogP(fix)-cp(fix) ||...
                                 ~isreal(proposedlogP(fix)) || isnan( proposedlogP(fix) )
-                        %if ~(lr(fix+1)<proposedlogP(fix)-cp(fix))
+                            %if ~(lr(fix+1)<proposedlogP(fix)-cp(fix))
                             acceptfullstep=false;
                             break
                         end
@@ -264,20 +290,20 @@ for row=1:Nkeep
                 if logrand(1,wix)<(numel(proposedm(:,wix))-1)*log(zz(wix))
                     for fix=1:NPfun
                         try
-                        proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
+                            proposedlogP(fix)=logPfuns{fix}(proposedm(:,wix));
                         catch ME
                             if strcmp(ME.identifier, 'DESuite:ODE15S:IntegrationToleranceNotMet')
-%                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
+                                %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
                                 proposedlogP(fix) = -Inf;
-                             end
-%                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
-%                                 proposedlogP(fix) = -inf;
+                            end
+                            %                                 non_integrable_m(:,wix,totalcount) = proposedm(:,wix);
+                            %                                 proposedlogP(fix) = -inf;
                         end
                         
                         if logrand(fix+1,wix)>proposedlogP(fix)-curlogP(fix,wix)...
                                 || ~isreal(proposedlogP(fix)) || isnan(proposedlogP(fix))
-                        %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix))
-                        %inverted expression to ensure rejection of nan and imaginary logP's.
+                            %if ~(logrand(fix+1,wix)<proposedlogP(fix)-curlogP(fix,wix))
+                            %inverted expression to ensure rejection of nan and imaginary logP's.
                             acceptfullstep=false;
                             break
                         end
@@ -291,7 +317,7 @@ for row=1:Nkeep
                     reject(wix)=reject(wix)+1;
                 end
             end
-
+            
         end
         totcount=totcount+Nwalkers;
         progress((row-1+jj/p.ThinChain)/Nkeep,curm,sum(reject)/totcount)
@@ -300,7 +326,7 @@ for row=1:Nkeep
     logP(:,:,row)=curlogP;
     rejProp(row) = sum(reject)/totcount; %!VSE
     %progress bar
-
+    
 end
 
 progress(1,0,0);
@@ -327,7 +353,7 @@ if pct==1
     return
 end
 if (cputime-lasttime>0.1)
-
+    
     ETA=datestr((cputime-starttime)*(1-pct)/(pct*60*60*24),13);
     progressmsg=[183-uint8((1:40)<=(pct*40)).*(183-'*') ''];
     %progressmsg=['-'-uint8((1:40)<=(pct*40)).*('-'-'•') ''];
@@ -336,7 +362,7 @@ if (cputime-lasttime>0.1)
     %curmtxt=mat2str(curm);
     progressmsg=sprintf('\nGWMCMC %5.1f%% [%s] %s\n%3.0f%% rejected\n%s\n',...
         pct*100,progressmsg,ETA,rejectpct*100,curmtxt);
-
+    
     fprintf('%s%s',repmat(char(8),1,lastNchar),progressmsg);
     drawnow;lasttime=cputime;
     lastNchar=length(progressmsg);
