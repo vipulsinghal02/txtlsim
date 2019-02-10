@@ -280,7 +280,7 @@ circuitInfo2 = ...
         ...                  % species names. the elements of the inner
         ...                  % cell array get summed.
         'measuredSpeciesIndex', {msIx1, msIx2},...  % maps measuredSpecies to the species in data array
-        'experimentWeighting', {1 0.03}, ... % 
+        'experimentWeighting', {1 0.3}, ... % 
         ... % relative importance of the different topologies.
         ... %geometries in a given topology are weighted with
         ...% the same level of importance for now. 

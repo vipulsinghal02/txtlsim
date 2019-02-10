@@ -235,7 +235,8 @@ end
     close all
     
     pix = 34
-%     mvarray load from elsewhere.
+%     mvarray load from case 4 of regen A analysis file:
+%     manual_txtlsim_parameters.
  paramsToTest = mvarray(:,1:5:end,end);  
  
    
@@ -393,12 +394,12 @@ found1 = [       5.5354
 % leaving only 
 
 
-%     {'TXTL_RNAdeg_kc'                 }
-%     {'RNase'                          }
 %     {'TX_elong_glob'                  }
 %     {'TXTL_P70_RNAPbound_Kd'          }
 %     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
+%     {'TXTL_RNAdeg_kc'                 }
 %     {'RNAP'                           }
+%     {'RNase'                          }
 %     {'TL_elong_glob'                  }
 %     {'TXTL_UTR_UTR1_Kd'               }
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
