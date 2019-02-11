@@ -135,6 +135,28 @@ function mcmc_plot(marray, legendz, varargin)
         end
         plotChains(marray, nW, legendz)
         
+        
+        if p.savematlabfig
+            if isempty(p.projdir) || isempty(p.tstamp)
+                warning('timestamp and project directory not specified. Nothing will be saved.')
+            else
+                
+                specificproj = [p.projdir '/simdata_' p.tstamp];
+                saveas(gcf, [specificproj '/trace' p.tstamp p.extrafignamestring]);
+                
+            end
+        end
+        
+        if p.savejpeg
+            if isempty(p.projdir) || isempty(p.tstamp)
+                warning('timestamp and project directory not specified. Nothing will be saved.')
+            else
+                specificproj = [p.projdir '/simdata_' p.tstamp];
+                print(gcf, '-djpeg', '-r200', [specificproj '/trace' p.tstamp p.extrafignamestring])
+            end
+        end
+        
+        
     end
 
 end
