@@ -10,7 +10,7 @@ function mobj = model_protein3(varargin)
 
 %% set input defaults
 p = inputParser ;
-addParameter(p, 'simtime', 2*3600);
+addParameter(p, 'simtime', 1.6*3600);
 parse(p);
 p = p.Results;
 
@@ -31,10 +31,10 @@ addparameter(mobj, 'kcp', 0.012);
 
 % setup model species initial concentrations. 
 P = sbioselect(mobj, 'name', 'dG');
-P.InitialAmount = 30;
+P.InitialAmount = 0;
 
 C = sbioselect(mobj, 'name', 'pol');
-C.InitialAmount = 100;
+C.InitialAmount = 0;
 
 E = sbioselect(mobj, 'name', 'dG_pol');
 E.InitialAmount = 0;

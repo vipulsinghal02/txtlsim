@@ -18,6 +18,10 @@
 # Simulink Code Generation
 slprj/
 
+# data dirs
+/mcmc_simbio/exp_data/Zach_IFFL_raw
+mcmc_simbio/exp_data/from_Tierra_Bio_2018_oct
+
 # Session info
 octave-workspace
 
@@ -93,3 +97,6 @@ Thumbs.db
 ######################
 Crash_logs_*/
 manual_txtlsim_parameters.m
+
+# reaction files I use 
+*.reactions*

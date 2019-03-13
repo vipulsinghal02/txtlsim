@@ -90,13 +90,18 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     RNAlength = rna.UserData;
     % add the transcription parameter in the model scope, with the length
     % adjusted value.
-    addparameter(tube, txparamname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength);
+    if isempty(sbioselect(tube, 'Type', 'Parameter', 'Name', txparamname))
+        addparameter(tube, txparamname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength);
+    end
     
     % compute the consumption reaction rate as follows
     % ntpcnt = rna.length/4.
     ntpcnt = round(RNAlength/4); %
     % add the ntp consumption parameter in the global scope.
-    addparameter(tube, ntpconsname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength*(ntpcnt-1));
+    if isempty(sbioselect(tube, 'Type', 'Parameter', 'Name', ntpconsname))
+        addparameter(tube, ntpconsname,tube.Userdata.ReactionConfig.Transcription_Rate/RNAlength*(ntpcnt-1));
+    end
+    
     
     % how to think about this: 1 nM of AGTP is 0.5nM of ATP, 0.5nM of GTP.
     % Since the reaction rnap:dna:agtp:cutp -> rnap:dna_term + mrna uses
@@ -113,13 +118,13 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     % now we actually add the rule that sets the transcription rate and the
     % ntp consumption rate.
-    ruleStr = [txparamname ' =  TX_elong_glob/' num2str(RNAlength)];
+    ruleStr = [txparamname ' = TX_elong_glob/' num2str(RNAlength)];
     if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
         addrule(tube, ruleStr, 'initialAssignment');
     end
     
     ruleStr = [ntpconsname ...
-        ' =  TX_elong_glob/' num2str(RNAlength) '*(' num2str(ntpcnt) '-1)'];
+        ' = TX_elong_glob/' num2str(RNAlength) '*(' num2str(ntpcnt) '-1)'];
     if isempty(sbioselect(tube,'Type','Rule', 'Rule', ruleStr))
         addrule(tube, ruleStr, 'initialAssignment');
     end

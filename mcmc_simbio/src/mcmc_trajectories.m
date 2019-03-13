@@ -266,8 +266,8 @@ if p.just_data_info
                 legendentry{i} = [legendentry{i} dNames{ndNames} ' = ' num2str(dVals(ndNames,i ))];
             end
             legend(linehandle, legendentry);
-            title(currdi.measuredNames{msnum}{1:end})
-            
+            %title(currdi.measuredNames{msnum}{1:end}) % what was I thinking here?
+            title(currdi.measuredNames{msnum})
         end
         
         

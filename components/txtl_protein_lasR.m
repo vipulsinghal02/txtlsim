@@ -73,8 +73,8 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     for k = 1:size(listOfProtein,1)
         txtl_addreaction(tube,['[' listOfProtein{k} '] + OC12HSL <-> [OC12HSL:' listOfProtein{k} ']'],...
-            'MassAction',{'TXTL_INDUCER_LUXR_AHL_F',paramObj.Protein_Inducer_Forward;...
-            'TXTL_INDUCER_LUXR_AHL_R',paramObj.Protein_Inducer_Reverse});
+            'MassAction',{'TXTL_INDUCER_LASR_AHL_F',paramObj.Protein_Inducer_Forward;...
+            'TXTL_INDUCER_LASR_AHL_R',paramObj.Protein_Inducer_Reverse});
     end
     
     
