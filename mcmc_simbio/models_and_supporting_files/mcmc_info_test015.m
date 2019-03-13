@@ -116,7 +116,7 @@ paramMap2 = [1 2 4 6]';
 paramMap = [paramMap1 paramMap2];
 
 % log transformed parameter ranges
-paramRanges =  [masterVector(estParamsIx)-8 masterVector(estParamsIx)+8];
+paramRanges =  [masterVector(estParamsIx)-15 masterVector(estParamsIx)+10];
 
 % The two geometries map to the first and second elements of the data_info
 % struct array. 

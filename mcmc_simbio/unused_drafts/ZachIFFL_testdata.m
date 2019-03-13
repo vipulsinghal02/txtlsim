@@ -11,7 +11,6 @@ txtl_init
 mcmc_init
 
 
-
 addpath(genpath('/Users/vipulsinghal/Dropbox/110114/Vipul_computational/Computational Tools'));
 datadir = '/Users/vipulsinghal/Dropbox/110114/Vipul_computational/Computational Tools/RawComputationalData';
 load([datadir '/Set6Data.mat'],'Set6Data')

@@ -5,6 +5,7 @@
 
 % simulate txtl model with custom parameter values, and look at the species
 % plots as specified by mcmc_info object.
+close all
 
 % Set working directory to the txtlsim toolbox directory.
 projdir = [pwd '/mcmc_simbio/projects/proj_test015'];
@@ -14,9 +15,9 @@ jpgsave = true;
 figsave = false;
 
 % Load model, mcmc_info, and data_info.
-mobj = model_dsg2014_regen;
-mcmc_info = mcmc_info_dsg2014_regen_F1(mobj);
-di = data_dsg2014_full;
+mobj = model_protein3;
+mcmc_info = mcmc_info_test015(mobj);
+di = data_test015;
 
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
@@ -27,9 +28,9 @@ tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1
-        ts1 = '20190313_141239_1_3';
+        ts1 = '20190313_091216_1_0p32242';
         tstamp = {ts1};
-        nIterID = {1:2};
+        nIterID = {1:7};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
@@ -70,7 +71,7 @@ if plotflag
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
 
-    mcmc_plot(marray(:, 1:3:end,1:end), parnames(:),...
+    mcmc_plot(marray(:, 1:10:end,1:10:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', ts1, 'extrafignamestring', 'WithTransient');
 %     figure
@@ -121,7 +122,7 @@ if plotflag
 %         'projdir', projdir, 'tstamp', ts5,...
 %         'extrafignamestring', 'MGa_deGFP');
 end
-marrayOrd(:,1:5,end)
+% marrayOrd(:,1:5,end)
 % flagz = ones(26, 1);
 % flagz([1 5 7 8 10 12 15 16 17 19 21 23 25 26]) = 0;
 % [mvarray(:,1:6,end) log(cell2mat(activeNames2(:, 2))) flagz]
