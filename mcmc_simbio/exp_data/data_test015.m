@@ -78,19 +78,19 @@ ttetR = ttetR(1:13);
 % data_array is nT x nMS x nIC x nEnv. 
 % need to separate out the Envs in the different data info entries. 
 % need to have data array be time by ms by reps by doses. 
-da1temp = data_ptet(1:13, :, :, 1);
+da1temp = 1000*data_ptet(1:13, :, :, 1);
 da1 = permute(da1temp, [1, 2, 4, 3]);
-da2temp = data_ptet(1:13, :, :, 2);
+da2temp = 1000*data_ptet(1:13, :, :, 2);
 da2 = permute(da2temp, [1, 2, 4, 3]);
-da3temp = data_ptet(1:13, :, :, 3);
+da3temp = 1000*data_ptet(1:13, :, :, 3);
 da3 = permute(da3temp, [1, 2, 4, 3]);
 
 
-da4temp = data_tetR(1:13, :, :, 1);
+da4temp = 1000*data_tetR(1:13, :, :, 1);
 da4 = permute(da4temp, [1, 2, 4, 3]);
-da5temp = data_tetR(1:13, :, :, 2);
+da5temp = 1000*data_tetR(1:13, :, :, 2);
 da5 = permute(da5temp, [1, 2, 4, 3]);
-da6temp = data_tetR(1:13, :, :, 3);
+da6temp = 1000*data_tetR(1:13, :, :, 3);
 da6 = permute(da6temp, [1, 2, 4, 3]);
 
 % define the doses: DNA at 0.5, 2, 5 and 20nM

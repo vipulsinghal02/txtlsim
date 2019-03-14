@@ -28,10 +28,11 @@ tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1
-        ts1 = '20190314_083312_1_0p20762';
-        tstamp = {ts1};
-        tsToSave = ts1;
-        nIterID = {1:9};
+        ts1 = '20190314_123130_1_0p20762';
+        ts2 = '20190314_123130_2_0p10381';
+        tstamp = {ts1 ts2};
+        tsToSave = ts2;
+        nIterID = {1:10 1:3};
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
@@ -73,17 +74,13 @@ parnames = ...
 if plotflag
     close all
     % Plot trace and corner (posterior distribution) plots
-    %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
-    
-    mcmc_plot(marray(:, 1:end,(end-1000):100:end), parnames(:),...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
-        mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
-    %     mcmc_plot(marray(:, 1:end,(end-400):10:end), parnames(:),...
-    %     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
+%     
+%     mcmc_plot(marray(:, 1:end,(end-1000):100:end), parnames(:),...
+%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
+%         mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
+%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
     
     
     
@@ -208,43 +205,43 @@ end
 %%
 %% Now we perform correction step 2 without CSP fixing, and then with.
 
-figure
-% The ESPs we use are
-kcp1 = exp(  5.9874);
-pol1 = exp(-11.3549);
-
-espvec = [ 5.9874; -11.3549]
-
-% next we simulate the results with the estimated test CSP params and
-% the non CSP fixing ESPs above.
-
-% create a master info
-
-szm = size(marray);
-mvarray_corr21 = repmat(mai.masterVector, [1, szm(2:end)]) ;
-eparray = repmat(espvec, [1, szm(2:end)]) ;
-estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
-mvarray_corr21(estParamsIx, :, :) = marray;
-mvarray_corr21(mai.fixedParams, :, :) = eparray;
-
-samplePoints = ceil(size(mvarray_corr21, 3) * [.9, 1]);
-%
-marrayOrd = mvarray_corr21(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
-titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-ms = {'GFP'};
-for i = 1:length(mi(1).measuredSpeciesIndex)
-    for j = 1:length(titls)
-        titls_array(j, 1, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, Exp data']};
-        titls_array(j, 2, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, MCMC samples']};
-    end
-end
-mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
-    titls_array, {},...
-    'SimMode', 'meanstd', 'separateExpSim', false,...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave,...
-    'extrafignamestring', 'E2');
+% figure
+% % The ESPs we use are
+% kcp1 = exp(  5.9874);
+% pol1 = exp(-11.3549);
+% 
+% espvec = [ 5.9874; -11.3549]
+% 
+% % next we simulate the results with the estimated test CSP params and
+% % the non CSP fixing ESPs above.
+% 
+% % create a master info
+% 
+% szm = size(marray);
+% mvarray_corr21 = repmat(mai.masterVector, [1, szm(2:end)]) ;
+% eparray = repmat(espvec, [1, szm(2:end)]) ;
+% estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
+% mvarray_corr21(estParamsIx, :, :) = marray;
+% mvarray_corr21(mai.fixedParams, :, :) = eparray;
+% 
+% samplePoints = ceil(size(mvarray_corr21, 3) * [.9, 1]);
+% %
+% marrayOrd = mvarray_corr21(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
+% titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+% titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+% ms = {'GFP'};
+% for i = 1:length(mi(1).measuredSpeciesIndex)
+%     for j = 1:length(titls)
+%         titls_array(j, 1, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, Exp data']};
+%         titls_array(j, 2, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, MCMC samples']};
+%     end
+% end
+% mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
+%     titls_array, {},...
+%     'SimMode', 'meanstd', 'separateExpSim', false,...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave,...
+%     'extrafignamestring', 'E2');
 
 % and plot these.
 
