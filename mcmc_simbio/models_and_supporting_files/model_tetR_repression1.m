@@ -42,8 +42,8 @@ mobj = sbiomodel('tetRepression1');
 rxn = addreaction(mobj,'dT + pol <-> dT_pol');
 Kobj = addkineticlaw(rxn,'MassAction');
 Kobj.ParameterVariableNames = {'kfdT','krdT'};
-addparameter(mobj, 'kfdT', 10);
-addparameter(mobj, 'krdT', 600);
+addparameter(mobj, 'kfdT',1);
+addparameter(mobj, 'krdT', 6);
 
 rxn = addreaction(mobj,'dT_pol -> dT + pol + pT');
 Kobj = addkineticlaw(rxn,'MassAction');
@@ -53,8 +53,8 @@ addparameter(mobj, 'kcp', 0.012);
 rxn = addreaction(mobj,'dG + pol <-> dG_pol');
 Kobj = addkineticlaw(rxn,'MassAction');
 Kobj.ParameterVariableNames = {'kfdG','krdG'};
-addparameter(mobj, 'kfdG', 10);
-addparameter(mobj, 'krdG', 600);
+addparameter(mobj, 'kfdG', 1);
+addparameter(mobj, 'krdG', 6);
 
 rxn = addreaction(mobj,'dG_pol -> dG + pol + pG');
 Kobj = addkineticlaw(rxn,'MassAction');
@@ -64,22 +64,22 @@ Kobj.ParameterVariableNames = {'kcp'};
 rxn = addreaction(mobj,'2 pT <-> pT2');
 Kobj = addkineticlaw(rxn,'MassAction');
 Kobj.ParameterVariableNames = {'kfdimTet','krdimTet'};
-addparameter(mobj, 'kfdimTet', 20);
-addparameter(mobj, 'krdimTet', 40);
+addparameter(mobj, 'kfdimTet', 2);
+addparameter(mobj, 'krdimTet', 4);
 
 rxn = addreaction(mobj,'dG + pT2 <-> dG_pT2');
 Kobj = addkineticlaw(rxn,'MassAction');
 Kobj.ParameterVariableNames = {'kfseqTet','krseqTet'};
-addparameter(mobj, 'kfseqTet', 20);
-addparameter(mobj, 'krseqTet', 40);
+addparameter(mobj, 'kfseqTet', 2);
+addparameter(mobj, 'krseqTet', 4);
 
 % setup model species initial concentrations. 
 % setup model species initial concentrations. 
 specie = sbioselect(mobj, 'name', 'dT');
-specie.InitialAmount = 0;
+specie.InitialAmount = 2;
 
 specie = sbioselect(mobj, 'name', 'dG');
-specie.InitialAmount = 0;
+specie.InitialAmount = 10;
 
 specie = sbioselect(mobj, 'name', 'pT');
 specie.InitialAmount = 0;
@@ -88,7 +88,7 @@ specie = sbioselect(mobj, 'name', 'pG');
 specie.InitialAmount = 0;
 
 specie = sbioselect(mobj, 'name', 'pol');
-specie.InitialAmount = 0;
+specie.InitialAmount = 100;
 
 specie = sbioselect(mobj, 'name', 'dT_pol');
 specie.InitialAmount = 0;

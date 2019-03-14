@@ -39,16 +39,45 @@ circuitInfo = ...
        'D_G + T2 <-> D_G:T2 (kfseq, krseq) \n'...
     'single topology, single geometry.'];
 
+% good starting values? seems like it!
+%    SimBiology Parameter Array
+% 
+%    Index:    Name:       Value:    ValueUnits:
+%    1         kfdT        1         
+%    2         krdT        6         
+%    3         kcp         0.012     
+%    4         kfdG        1         
+%    5         krdG        6         
+%    6         kfdimTet    2         
+%    7         krdimTet    4         
+%    8         kfseqTet    2         
+%    9         krseqTet    4         
+% 
+% mobj.Parameters.Value
+% Undefined function or variable 'Value'.
+%  
+% mobj.Parameters(1).Value
+% 
+% ans =
+% 
+%      1
+% 
+% log([1 6 .012 1 6 2 4 2 4 100])
+% 
+% ans =
+% 
+%          0    1.7918   -4.4228         0    1.7918    0.6931    1.3863    0.6931    1.3863    4.6052
+         
 %cpol = exp(1.0212); % nM
 rkfdG = 1; % nM-1s-1
-rkrdG = 1; % s-1
-rkfdT =exp(2.4); % fixed after looking at the corner plot. 
-rkrdT = 1;
+rkrdG = 6; % s-1
+rkfdT = 1; % 
+rkrdT = 6;
 %rkcp = exp( -7.6000); %s-1
-rkfdimTet = exp(1.5); % nM-1s-1 % fixed after looking at the corner plot
-rkrdimTet = 1; % s-1
-rkfseqTet = 1; % nM-1s-1 % fixed after looking at the corner plot. 
-rkrseqTet = 1; % s-1
+rkfdimTet = 2; % nM-1s-1 
+rkrdimTet = 4; % s-1
+rkfseqTet = 2; % nM-1s-1 
+rkrseqTet = 4; % s-1
 
 activeNames = ...
     {'kfdG'
@@ -85,7 +114,7 @@ estParams = {'kfdG'
     'krseqTet'};
 
 paramMap = [1:length(masterVector)]';
-paramRanges =  [masterVector(estParamsIx)-20 masterVector(estParamsIx)+15];
+paramRanges =  [masterVector(estParamsIx)-10 masterVector(estParamsIx)+5];
 
 
 dataIndices = [6];

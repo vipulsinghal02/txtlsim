@@ -8,7 +8,7 @@
 close all
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_test015_corr1'];
+projdir = [pwd '/mcmc_simbio/projects/proj_test015_corr1_Ffix'];
 addpath(projdir)
 
 jpgsave = true;
@@ -16,7 +16,7 @@ figsave = false;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_tetR_repression1;
-mcmc_info = mcmc_info_test015_corr1(mobj, exp(-7.6), exp(1.0212));
+mcmc_info = mcmc_info_test015_corr1_Ffix(mobj, exp(-7.6), exp(1.0212));
 di = data_test015;
 
 mi = mcmc_info.model_info;
@@ -28,11 +28,10 @@ tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1
-        ts1 = '20190314_050144_1_0p20762';
-        ts2 = '20190314_072843_1_0p083047';
-        tstamp = {ts1 ts2};
-        tsToSave = ts2;
-        nIterID = {1:20 1:3};
+        ts1 = '20190314_083312_1_0p20762';
+        tstamp = {ts1};
+        tsToSave = ts1;
+        nIterID = {1:9};
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
@@ -76,9 +75,12 @@ if plotflag
     % Plot trace and corner (posterior distribution) plots
     %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
     
-    mcmc_plot(marray(:, 1:end,1:50:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-1000):100:end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
+        mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
     %     mcmc_plot(marray(:, 1:end,(end-400):10:end), parnames(:),...
     %     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
@@ -96,6 +98,7 @@ if plotflag
     %     title('Markov Chain Auto Correlation')
     %
     %
+    %%
     mvarray = masterVecArray(marray, mai);
     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
     %
@@ -105,18 +108,34 @@ if plotflag
     ms = {'GFP'};
     for i = 1:length(mi(1).measuredSpeciesIndex)
         for j = 1:length(titls)
-            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, Exp data']};
-            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, MCMC samples']};
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{1,j} 'nM initial tetR DNA, MCMC samples']};
         end
     end
     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
         titls_array, {},...
-        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'SimMode', 'meanstd', 'separateExpSim', true,...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave,...
         'extrafignamestring', 'E2');
 end
 
+% mi.namesOrd
+% 
+% ans =
+% 
+%   10×1 cell array
+% 
+%     {'kfdT'    }
+%     {'krdT'    }
+%     {'kcp'     }
+%     {'kfdG'    }
+%     {'krdG'    }
+%     {'kfdimTet'}
+%     {'krdimTet'}
+%     {'kfseqTet'}
+%     {'krseqTet'}
+%     {'pol'     }
 
 %%
 % get a random point from the estimated parameter sets
