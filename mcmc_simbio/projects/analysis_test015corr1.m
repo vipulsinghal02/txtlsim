@@ -8,15 +8,15 @@
 close all
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_test015'];
+projdir = [pwd '/mcmc_simbio/projects/proj_test015_corr1'];
 addpath(projdir)
 
 jpgsave = true;
 figsave = false;
 
 % Load model, mcmc_info, and data_info.
-mobj = model_protein3;
-mcmc_info = mcmc_info_test015(mobj);
+mobj = model_tetR_repression1;
+mcmc_info = mcmc_info_test015_corr1(mobj, exp(-7.6), exp(1.0212));
 di = data_test015;
 
 mi = mcmc_info.model_info;
@@ -25,24 +25,20 @@ mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
 tsIDtouse = 1;
-
 plotflag = true;
 switch tsIDtouse
     case 1
-        ts1 = '20190313_091216_1_0p32242';
-        ts2 = '20190313_101830_1_0p32242';
-        ts3 = '20190313_130351_1_0p32242';
-        ts4='20190313_153908_1_0p32242';
-        ts5 = '20190313_171758_1_0p064484';
-        ts6 = '20190314_004559_1_0p12897';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6};
-        
-        nIterID = {1:9 1:20 1:20 1:5 1:60 1:30};
-        load([projdir '/simdata_' ts6 '/full_variable_set_' ts6 '.mat'], ...
+        ts1 = '20190314_050144_1_0p20762';
+        ts2 = '20190314_072843_1_0p083047';
+        tstamp = {ts1 ts2};
+        tsToSave = ts2;
+        nIterID = {1:20 1:3};
+        load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
 end
-tsToSave = ts6;
+
+
 mai.masterVector
 
 
@@ -51,10 +47,12 @@ marray = marray_full(:,:,1:end);
 parnames = ...
         {'kfdG'
     'krdG'
-    'kcp1'
-    'kcp2'
-    'pol1'
-    'pol2'};
+    'kfdT'
+    'krdT'
+    'kfdimTet'
+    'krdimTet'
+    'kfseqTet'
+    'krseqTet'};
 
 
 % 
@@ -78,19 +76,13 @@ if plotflag
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
 
-    mcmc_plot(marray([1 2 3 5], 1:10:end,1:100:end), parnames([1 2 3 5]),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E1');
-    mcmc_plot(marray([1 2 3 5], 1:end,(end-4000):100:end), parnames([1 2 3 5]),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E1');
-
-    mcmc_plot(marray([1 2 4 6], 1:10:end,1:100:end), parnames([1 2 4 6]),...
+    mcmc_plot(marray(:, 1:end,1:50:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
-    mcmc_plot(marray([1 2 4 6], 1:end,(end-4000):100:end), parnames([1 2 4 6]),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
+%     mcmc_plot(marray(:, 1:end,(end-400):10:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
+
 
 
 %     figure
@@ -110,31 +102,14 @@ if plotflag
     marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
     titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
     titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-    ms = {'RNA'};
+    ms = {'GFP'};
     for i = 1:length(mi(1).measuredSpeciesIndex)
         for j = 1:length(titls)
-            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, Exp data']};
-            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, MCMC samples']};
         end
     end
     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
-        titls_array, {},...
-        'SimMode', 'meanstd', 'separateExpSim', false,...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave,...
-        'extrafignamestring', 'E1');
-    
-    marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,2),:,samplePoints);
-    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-    ms = {'MG aptamer', 'deGFP'};
-    for i = 1:length(mi(1).measuredSpeciesIndex)
-        for j = 1:length(titls)
-            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, Exp data']};
-            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
-        end
-    end
-    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(2)), mi(1), marrayOrd,...
         titls_array, {},...
         'SimMode', 'meanstd', 'separateExpSim', false,...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
@@ -183,7 +158,7 @@ end
 %     {'pol1'}    {[  3.7324]}
 %     {'pol2'}    {[  1.0212]}
 
-% the esps we will use are: 
+% the esps we used are: 
 %     {'kcp2'}    {[ -7.6000]}
 %     {'pol2'}    {[  1.0212]}
 
@@ -191,10 +166,73 @@ end
 %     {'kcp1'}    {[-10.2922]}
 %     {'pol1'}    {[  3.7324]}
 
+% The ESPs when the CSPs are not fixed are: 
+% we can try are: 
+% [  5.9874]
+% [-11.3549]
+% 
+% or 
+% 
+% [  5.9437]
+% [ -0.3403]
+% 
+% or
+% 
+% [-0.9758]
+% [-4.2267]
+% 
+% or 
+% 
+% [  9.1865]
+% [-14.5707]
+%%
+%%
+%% Now we perform correction step 2 without CSP fixing, and then with. 
 
-%%
-%%
-%%
+
+% The ESPs we use are
+kcp1 = exp([  5.9874]);
+pol1 = exp([-11.3549]);
+
+% next we simulate the results with the estimated test CSP params and
+% the non CSP fixing ESPs above. 
+
+% create a master info 
+
+szm = size(marray);
+mvarray = repmat(mai.masterVector, [1, szm(2:end)]) ;
+
+estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
+mvarray(estParamsIx, :, :) = marray;
+
+
+mvarray_corr21 = masterVecArray(marray, mai);
+    samplePoints = ceil(size(mvarray_corr21, 3) * [.9, 1]);
+    %
+    marrayOrd = mvarray_corr21(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
+    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+    ms = {'GFP'};
+    for i = 1:length(mi(1).measuredSpeciesIndex)
+        for j = 1:length(titls)
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial tetR DNA, MCMC samples']};
+        end
+    end
+    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
+        titls_array, {},...
+        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave,...
+        'extrafignamestring', 'E2');
+
+% and plot these. 
+
+
+% and finally with the CSP fixing ESPs
+
+
+
 
 
 

@@ -34,7 +34,6 @@ p.addParameter('temperatureLadder', 0.002); % can be a boolean: true or false,
 p.addParameter('rkcp', exp(-7.6));
 p.addParameter('cpol', exp(1.0212));
 
-
 p.parse(varargin{:});
 p = p.Results;
 
