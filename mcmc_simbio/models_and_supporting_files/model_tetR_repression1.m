@@ -76,10 +76,10 @@ addparameter(mobj, 'krseqTet', 40);
 % setup model species initial concentrations. 
 % setup model species initial concentrations. 
 specie = sbioselect(mobj, 'name', 'dT');
-specie.InitialAmount = 0.5;
+specie.InitialAmount = 0;
 
 specie = sbioselect(mobj, 'name', 'dG');
-specie.InitialAmount = 30;
+specie.InitialAmount = 0;
 
 specie = sbioselect(mobj, 'name', 'pT');
 specie.InitialAmount = 0;
@@ -88,7 +88,7 @@ specie = sbioselect(mobj, 'name', 'pG');
 specie.InitialAmount = 0;
 
 specie = sbioselect(mobj, 'name', 'pol');
-specie.InitialAmount = 100;
+specie.InitialAmount = 0;
 
 specie = sbioselect(mobj, 'name', 'dT_pol');
 specie.InitialAmount = 0;
