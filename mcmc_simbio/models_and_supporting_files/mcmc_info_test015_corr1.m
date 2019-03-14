@@ -40,15 +40,15 @@ circuitInfo = ...
     'single topology, single geometry.'];
 
 %cpol = exp(1.0212); % nM
-rkfdG = 5; % nM-1s-1
-rkrdG = 300; % s-1
-rkfdT = 5;
-rkrdT = 300;
+rkfdG = 1; % nM-1s-1
+rkrdG = 1; % s-1
+rkfdT =1;
+rkrdT = 1;
 %rkcp = exp( -7.6000); %s-1
-rkfdimTet = 20; % nM-1s-1
-rkrdimTet = 10; % s-1
-rkfseqTet = 20; % nM-1s-1
-rkrseqTet = 10; % s-1
+rkfdimTet = 1; % nM-1s-1
+rkrdimTet = 1; % s-1
+rkfseqTet = 1; % nM-1s-1
+rkrseqTet = 1; % s-1
 
 activeNames = ...
     {'kfdG'
@@ -96,7 +96,7 @@ paramRanges =  [masterVector(estParamsIx)-15 masterVector(estParamsIx)+10];
 dataIndices = [6];
 
 %% next we define the dosing strategy.
-dosedNames = {'dT'; 'dG'};
+dosedNames = {'dG'; 'dT'};
 dosedVals = [   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000
          0    0.2500    0.5000    0.7500    1.0000    2.0000    5.0000   10.0000];
 
