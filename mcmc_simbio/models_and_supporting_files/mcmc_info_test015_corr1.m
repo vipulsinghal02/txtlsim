@@ -94,9 +94,9 @@ paramRanges =  [masterVector(estParamsIx)-15 masterVector(estParamsIx)+10];
 dataIndices = [6];
 
 %% next we define the dosing strategy.
-dosedNames = {'dG'; 'dT'};
-dosedVals = [   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000
-         0    0.2500    0.5000    0.7500    1.0000    2.0000    5.0000   10.0000];
+dosedNames = {'dT'; 'dG'};
+dosedVals = flipud([   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000   10.0000
+         0    0.2500    0.5000    0.7500    1.0000    2.0000    5.0000   10.0000]);
 
          
 measuredSpecies = {{'pG'}};

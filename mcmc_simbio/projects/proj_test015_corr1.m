@@ -17,7 +17,7 @@ p.addParameter('nW', 40);
 p.addParameter('nPoints', 100*40);
 p.addParameter('thinning', 1);
 p.addParameter('nIter', 2);
-p.addParameter('parallel', true);
+p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
 p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
