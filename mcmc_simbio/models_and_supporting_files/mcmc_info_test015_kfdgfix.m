@@ -89,8 +89,7 @@ namesUnord = ...
     'kcp'
     'pol'};
 
-estParams = {'kfdG'
-    'krdG'
+estParams = {'krdG'
     'kcp1'
     'kcp2'
     'pol1'
@@ -105,7 +104,7 @@ cpol1
 cpol2]);
 
 % fixedParams vector
-fixedParams = []; % just the rkfdG parameter is fixed
+fixedParams = [1]; % just the rkfdG parameter is fixed
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 

@@ -47,9 +47,10 @@ switch tsIDtouse
         ts3 = '20190314_161518_3_161';
         ts4 = '20190314_161518_4_81';
         ts5 = '20190315_102139_1_242';
-        tstamp = {ts1 ts2 ts3 ts4 ts5};
+        ts6 = '20190315_102139_2_81';
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6};
         tsToSave = ts5;
-        nIterID = {1:20 1:20 1:20 1:20 1:9};
+        nIterID = {1:20 1:20 1:20 1:20 1:30 1:6};
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
