@@ -103,7 +103,7 @@ rkrseqTet
 rkcp
 cpol]);
 % fixedParams vector
-fixedParams = [3 5 7 9 10];
+fixedParams = [5 9 10];
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
@@ -114,7 +114,7 @@ estParams = {'kfdG'
     'krseqTet'};
 
 paramMap = [1:length(masterVector)]';
-paramRanges =  [masterVector(estParamsIx)-10 masterVector(estParamsIx)+5];
+paramRanges =  [masterVector(estParamsIx)-12 masterVector(estParamsIx)+8];
 
 
 dataIndices = [6];
