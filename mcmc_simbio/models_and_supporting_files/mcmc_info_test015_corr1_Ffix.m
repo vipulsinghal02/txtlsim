@@ -107,11 +107,11 @@ fixedParams = [5 9 10];
 
 estParamsIx = setdiff((1:length(masterVector))', fixedParams);
 
-estParams = {'kfdG'
-    'krdG'
-    'krdT'
-    'krdimTet'
-    'krseqTet'};
+estParams = activeNames(estParamsIx); %{'kfdG'
+%     'krdG'
+%     'krdT'
+%     'krdimTet'
+%     'krseqTet'};
 
 paramMap = [1:length(masterVector)]';
 paramRanges =  [masterVector(estParamsIx)-10 masterVector(estParamsIx)+5];
