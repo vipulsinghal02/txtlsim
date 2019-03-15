@@ -8,7 +8,7 @@
 close all
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_test015_corr1_Ffix'];
+projdir = [pwd '/mcmc_simbio/projects/proj_test015_corr1_Ffix2'];
 addpath(projdir)
 
 jpgsave = true;
@@ -16,12 +16,10 @@ figsave = false;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_tetR_repression1;
-mcmc_info = mcmc_info_test015_corr1_Ffix(mobj, exp(-2.8704), exp(2.6442));
-
+mcmc_info = mcmc_info_test015_corr1_Ffix2(mobj, exp(-2.8704), exp( 2.6442));
 
 %     {'kcp2'}    {[-2.8704]}
 %     {'pol2'}    {[ 2.6442]}
-
 
 di = data_test015;
 
@@ -30,25 +28,19 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
-tsIDtouse = 2;
+tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1
-        ts1 = '20190314_123130_1_0p20762';
-        ts2 = '20190314_123130_2_0p10381';
-        tstamp = {ts1 ts2};
-        tsToSave = ts2;
-        nIterID = {1:10 1:3};
-        load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
-            'mi',...
-            'mcmc_info', 'data_info', 'mai', 'ri');
+        ts1 = '20190315_070429_1_208';
+        ts2 = '20190315_070429_2_145';
+        ts3 = '20190315_070429_3_104';
+        ts4 = '20190315_070429_4_83';
         
-    case 2
-        ts1 = '20190315_031445_1_104';
-        ts2 = '20190315_040723_1_104'
-        tstamp = {ts1 ts2};
-        tsToSave = ts2;
-        nIterID = {1:6 1:12};
+        tstamp = {ts1 ts2 ts3 ts4};
+        tsToSave = ts4;
+        nIterID = {1:5, 1:5, 1:5 1:3};
+        
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
@@ -92,12 +84,12 @@ if plotflag
     close all
     % Plot trace and corner (posterior distribution) plots
 %     
-%     mcmc_plot(marray(:, 1:end,(end-2000):100:end), parnames(:),...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
-%         mcmc_plot(marray(:, 1:10:end,1:10:end), parnames(:),...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
+    mcmc_plot(marray(:, 1:end,(end-1000):25:end), parnames(:),...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
+        mcmc_plot(marray(:, 1:10:end,1:10:end), parnames(:),...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
     
     
     
@@ -221,11 +213,11 @@ end
 
 % figure
 % % The ESPs we use are
-kcp1 =   -3.7404;
-pol1 = 6.0991;
+kcp1 = -3.7404;
+pol1 =  6.0991;
 % 
  espvec = [ kcp1; pol1];
- fixparamvec = [log(2); espvec];
+ fixparamvec = [0; 0; log(2); log(2); espvec];
 % 
 % % next we simulate the results with the estimated test CSP params and
 % % the non CSP fixing ESPs above.
@@ -256,7 +248,7 @@ mcmc_trajectories(mi(1).emo, data_info(4), mi(1), marrayOrd,...
     'SimMode', 'meanstd', 'separateExpSim', false,...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave,...
-    'extrafignamestring', 'E2');
+    'extrafignamestring', 'E1_pred_nofix');
 
 % and plot these.
 
@@ -269,7 +261,7 @@ kcp1 =   1.6081;
 pol1 = 0.2897;
 % 
  espvec = [ kcp1; pol1];
- fixparamvec = [log(2); espvec];
+ fixparamvec = [0; 0; log(2); log(2); espvec];
 % 
 % % next we simulate the results with the estimated test CSP params and
 % % the non CSP fixing ESPs above.
@@ -300,7 +292,7 @@ mcmc_trajectories(mi(1).emo, data_info(4), mi(1), marrayOrd,...
     'SimMode', 'meanstd', 'separateExpSim', false,...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave,...
-    'extrafignamestring', 'E2');
+    'extrafignamestring', 'E1_pred_cspfix');
 
 
 

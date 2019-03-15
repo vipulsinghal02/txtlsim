@@ -1,4 +1,4 @@
-function mcmc_info = mcmc_info_test015_corr1_Ffix(modelObj, rkcp, cpol)
+function mcmc_info = mcmc_info_test015_corr1_Ffix2(modelObj, rkcp, cpol)
 % Single topology: tetR repression circuit
 % 2 geometries (extracts)
 % kf(s) fixed. 
