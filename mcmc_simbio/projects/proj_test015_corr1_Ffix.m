@@ -31,8 +31,8 @@ p.addParameter('temperatureLadder', 0.002); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 
-p.addParameter('rkcp', exp(-7.6));
-p.addParameter('cpol', exp(1.0212));
+p.addParameter('rkcp', exp([-2.8704]));
+p.addParameter('cpol', exp([ 2.6442]));
 
 p.parse(varargin{:});
 p = p.Results;
