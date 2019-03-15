@@ -114,7 +114,7 @@ estParams = {'kfdG'
     'krseqTet'};
 
 paramMap = [1:length(masterVector)]';
-paramRanges =  [masterVector(estParamsIx)-12 masterVector(estParamsIx)+8];
+paramRanges =  [masterVector(estParamsIx)-10 masterVector(estParamsIx)+5];
 
 
 dataIndices = [6];
