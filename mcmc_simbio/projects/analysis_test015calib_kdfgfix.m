@@ -8,7 +8,7 @@
 close all
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_test015'];
+projdir = [pwd '/mcmc_simbio/projects/proj_test015_kfdgfix'];
 addpath(projdir)
 
 jpgsave = true;
@@ -16,7 +16,7 @@ figsave = false;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_protein3;
-mcmc_info = mcmc_info_test015(mobj);
+mcmc_info = mcmc_info_test015_kfdgfix(mobj);
 di = data_test015;
 
 mi = mcmc_info.model_info;
@@ -24,42 +24,21 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
-tsIDtouse = 2;
+tsIDtouse = 1;
 
 plotflag = true;
 switch tsIDtouse
+    
     case 1
-        ts1 = '20190313_091216_1_0p32242';
-        ts2 = '20190313_101830_1_0p32242';
-        ts3 = '20190313_130351_1_0p32242';
-        ts4='20190313_153908_1_0p32242';
-        ts5 = '20190313_171758_1_0p064484';
-        ts6 = '20190314_004559_1_0p12897';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6};
-        
-        nIterID = {1:9 1:20 1:20 1:5 1:60 1:30};
-        load([projdir '/simdata_' ts6 '/full_variable_set_' ts6 '.mat'], ...
-            'mi',...
-            'mcmc_info', 'data_info', 'mai', 'ri');
-    case 2
-        ts1 = '20190314_161518_1_322';
-        ts2 = '20190314_161518_2_242';
-        ts3 = '20190314_161518_3_161';
-        ts4 = '20190314_161518_4_81';
-        ts5 = '20190315_102139_1_242';
-        ts6 = '20190315_102139_2_81';
-        ts7 = '20190316_033531_1_81';
-        ts8 = '20190316_044847_1_81';
-        ts9 = '20190316_092219_1_242';
-        ts10 = '20190318_082039_1_32';
-        ts11 = '20190318_082039_2_23';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
-        tsToSave = ts11;
-        nIterID = {1:20 1:20 1:20 1:20 1:30 1:6 1:7 1:24 1:50 1:15 1:15};
+        ts1 = '20190315_152003_1_242';
+        ts2 = '20190315_152003_2_161';
+        ts3 = '20190315_152003_3_81';
+        tstamp = {ts1 ts2 ts3};
+        tsToSave = ts1;
+        nIterID = {1:30 1:30 1:23};
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
-        
 end
 
 mai.masterVector
@@ -68,8 +47,7 @@ mai.masterVector
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
 marray = marray_full(:,:,1:end);
 parnames = ...
-        {'kfdG'
-    'krdG'
+        {'krdG'
     'kcp1'
     'kcp2'
     'pol1'
@@ -97,24 +75,20 @@ if plotflag
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
 %%
-%  close
-% marray_red = marray(:, :,((end-2600):10:end));
+% close
+% marray_red = marray(:, :,(end-16000:50:end));
 % mstack = marray_red(:, :)';
-% ixs = find(mstack(:, 4)>-2.89 & mstack(:, 4)<-2.85 &...
-%     mstack(:, 6)>2.63 & mstack(:, 6)<2.65);
+% ixs = find(mstack(:, 1)>-4.7 & mstack(:, 1)<-3.45);
 % mcmc_plot(mstack(ixs,:), parnames(:))
 %%
 
-%     mcmc_plot(marray(:, 1:end,1:4000:end), parnames(:),...
-%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithTr');
-% mcmc_plot(marray(:, 1:end,(end-3000):100:end), parnames(:),...
-%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithoutTr');
+    mcmc_plot(marray(:, 1:10:end,1:100:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithTr');
+mcmc_plot(marray(:, 1:end,(end-10000):500:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithoutTr');
 % 
-% mcmc_plot(marray(:, 1:20:end,1:100:end), parnames(:),...
-%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithoutTr');
 %     mcmc_plot(marray([1 2 3 5], 1:10:end,1:100:end), parnames([1 2 3 5]),...
 %     'savematlabfig', figsave, 'savejpeg', jpgsave,...
 %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E1');
@@ -141,42 +115,42 @@ if plotflag
 %     title('Markov Chain Auto Correlation')
 %     
 %     %%
-%     mvarray = masterVecArray(marray, mai);
-%     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
-%     %
-%     marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
-%     titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-%     titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-%     ms = {'RNA'};
-%     for i = 1:length(mi(1).measuredSpeciesIndex)
-%         for j = 1:length(titls)
-%             titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, Exp data']};
-%             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
-%         end
-%     end
-%     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
-%         titls_array, {},...
-%         'SimMode', 'meanstd', 'separateExpSim', false,...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave,...
-%         'extrafignamestring', 'E1');
-%     
-%     marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,2),:,samplePoints);
-%     titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-%     titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-%     ms = {'MG aptamer', 'deGFP'};
-%     for i = 1:length(mi(1).measuredSpeciesIndex)
-%         for j = 1:length(titls)
-%             titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, Exp data']};
-%             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
-%         end
-%     end
-%     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(2)), mi(1), marrayOrd,...
-%         titls_array, {},...
-%         'SimMode', 'meanstd', 'separateExpSim', false,...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave,...
-%         'extrafignamestring', 'E2');
+    mvarray = masterVecArray(marray, mai);
+    samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
+    %
+    marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
+    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+    ms = {'RNA'};
+    for i = 1:length(mi(1).measuredSpeciesIndex)
+        for j = 1:length(titls)
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
+        end
+    end
+    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
+        titls_array, {},...
+        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave,...
+        'extrafignamestring', 'E1');
+    
+    marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,2),:,samplePoints);
+    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+    ms = {'MG aptamer', 'deGFP'};
+    for i = 1:length(mi(1).measuredSpeciesIndex)
+        for j = 1:length(titls)
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
+        end
+    end
+    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(2)), mi(1), marrayOrd,...
+        titls_array, {},...
+        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave,...
+        'extrafignamestring', 'E2');
 end
 
 
@@ -229,44 +203,14 @@ end
 %     {'pol1'}    {[ 0.2897]}
 
 
-% ok no good: lets try again. 
-% I constrained all the points to 
-% ixs = find(mstack(:, 4)>-3.1 & mstack(:, 4)<-2.8 &...
-%     mstack(:, 6)>2.5 & mstack(:, 6)<2.8);
-% and generated the corner plot. 
-
-% With these constraints, some of the compatible parameter values for the
-% ESP1s are (compatible == there exists a point in CSP space for which the 
-% there is at least one point in E1 and one in E2 . 
-
-% kcp1 = -3.795 to -3.71 || pol1 = 2.9 to 9.7
-% another set is: the trapezoid with vertices: 
-
-% X,Y
-% 0.59, 0.369 
-% 3.033, -1.59
-% 9.83, 0.369 
-% 9.83, -1.59
-
-
-
-
 
 
 
 
 %%
 %%
-%% get points that are within a tight range of the ESP2 fixed points. 
-%(for use with the corr steps)
-% 
-marray_red = marray(:, :,((end-2600):200:end));
-mstack = marray_red(:, :)';
-ixs = find(mstack(:, 4)>-2.90 & mstack(:, 4)<-2.84 &...
-    mstack(:, 6)>2.61 & mstack(:, 6)<2.67);
-mcmc_plot(mstack(ixs,:), parnames(:))
-ESP2_tilda = mstack(ixs,:);
-% save('ESP2 points', 'ESP2_tilda')
+%%
+
 
 
 
