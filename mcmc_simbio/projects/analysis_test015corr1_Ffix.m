@@ -371,11 +371,6 @@ for i = 1:length(ix_to_use)
     pol1 = curr_calib(5);
     ESP1_ix = [9 10];
     ESP1_vals = [kcp1, pol1];
-    
-
-
-    
-    
     if ~isempty(ixs{i})
 %         figure(i)
         mvarray = repmat(mai.masterVector', [length(ixs{i}), 1]) ;
@@ -398,23 +393,7 @@ for i = 1:length(ix_to_use)
             'savematlabfig', figsave, 'savejpeg', jpgsave,...
             'projdir', projdir, 'tstamp', tsToSave,...
             'extrafignamestring', 'test');
-        
-        
-        
     end
-    
-    
-    
-    
-    
-    %
-    
-    
-    
-    
-    
-    
-    
 end
 
 ixs

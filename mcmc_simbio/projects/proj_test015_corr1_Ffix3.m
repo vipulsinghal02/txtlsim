@@ -33,6 +33,16 @@ p.addParameter('temperatureLadder', 0.002); % can be a boolean: true or false,
 p.addParameter('rkcp', exp(-2.8704));
 p.addParameter('cpol', exp( 2.6442));
 
+% other values, in particular at the line of covartiation: 
+% rkcp, cpol (log)
+% -1.068, 1.33
+% -0.2447, 0.5928
+% 0.7937, -0.5113
+% 2.987, -2.662
+% 3.635, -3.342
+
+% 
+
 p.parse(varargin{:});
 p = p.Results;
 

@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_test015(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_test015_E1E2same(varargin)
 % proj_acs_dsg2014
 % In this project, we fit RNA degradation and mRNA expression to data from
 % the paper

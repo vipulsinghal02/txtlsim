@@ -6,6 +6,7 @@
 % simulate txtl model with custom parameter values, and look at the species
 % plots as specified by mcmc_info object.
 close all
+clear all
 
 % Set working directory to the txtlsim toolbox directory.
 projdir = [pwd '/mcmc_simbio/projects/proj_test015'];
@@ -24,7 +25,7 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
-tsIDtouse = 2;
+tsIDtouse = 3.2;
 
 plotflag = true;
 switch tsIDtouse
@@ -53,13 +54,74 @@ switch tsIDtouse
         ts9 = '20190316_092219_1_242';
         ts10 = '20190318_082039_1_32';
         ts11 = '20190318_082039_2_23';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
-        tsToSave = ts11;
-        nIterID = {1:20 1:20 1:20 1:20 1:30 1:6 1:7 1:24 1:50 1:15 1:15};
+        ts12 = '20190318_082039_3_10';
+        ts13 = '20190318_143245_1_10';
+        ts14 = '20190318_143245_2_6';
+        ts15 = '20190318_143245_3_3';
+        ts16 = '20190319_071743_1_32';
+        ts17 = '20190319_105547_1_10'
+        
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ts12 ts13 ts14 ts15 ts16 ts17};
+        tsToSave = ts17;
+        nIterID = {1:20 1:20 1:20 1:20 1:30 1:6 1:7 1:24 1:50 1:15 1:15 1:9 1:45 1:45 1:39 1:29 1:33};
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
         
+        case 3
+        
+        ts13 = '20190318_143245_1_10';
+       
+        ts14 = '20190318_143245_2_6';
+        ts15 = '20190318_143245_3_3';
+        ts16 = '20190319_071743_1_32';
+        
+        ts17 = '20190319_105547_1_10'
+        tstamp = {ts13 ts14 ts15 ts16 ts17};
+        tsToSave = ts17;
+        nIterID = {1:45 1:45 1:39 1:29 1:33};
+        load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri');
+        case 3.1
+        
+        ts13 = '20190318_143245_1_10';
+       
+        ts14 = '20190318_143245_2_6';
+        ts15 = '20190318_143245_3_3';
+        
+        ts17 = '20190319_105547_1_10'
+        tstamp = {ts13 ts14 ts15  ts17};
+        tsToSave = ts17;
+        nIterID = {1:45 1:45 1:39 1:33};
+        load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri');
+        
+        % these sims suggest that kcp2 should be -2.8 to -3 (==-3.001). pretty tight!
+        % pol2 :  +2.6 to  +2.8. (== 2.655)
+        
+        % for ESP 1: 2 for kcp1. for pol 1: -0.2 to -0.4
+       % the esps, can also try -3.6 to -3.9 (-3.66) for kcp1 and 
+       % 3.3 (+-0.2) (==3.26) for the pol1. This second point is more compatible
+       % with the ESP2 point I think. moving to the corr code now: 
+       % analysis file for test015_corr1_Ffix3
+        
+       case 3.2
+        
+        ts17 = '20190319_105547_1_10';
+        ts18 = '20190319_153606_1_10';
+        ts19 = '20190319_152204_1_10';
+        ts20 = '20190319_153210_1_16';
+        tstamp = {ts17 ts18 ts19 ts20};
+        tsToSave = ts20;
+        nIterID = {1:35 1:74 1:80 1:80};
+        load([projdir '/simdata_' tsToSave '/full_variable_set_'...
+            tsToSave '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri');
+         
+       % 20190319_153606_1_10
 end
 
 mai.masterVector
@@ -67,6 +129,7 @@ mai.masterVector
 
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
 marray = marray_full(:,:,1:end);
+clear marray_full
 parnames = ...
         {'kfdG'
     'krdG'
@@ -103,12 +166,15 @@ if plotflag
 % ixs = find(mstack(:, 4)>-2.89 & mstack(:, 4)<-2.85 &...
 %     mstack(:, 6)>2.63 & mstack(:, 6)<2.65);
 % mcmc_plot(mstack(ixs,:), parnames(:))
-%%
+%
 
-%     mcmc_plot(marray(:, 1:end,1:4000:end), parnames(:),...
+%     mcmc_plot(marray(:, 1:end,1:100:end), parnames(:),... %uncomment this
 %     'savematlabfig', figsave, 'savejpeg', jpgsave,...
 %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithTr');
-% mcmc_plot(marray(:, 1:end,(end-3000):100:end), parnames(:),...
+%     mcmc_plot(marray(:, 1:end,(end-6000):500:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithoutTr');
+% mcmc_plot(marray(:, 1:20:end,(end-24000):500:end), parnames(:),...
 %     'savematlabfig', figsave, 'savejpeg', jpgsave,...
 %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'all_WithoutTr');
 % 
@@ -140,43 +206,44 @@ if plotflag
 %         ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
 %     title('Markov Chain Auto Correlation')
 %     
-%     %%
-%     mvarray = masterVecArray(marray, mai);
-%     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
-%     %
-%     marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
-%     titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-%     titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-%     ms = {'RNA'};
-%     for i = 1:length(mi(1).measuredSpeciesIndex)
-%         for j = 1:length(titls)
-%             titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, Exp data']};
-%             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
-%         end
-%     end
-%     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
-%         titls_array, {},...
-%         'SimMode', 'meanstd', 'separateExpSim', false,...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave,...
-%         'extrafignamestring', 'E1');
-%     
-%     marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,2),:,samplePoints);
-%     titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-%     titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-%     ms = {'MG aptamer', 'deGFP'};
-%     for i = 1:length(mi(1).measuredSpeciesIndex)
-%         for j = 1:length(titls)
-%             titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, Exp data']};
-%             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
-%         end
-%     end
-%     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(2)), mi(1), marrayOrd,...
-%         titls_array, {},...
-%         'SimMode', 'meanstd', 'separateExpSim', false,...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave,...
-%         'extrafignamestring', 'E2');
+%%
+    mvarray = masterVecArray(marray, mai);
+    samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
+    %
+    marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,1),:,samplePoints);
+    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+    ms = {'RNA'};
+    for i = 1:length(mi(1).measuredSpeciesIndex)
+        for j = 1:length(titls)
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
+        end
+    end
+    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
+        titls_array, {},...
+        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave,...
+        'extrafignamestring', 'E1');
+    
+    marrayOrd = mvarray(mi(1).paramMaps(mi(1).orderingIx,2),:,samplePoints);
+    titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+    titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+    ms = {'MG aptamer', 'deGFP'};
+    for i = 1:length(mi(1).measuredSpeciesIndex)
+        for j = 1:length(titls)
+            titls_array(j, 1, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, Exp data']};
+            titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
+        end
+    end
+    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(2)), mi(1), marrayOrd,...
+        titls_array, {},...
+        'SimMode', 'meanstd', 'separateExpSim', false,...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave,...
+        'extrafignamestring', 'E2');
+%%
 end
 
 
@@ -260,19 +327,103 @@ end
 %% get points that are within a tight range of the ESP2 fixed points. 
 %(for use with the corr steps)
 % 
-marray_red = marray(:, :,((end-2600):200:end));
+% marray_red = marray(:, :,1:200:end);
+% mstack = marray_red(:, :)';
+% 
+%  % these sims suggest that kcp2 should be -2.8 to -3 (==-3.001). pretty tight!
+%         % pol2 :  +2.6 to  +2.8. (== 2.655)
+%         
+%         % for ESP 1: 2 for kcp1. for pol 1: -0.2 to -0.4
+%        % the esps, can also try -3.6 to -3.9 (-3.66) for kcp1 and 
+%        % 3.3 (+-0.2) (==3.26) for the pol1. This second point is more compatible
+%        % with the ESP2 point I think. moving to the corr code now: 
+%        % analysis file for test015_corr1_Ffix3
+%        
+% epsi = 0.1;
+% kc1 = -3.66;
+% pol1 = 3.26;
+% kc2 = -2.87;
+% pol2 = 2.6442;
+% 
+% ixs = find(mstack(:, 4)>(kc2-epsi) & mstack(:, 4)<(kc2+epsi) &...
+%     mstack(:, 6)>(pol2-epsi) & mstack(:, 6)<(pol2+epsi));
+% 
+% % ixs = find(mstack(:, 4)>kc2-epsi & mstack(:, 4)<kc2+epsi &...
+% %     mstack(:, 6)>pol2-epsi & mstack(:, 6)<pol2+epsi &...
+% %     mstack(:, 3)>kc1-epsi & mstack(:, 3)<kc1+epsi &...
+% %     mstack(:, 5)>pol1-epsi & mstack(:, 5)<pol1+epsi);
+% 
+% 
+% mcmc_plot(mstack(ixs,:), parnames(:))
+% ESP2_tilda = mstack(ixs,:);
+%  save('ESP2 points_pts1_ts20', 'ESP2_tilda')
+% figure; 
+% subplot(3,2,1); hist(ESP2_tilda(:,1), 100); title('kfdg')
+% subplot(3,2,2); hist(ESP2_tilda(:,2), 100);  title('krdg')
+% subplot(3,2,3); hist(ESP2_tilda(:,3), 100);  title('kcp1')
+% subplot(3,2,4); hist(ESP2_tilda(:,4), 100);  title('kcp2')
+% subplot(3,2,5); hist(ESP2_tilda(:,5), 100);  title('pol1')
+% subplot(3,2,6); hist(ESP2_tilda(:,6), 100); title('pol2')
+% 
+% close
+% epsi = 0.02
+% kcp2val = 0.7937
+% pol2val = -0.5113
+% 
+% 
+% marray_red = marray(:, :,((end-12000):1:end));
+% mstack = marray_red(:, :)';
+% ixs = find(mstack(:, 4)>kcp2val-epsi & mstack(:, 4)<kcp2val+epsi &...
+%     mstack(:, 6)>pol2val-epsi & mstack(:, 6)<pol2val+epsi);
+% mcmc_plot(mstack(ixs,:), parnames(:))
+% ESP2_tilda_ii = mstack(ixs,:);
+
+
+
+%%
+
+marray_red = marray(:, :,1:end);
 mstack = marray_red(:, :)';
-ixs = find(mstack(:, 4)>-2.90 & mstack(:, 4)<-2.84 &...
-    mstack(:, 6)>2.61 & mstack(:, 6)<2.67);
+
+ % these sims suggest that kcp2 should be -2.8 to -3 (==-3.001). pretty tight!
+        % pol2 :  +2.6 to  +2.8. (== 2.655)
+        
+        % for ESP 1: 2 for kcp1. for pol 1: -0.2 to -0.4
+       % the esps, can also try -3.6 to -3.9 (-3.66) for kcp1 and 
+       % 3.3 (+-0.2) (==3.26) for the pol1. This second point is more compatible
+       % with the ESP2 point I think. moving to the corr code now: 
+       % analysis file for test015_corr1_Ffix3
+       
+epsi = 0.1;
+kfdg = 0.75
+krdg = 3.889
+ixs = find(mstack(:, 1)>(kfdg-epsi) & mstack(:, 1)<(kfdg+epsi) &...
+    mstack(:, 2)>(krdg-epsi) & mstack(:, 2)<(krdg+epsi));
+
+% ixs = find(mstack(:, 4)>kc2-epsi & mstack(:, 4)<kc2+epsi &...
+%     mstack(:, 6)>pol2-epsi & mstack(:, 6)<pol2+epsi &...
+%     mstack(:, 3)>kc1-epsi & mstack(:, 3)<kc1+epsi &...
+%     mstack(:, 5)>pol1-epsi & mstack(:, 5)<pol1+epsi);
+
+
 mcmc_plot(mstack(ixs,:), parnames(:))
-ESP2_tilda = mstack(ixs,:);
-% save('ESP2 points', 'ESP2_tilda')
+CSP_fixed_pts = mstack(ixs,:);
 
+ save('CSP_fixed_pts_ts20', 'CSP_fixed_pts') 
+figure; 
+subplot(3,2,1); hist(CSP_fixed_pts(:,1), 100); title('kfdg')
+subplot(3,2,2); hist(CSP_fixed_pts(:,2), 100);  title('krdg')
+subplot(3,2,3); hist(CSP_fixed_pts(:,3), 100);  title('kcp1')
+subplot(3,2,4); hist(CSP_fixed_pts(:,4), 100);  title('kcp2')
+subplot(3,2,5); hist(CSP_fixed_pts(:,5), 100);  title('pol1')
+subplot(3,2,6); hist(CSP_fixed_pts(:,6), 100); title('pol2')
 
+% looks like a good ? ESP2 value set might be 
+% kcp2 = 0.5168
+% pol2 = -0.2199
 
-
-
-
-
-
-
+% The corresponding kcp1, pol1 has 3 numbers:
+% (-3.69, 5.93;;                    == -3.7,  6.09), 
+% (5.77 to 6.26, -4.2 to -4.42;;    ==  6.05,-4.3), 
+% (-3.517 to -3.3, 4.49 to 3.9 ;;   == -3.3,  4.0)
+% Lest set this in the corr step 1, and estimate the CSP test parameters. 
