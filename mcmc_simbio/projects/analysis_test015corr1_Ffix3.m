@@ -29,7 +29,7 @@ mai = mcmc_info.master_info;
 
 
 % plot data from existing simulations.
-tsIDtouse = 1;
+tsIDtouse = 4;
 plotflag = true;
 switch tsIDtouse
     case 1
@@ -145,6 +145,31 @@ switch tsIDtouse
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
         
+        
+    case 4
+
+% kcp2 = 0.5168
+% pol2 = -0.2199
+
+        rkcp2 = 0.5168;
+        cpol2 = -0.2199;
+        mcmc_info = mcmc_info_test015_corr1_Ffix3(mobj, exp(rkcp2), exp(cpol2));
+        
+        mi = mcmc_info.model_info;
+        ri = mcmc_info.runsim_info;
+        mai = mcmc_info.master_info;
+
+
+        ts1 = '20190320_044704_1_42';
+        ts2 = '20190320_044942_1_104';
+        
+        tstamp = {ts1 ts2};
+        tsToSave = ts2;
+        nIterID = {3:6 4:8};
+        
+        load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri');
 end
 
 
@@ -181,9 +206,9 @@ if plotflag
     close all
     % Plot trace and corner (posterior distribution) plots
 %     %
-%     mcmc_plot(marray(:, 1:10:end,1:500:end), parnames(:),...
-%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
+    mcmc_plot(marray(:, 1:end,1:10:end), parnames(:),...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
 %     mcmc_plot(marray(:, 1:4:end,(end - 11000):500:end), parnames(:),...
 %         'savematlabfig', figsave, 'savejpeg', jpgsave,...
 %         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTr_E2');
@@ -517,8 +542,8 @@ end
 
 % figure
 % % The ESPs we use are
-kcp1 = -3.7;
-pol1 =  3.3;
+kcp1 = 6.05;%-3.7;
+pol1 =  -4.3;%3.3;
 %
  espvec = [ kcp1; pol1];
  fixparamvec = [0; 0; 0; espvec];
@@ -658,14 +683,14 @@ ixs_calib = 1:size(CSP_fixed_pts,1);
 
 CSP_fixed_pts2 = CSP_fixed_pts(ixs_calib,:);
 length(CSP_fixed_pts2)
-ix_to_use = randperm(length(CSP_fixed_pts2), 20);
+ix_to_use = randperm(length(CSP_fixed_pts2), 10);
 
 % ix_to_use = 1:length(ESP2_tilda2)
 
 % test params:
 marray_thin = marray(:, :,1:20:end);
 mstacked = marray_thin(:,:)';
-epsilon = .5;
+epsilon = .4;
 ixs = cell(length(ix_to_use),1);
 estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
 count = 0;

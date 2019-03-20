@@ -39,7 +39,7 @@ p = p.Results;
 mobj = model_protein3;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_test015(mobj);
+mcmc_info = mcmc_info_test015_E1E2same(mobj);
 
 mi = mcmc_info.model_info;
 
