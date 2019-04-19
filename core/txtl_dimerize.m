@@ -53,21 +53,23 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     reactionRate = varargin{1};
-
+    regIX = regexp(protein.Name,'^protein ', 'end');
+    protstr = protein.Name((regIX+1):end);
     if isempty(reactionRate)
         error('txtltoolbox:txtl_dimerize:unspecifiedRR', ...
             'Please specify dimerization reaction rates as an input vector');
     elseif reactionRate(2) == 0 || length(reactionRate) == 1
        Robj = addreaction(tube, ['2 [' protein.Name '] -> [' protein.Name 'dimer]']);
        Kobj = addkineticlaw(Robj,'MassAction');
-       Pobj = addparameter(Kobj,  'kf', reactionRate(1));
-       set(Kobj, 'ParameterVariableNames','kf');
+       Pobj = addparameter(Kobj,  ['TXTL_DIMER_' protstr '_' 'F'], reactionRate(1));
+       set(Kobj, 'ParameterVariableNames',['TXTL_DIMER_' protstr '_' 'F']);
     else
        Robj = addreaction(tube, ['2 [' protein.Name '] <-> [' protein.Name 'dimer]']); 
        Kobj = addkineticlaw(Robj,'MassAction');
-       Pobjf = addparameter(Kobj, 'kf', reactionRate(1));
-       Pobjr = addparameter(Kobj, 'kr', reactionRate(2));
-       set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+       Pobjf = addparameter(Kobj, ['TXTL_DIMER_' protstr '_' 'F'], reactionRate(1));
+       Pobjr = addparameter(Kobj, ['TXTL_DIMER_' protstr '_' 'R'], reactionRate(2));
+       set(Kobj, 'ParameterVariableNames', {['TXTL_DIMER_' protstr '_' 'F'],...
+           ['TXTL_DIMER_' protstr '_' 'R']});
     end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%

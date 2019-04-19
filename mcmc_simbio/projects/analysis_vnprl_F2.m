@@ -5,8 +5,8 @@
 projdir = [pwd '/mcmc_simbio/projects/proj_vnprl'];
 addpath(projdir)
 
-jpgsave = true;
-figsave = false;
+jpgsave = false;
+figsave = true;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_dsg2014_regen;
@@ -89,32 +89,140 @@ parnames = ...
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
 %
-
+%%
 if plotflag
-    close all
+%     close all
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
-%     mcmc_plot(marray(:, 1:end,8000:20:end), parnames(:),...
-%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedInAllWalkers');
+    mcmc_plot(marray(:, 1:end,10000:500:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedInAllWalkers');
 
 
-    mcmc_plot(marray(:, 1:10:end,(end-18000):100:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-18000):100:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+    
+%% Stepwise restriction of parameter ranges to get a point that exists in the joint parameter space. 
+    % cleaning up the parameters by removing any parameters that are 
+    % -2.5, 1.9 ---> % RNAse_{cat} -- 7
+    % 3.5, 10.75 ---> % RNase -- 9 
+    % because we do not want to be hitting the boundaries of the parameter
+    % ranges, there is a biased concentration of points at these
+    % boundaries. 
+    parRanges = mai.paramRanges;
+    parRanges([7,9], :) = [-1.863, 1.9;3.5, 10.75]
+    marray_cut = mcmc_cut(marray, [7, 9], flipud((parRanges([7 9], :))'));
+    
+    mcmc_plot(marray_cut(:, 1:end,10000:500:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+
+    % next we restrict the covarying points to small cartesian squares. 
+    % RNAse_cat (index 7) ---> -0.2966 0.1031
+    % RNase (index 9) ---> 8.298 8.738
+    parRanges([7,9], :) = [-0.2966 0.1031; 8.298 8.738];
+    marray_cut = mcmc_cut(marray, [7,9], flipud((parRanges([7 9], :))'));
+    
+    mcmc_plot(marray_cut(:, 1:end,ceil(end/3):10:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+    
+    % next we restrict the covarying points to small cartesian squares. 
+    % RNAse_Kd (index 6) ---> 15.59 15.73 
+    % RNAse_cat (index 7) ---> -0.2966 0.1031
+    % RNase (index 9) ---> 8.385 8.622
+    parRanges([6,7, 9], :) = [15.59 15.73 ; 
+        -0.2966 0.1031;
+        8.385 8.622];
+    marray_cut = mcmc_cut(marray, [6,7,9], flipud((parRanges([6 7 9], :))'));
+    
+    mcmc_plot(marray_cut(:, 1:end,ceil(end/4):end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+    mcut = marray_cut([6 7 9], 1:end,ceil(end/4):end);
+    mcmc_3D(mcut(:,:)', parnames([6 7 9]), 'RNA deg covariation')
+    
+% an attempt at sequential elimination of covariation. The three parameters
+% RNase KD, RNase Cat, and RNase covary mutually. We want to find *a*
+% volumme hyper cube within the covarying plane. Ideally of maximized mass,
+% but otherwise any volume will do. 
+
+% Looks like RNase Kd (15.59 15.73) and RNAse (8.385 8.622) gives a square,
+% but the other two covary: the Kd with the cat, and the cat with the
+% rnase. 
+
+% as long as I pick values within the first square, it should stay a
+% square. So lets try to squarify the other two. 
+
+% KD vs cat
+% Kd: 15.65 15.73
+% cat: -0.1224 0.02126 
+
+% rnase vs cat
+% rnase: 8.386 8.461, 
+% cat: -0.039 0.022 --> Kd further restricted to ... nope, the KD vs cat 
+% range is cartesian, so no further restriction needed due to the cat being 
+% further restricted.
 % 
-pause(10)
-close 
-close
 
-    mcmc_plot(marray(:, 1:10:end,1:100:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTransient');
-pause(10)
-close 
-close
+% The intersection of these sets should give us the cube:
+% Kd: 15.65 15.73
+% cat: -0.039 0.02126 
+% rnase: 8.386 8.461 
+
+% lets try this. 
+    parRanges([6,7, 9], :) = [15.65 15.73 ; 
+        -0.039 0.02126;
+        8.386 8.461 ];
+    marray_cut = mcmc_cut(marray, [6,7,9], flipud((parRanges([6 7 9], :))'));
+    
+    mcmc_plot(marray_cut(:, 1:end,ceil(end/4):end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+    
+    % nope, I do not get a cube. Need to think about this. I think it is a
+    % tilted hyperplane in space, and just ntersecting a cube with it is
+    % not going to give a filled up cube. but even then, its projection
+    % should be a bunch of squares, no? need to think about it. this is
+    % very interesting. Think about what happens to a tilted plane when you
+    % try to intersect a hypercube with it. Also, it is just 3d, can try to
+    % just plot it in 3d. oh yeah, lol. 
+
+%     Actually yeah, see the mcmc_3D plot above, it explains this. 
 
 
+%% FINALLY USED VALUES SECTION %%%%%
+% Ok, next up, we are going to restrict most parameters to some ranges, and
+% then pick parameter values at random from the set of remaining points. 
+% TX cat: 2.3 2.95
+    % RNAse_Kd (index 6) ---> 15.59 15.73 
+    % RNAse_cat (index 7) ---> -0.2966 0.1031
+    % RNase (index 9) ---> 8.385 8.622
+    close all
+    paramIndices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+    parRanges(paramIndices, :) = [...
+        2.3 2.95; %1
+        8.6 8.95; %2
+        -10.1 -9.7; %3
+        13 15; %4
+        -1 5 ; %5
+        15.59 15.73; %6
+        -0.2966 0.1031; %7
+        0.7 2.2; %8 pol
+        8.385 8.622;%9 RNase
+        3.18 3.69; % 10 -- TLcat
+        -3 13.5;%RiboKd
+        2 3;% Ribo term
+        3 4.6 ];% Ribo
+    marray_cut = mcmc_cut(marray, paramIndices, flipud((parRanges(paramIndices, :))'));
+    
+    mcmc_plot(marray_cut(:, 1:end,ceil(end/4):end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+
+
+ CandidateParams = marray_cut(:,1:100:end,end)
 %     figure
 %     [C,lags,ESS]=eacorr(marray(:, :,1:end));%10000:end
 %     plot(lags,C,'.-',lags([1 end]),[0 0],'k');
@@ -125,8 +233,8 @@ close
 %         ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
 %     title('Markov Chain Auto Correlation')
 %     
-    
-    mvarray = masterVecArray(marray, mai);
+    %%
+    mvarray = masterVecArray(marray_cut, mai);
     clear marray
     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
     %

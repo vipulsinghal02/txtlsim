@@ -1,8 +1,8 @@
-function m = model_txtl_pLacdeGFP(varargin)
-% model_txtl_ptetdeGFP_pLactetR_aTc: txtlsim model containing: 
-% ptet-UTR1-deGFP
-% pLac-UTR1-tetR
-% aTc
+function m = model_txtl_pLacLasR_pLasdeGFP(varargin)
+% model_txtl_pLacLasR_pLasdeGFP: txtlsim model containing: 
+% pLas-UTR1-deGFP
+% pLac-UTR1-LasR
+% 3OC12HSL
 % 
 % 
 % ~~~ INPUTS ~~~

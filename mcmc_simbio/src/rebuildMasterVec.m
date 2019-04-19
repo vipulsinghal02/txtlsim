@@ -11,7 +11,6 @@ function [mv] = rebuildMasterVec(rmv, mai)
 	% fed into this function, as done by the integrableLHS_v2.m
 
 	for i = 1:length(sg)
-        
         % build the matrix of semanticGroup normalizations
         % This is very interesting! can write a paper about this. 
         % data initialization structure. 

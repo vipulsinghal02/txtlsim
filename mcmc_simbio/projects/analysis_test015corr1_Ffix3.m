@@ -162,10 +162,11 @@ switch tsIDtouse
 
         ts1 = '20190320_044704_1_42';
         ts2 = '20190320_044942_1_104';
+        ts3 = '20190320_044942_2_62';
         
-        tstamp = {ts1 ts2};
-        tsToSave = ts2;
-        nIterID = {3:6 4:8};
+        tstamp = {ts1 ts2 ts3};
+        tsToSave = ts3;
+        nIterID = {10:21 10:30 1:4};
         
         load([projdir '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
             'mi',...
@@ -206,7 +207,7 @@ if plotflag
     close all
     % Plot trace and corner (posterior distribution) plots
 %     %
-    mcmc_plot(marray(:, 1:end,1:10:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,1:200:end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithoutTr_E2');
 %     mcmc_plot(marray(:, 1:4:end,(end - 11000):500:end), parnames(:),...
@@ -542,8 +543,8 @@ end
 
 % figure
 % % The ESPs we use are
-kcp1 = 6.05;%-3.7;
-pol1 =  -4.3;%3.3;
+kcp1 = -3.3;%-3.7;
+pol1 =  4.0;%3.3;
 %
  espvec = [ kcp1; pol1];
  fixparamvec = [0; 0; 0; espvec];
@@ -581,89 +582,89 @@ mcmc_trajectories(mi(1).emo, data_info(4), mi(1), marrayOrd,...
 
 
 %%
-
-clc
-clear non_empty
-clear ixs
-load('ESP2 points_pts1_ts20', 'ESP2_tilda') 
-
-close all
-epsi_calib = 0.05;
-ixs_calib = 1:size(ESP2_tilda,1);
-
-
-%find(ESP2_tilda(:, 4)>(rkcp2-epsi_calib) & ESP2_tilda(:, 4)<(rkcp2+epsi_calib) &...
-   % ESP2_tilda(:, 6)>(cpol2-epsi_calib) & ESP2_tilda(:, 6)<(cpol2+epsi_calib))
-
-ESP2_tilda2 = ESP2_tilda(ixs_calib,:);
-length(ESP2_tilda2)
-ix_to_use = randperm(length(ESP2_tilda2), 20);
-
-% ix_to_use = 1:length(ESP2_tilda2)
-
-% test params:
-marray_thin = marray(:, :,1:20:end);
-mstacked = marray_thin(:,:)';
-epsilon = .5;
-ixs = cell(length(ix_to_use),1);
-estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
-count = 0;
-for i = 1:length(ix_to_use)
-    curr_calib = ESP2_tilda(ix_to_use(i), :);
-    % find the elements of mstacked that are within the set
-    kf_range = [curr_calib(1)-epsilon curr_calib(1)+epsilon];
-    kr_range = [curr_calib(2)-epsilon curr_calib(2)+epsilon];
-    ixs{i} = find(mstacked(:, 1)>kf_range(1) & mstacked(:, 1)<kf_range(2) &...
-        mstacked(:, 2)>kr_range(1) & mstacked(:, 2)<kr_range(2));
-    if  ~isempty(ixs{i})
-        count = count+1;
-        non_empty(count) = i;
-    end
-    
-%     The corresponding ESP1s are: 
-    kcp1 = curr_calib(3);
-    pol1 = curr_calib(5);
-    ESP1_ix = [9 10];
-    ESP1_vals = [kcp1, pol1]
-    
-
-end
-count
-non_empty
-ixs(non_empty)
-
-curr_time = datestr(now, 'ddmmyy_HHMM');
-for p = 1:length(non_empty)
-    i = non_empty(p)
-    
-        if ~isempty(ixs{i})
-%         figure(i)
-        mvarray = repmat(mai.masterVector', [length(ixs{i}), 1]) ;
-        mvarray(:, estParamsIx) = mstacked(ixs{i}, :);
-        mvarray(:, ESP1_ix) = repmat(ESP1_vals, [length(ixs{i}), 1]);
-        marrayOrd = mvarray(:,mi(1).paramMaps(mi(1).orderingIx,1));
-        
-        titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
-        titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
-        ms = {'GFP'};
-        for k = 1:length(mi(1).measuredSpeciesIndex)
-            for j = 1:length(titls)
-                titls_array(j, 1, k) = {[ms{k} ', ' titls{1,j} 'nM initial tetR DNA, Exp data,' ' ntraj=' num2str(length(ixs{i}))]};
-                titls_array(j, 2, k) = {[ms{k} ', ' titls{1,j} 'nM initial tetR DNA, MCMC samples']};
-            end
-        end
-        mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
-            titls_array, {},...
-            'SimMode', 'meanstd', 'separateExpSim', false,...
-            'savematlabfig', figsave, 'savejpeg', jpgsave,...
-            'projdir', projdir, 'tstamp', tsToSave,...
-            'extrafignamestring', ['_' curr_time '_cor2_' num2str(i) '_numtraj_' num2str(length(ixs{1}))]);
-%         pause(0.3)
-        close
-        
-        end
-    
-end
+% 
+% clc
+% clear non_empty
+% clear ixs
+% load('ESP2 points_pts1_ts20', 'ESP2_tilda') 
+% 
+% close all
+% epsi_calib = 0.05;
+% ixs_calib = 1:size(ESP2_tilda,1);
+% 
+% 
+% %find(ESP2_tilda(:, 4)>(rkcp2-epsi_calib) & ESP2_tilda(:, 4)<(rkcp2+epsi_calib) &...
+%    % ESP2_tilda(:, 6)>(cpol2-epsi_calib) & ESP2_tilda(:, 6)<(cpol2+epsi_calib))
+% 
+% ESP2_tilda2 = ESP2_tilda(ixs_calib,:);
+% length(ESP2_tilda2)
+% ix_to_use = randperm(length(ESP2_tilda2), 20);
+% 
+% % ix_to_use = 1:length(ESP2_tilda2)
+% 
+% % test params:
+% marray_thin = marray(:, :,1:20:end);
+% mstacked = marray_thin(:,:)';
+% epsilon = .5;
+% ixs = cell(length(ix_to_use),1);
+% estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
+% count = 0;
+% for i = 1:length(ix_to_use)
+%     curr_calib = ESP2_tilda(ix_to_use(i), :);
+%     % find the elements of mstacked that are within the set
+%     kf_range = [curr_calib(1)-epsilon curr_calib(1)+epsilon];
+%     kr_range = [curr_calib(2)-epsilon curr_calib(2)+epsilon];
+%     ixs{i} = find(mstacked(:, 1)>kf_range(1) & mstacked(:, 1)<kf_range(2) &...
+%         mstacked(:, 2)>kr_range(1) & mstacked(:, 2)<kr_range(2));
+%     if  ~isempty(ixs{i})
+%         count = count+1;
+%         non_empty(count) = i;
+%     end
+%     
+% %     The corresponding ESP1s are: 
+%     kcp1 = curr_calib(3);
+%     pol1 = curr_calib(5);
+%     ESP1_ix = [9 10];
+%     ESP1_vals = [kcp1, pol1]
+%     
+% 
+% end
+% count
+% non_empty
+% ixs(non_empty)
+% 
+% curr_time = datestr(now, 'ddmmyy_HHMM');
+% for p = 1:length(non_empty)
+%     i = non_empty(p)
+%     
+%         if ~isempty(ixs{i})
+% %         figure(i)
+%         mvarray = repmat(mai.masterVector', [length(ixs{i}), 1]) ;
+%         mvarray(:, estParamsIx) = mstacked(ixs{i}, :);
+%         mvarray(:, ESP1_ix) = repmat(ESP1_vals, [length(ixs{i}), 1]);
+%         marrayOrd = mvarray(:,mi(1).paramMaps(mi(1).orderingIx,1));
+%         
+%         titls = arrayfun(@num2str, mi(1).dosedVals, 'UniformOutput', false);
+%         titls_array = cell(length(titls), 2, length(mi(1).measuredSpeciesIndex));
+%         ms = {'GFP'};
+%         for k = 1:length(mi(1).measuredSpeciesIndex)
+%             for j = 1:length(titls)
+%                 titls_array(j, 1, k) = {[ms{k} ', ' titls{1,j} 'nM initial tetR DNA, Exp data,' ' ntraj=' num2str(length(ixs{i}))]};
+%                 titls_array(j, 2, k) = {[ms{k} ', ' titls{1,j} 'nM initial tetR DNA, MCMC samples']};
+%             end
+%         end
+%         mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo(1)), mi(1), marrayOrd,...
+%             titls_array, {},...
+%             'SimMode', 'meanstd', 'separateExpSim', false,...
+%             'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%             'projdir', projdir, 'tstamp', tsToSave,...
+%             'extrafignamestring', ['_' curr_time '_cor2_' num2str(i) '_numtraj_' num2str(length(ixs{1}))]);
+% %         pause(0.3)
+%         close
+%         
+%         end
+%     
+% end
 
 %% true CSP fixing. 
 
@@ -674,31 +675,32 @@ clear ixs
 load('CSP_fixed_pts_ts20', 'CSP_fixed_pts') 
 
 close all
-epsi_calib = 0.05;
-ixs_calib = 1:size(CSP_fixed_pts,1);
+epsi_calib = 0.1;
+% CSP_fixed_pts = CSP_fixed_pts(1:2000:end,:);
+% ixs_calib = 1:size(CSP_fixed_pts,1);
 
 
-%find(ESP2_tilda(:, 4)>(rkcp2-epsi_calib) & ESP2_tilda(:, 4)<(rkcp2+epsi_calib) &...
-   % ESP2_tilda(:, 6)>(cpol2-epsi_calib) & ESP2_tilda(:, 6)<(cpol2+epsi_calib))
+ixs_calib = find(CSP_fixed_pts(:, 4)>(rkcp2-epsi_calib) & CSP_fixed_pts(:, 4)<(rkcp2+epsi_calib) &...
+   CSP_fixed_pts(:, 6)>(cpol2-epsi_calib) & CSP_fixed_pts(:, 6)<(cpol2+epsi_calib));
 
 CSP_fixed_pts2 = CSP_fixed_pts(ixs_calib,:);
 length(CSP_fixed_pts2)
-ix_to_use = randperm(length(CSP_fixed_pts2), 10);
-
+ix_to_use = randperm(length(CSP_fixed_pts2), 4);
+CSP_fixed_pts2(ix_to_use,:)
 % ix_to_use = 1:length(ESP2_tilda2)
-
+%%
 % test params:
-marray_thin = marray(:, :,1:20:end);
+marray_thin = marray(:, 1:end,1:800:end);
 mstacked = marray_thin(:,:)';
-epsilon = .4;
+epsilon = 2;
 ixs = cell(length(ix_to_use),1);
 estParamsIx = setdiff((1:length(mai.masterVector))', mai.fixedParams);
 count = 0;
 for i = 1:length(ix_to_use)
-    curr_calib = CSP_fixed_pts(ix_to_use(i), :);
+    curr_calib = CSP_fixed_pts2(ix_to_use(i), :)
     % find the elements of mstacked that are within the set
-    kf_range = [curr_calib(1)-epsilon curr_calib(1)+epsilon];
-    kr_range = [curr_calib(2)-epsilon curr_calib(2)+epsilon];
+    kf_range = [curr_calib(1)-epsilon curr_calib(1)+epsilon]
+    kr_range = [curr_calib(2)-epsilon curr_calib(2)+epsilon]
     ixs{i} = find(mstacked(:, 1)>kf_range(1) & mstacked(:, 1)<kf_range(2) &...
         mstacked(:, 2)>kr_range(1) & mstacked(:, 2)<kr_range(2));
     if  ~isempty(ixs{i})
@@ -712,7 +714,7 @@ for i = 1:length(ix_to_use)
     ESP1_ix = [9 10];
     ESP1_vals = [kcp1, pol1]
     
-
+% pause(3)
 end
 count
 non_empty

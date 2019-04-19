@@ -15,8 +15,8 @@ YY = mcut(:, 2);
 ZZ = mcut(:, 3);
 scatter3(XX,YY,ZZ)
 xlabel(axL{1}, 'FontSize', 20)
-ylabel(axL{1}, 'FontSize', 20)
-zlabel(axL{1}, 'FontSize', 20)
+ylabel(axL{2}, 'FontSize', 20)
+zlabel(axL{3}, 'FontSize', 20)
 title(titl, 'FontSize', 20)
 ax = gca;
 end

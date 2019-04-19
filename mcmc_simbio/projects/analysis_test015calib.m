@@ -409,14 +409,14 @@ ixs = find(mstack(:, 1)>(kfdg-epsi) & mstack(:, 1)<(kfdg+epsi) &...
 mcmc_plot(mstack(ixs,:), parnames(:))
 CSP_fixed_pts = mstack(ixs,:);
 
- save('CSP_fixed_pts_ts20', 'CSP_fixed_pts') 
+ load('CSP_fixed_pts_ts20', 'CSP_fixed_pts') 
 figure; 
-subplot(3,2,1); hist(CSP_fixed_pts(:,1), 100); title('kfdg')
-subplot(3,2,2); hist(CSP_fixed_pts(:,2), 100);  title('krdg')
-subplot(3,2,3); hist(CSP_fixed_pts(:,3), 100);  title('kcp1')
-subplot(3,2,4); hist(CSP_fixed_pts(:,4), 100);  title('kcp2')
-subplot(3,2,5); hist(CSP_fixed_pts(:,5), 100);  title('pol1')
-subplot(3,2,6); hist(CSP_fixed_pts(:,6), 100); title('pol2')
+subplot(3,2,1); hist(CSP_fixed_pts(1:1000:end,1), 30); title('kfdg')
+subplot(3,2,2); hist(CSP_fixed_pts(1:1000:end,2), 30);  title('krdg')
+subplot(3,2,3); hist(CSP_fixed_pts(1:1000:end,3), 30);  title('kcp1')
+subplot(3,2,4); hist(CSP_fixed_pts(1:1000:end,4), 30);  title('kcp2')
+subplot(3,2,5); hist(CSP_fixed_pts(1:1000:end,5), 30);  title('pol1')
+subplot(3,2,6); hist(CSP_fixed_pts(1:1000:end,6), 30); title('pol2')
 
 % looks like a good ? ESP2 value set might be 
 % kcp2 = 0.5168

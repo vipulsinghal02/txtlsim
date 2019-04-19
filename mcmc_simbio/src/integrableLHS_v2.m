@@ -21,7 +21,6 @@ function int_minit = integrableLHS_v2(mi, mai, ri, varargin)
     % us the indices of the parameters to be estimated for that problem,
     % followed by zeros to pad.
 
-
     p = inputParser;
     p.addParameter('multiopt_params', [], @isnumeric)
     p.addParameter('distribution', 'LHS', @ischar)

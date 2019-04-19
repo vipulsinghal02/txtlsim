@@ -5,7 +5,6 @@ function [rmv, rpr, sgnames] = reduceMasterVec(master_info)
 % 
 % return to that and try some things out. % working on this 
 % nov 2018
-%
 % Copyright, Vipul Singhal
 	mv = master_info.masterVector;
 	estParamsIx = setdiff((1:length(mv))', master_info.fixedParams);
@@ -21,7 +20,6 @@ function [rmv, rpr, sgnames] = reduceMasterVec(master_info)
     pr = master_info.paramRanges;
     rpr = zeros(reducedLength, 2);
     sgnames = cell(reducedLength, 1); % list of names for the sematic groups
-
     mastnames = master_info.estNames;
 	for i = 1:reducedLength 
 		sgi = master_info.semanticGroups{i}; % ith sematic group
@@ -30,6 +28,7 @@ function [rmv, rpr, sgnames] = reduceMasterVec(master_info)
 		sgnames{i} = mastnames{sgi(1)}; % the first name in the group
 	end
 
-
-
 end
+
+
+

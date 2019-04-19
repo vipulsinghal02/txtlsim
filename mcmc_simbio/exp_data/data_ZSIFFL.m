@@ -88,7 +88,7 @@ datadescription = {'Zach IFFL training data: pTet constitutive';
     'Zach IFFL training data: pLac constitutive';
     'Zach IFFL training data: TetR repression'; 
     'Zach IFFL training data: aTc induction';
-    'Zach IFFL training data: 3oc12 AHL induction'};
+    'Zach IFFL training data: 3OC12 AHL induction'};
 % final order is time x species x replicates x doses
 % da = permute(da, [1, 3, 4, 2]); 
 dimlabels = {'time points', 'measured species', 'replicates', 'doses'};
@@ -106,7 +106,7 @@ dosedNames2 = {'pLac-deGFP DNA'};
 dosedNames3 = {'pLac-TetR DNA'};
 dosedNames4 = {'aTc'};
 dosedNames5 = {'3OC12HSL'};
-%
+% 
 da = cell(5, 1);
 for i = 1:5
     

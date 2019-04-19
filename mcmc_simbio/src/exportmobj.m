@@ -2,8 +2,6 @@ function [da, mi, tv] = exportmobj(mi, data_info, fitOption)
 %exportmobj export simbiology model object and update the model info struct
 %with the ordering indices and the exported model object. 
 
-
-
 nTopo = length(mi);
 nGeom = zeros(length(mi),1);
 for i = 1:nTopo
@@ -51,22 +49,69 @@ for i = 1:nTopo % each topology
     % http://sveme.org/how-to-use-global-optimization-toolbox-algorithms-for-
     % simbiology-parameter-estimation-in-parallel-part-i.html
 
+    
+    
+    
+    
+    
+
+
+    
+    
     mobj = mi(i).modelObj;
 
-    enuo = mi(i).namesUnord;% estimated names unordered
+    enuo = mi(i).namesUnord; % estimated names unordered
     
     ep = sbioselect(mobj, 'Type', 'parameter', 'Name', ...
         mi(i).namesUnord);% est parameters
 
     es = sbioselect(mobj, 'Type', 'species', 'Name', ...
         mi(i).namesUnord);% est species
-
+    
+    
     aps = [ep; es]; % active parameters and species
 
     % reorder the parameter and species so they are in the same order as that
     % in the model. 
     eno = cell(length(aps), 1);% est names ordered
     ds = sbioselect(mobj, 'Type', 'species', 'Name', mi(i).dosedNames);
+    
+    % bugfix -- APRIL 19 2019: need to also reorder the dose values to
+    % match the ordering in the model objects value info. See for example: 
+    %     
+    % ds
+    % 
+    %    SimBiology Species Array
+    % 
+    %    Index:    Compartment:    Name:                    InitialAmount:    InitialAmountUnits:
+    %    1         contents        DNA ptet--utr1--deGFP    0                 
+    %    2         contents        aTc                      0                 
+    %    3         contents        DNA plac--utr1--tetR     0                 
+    % 
+    % mi(3).dosedNames
+    % 
+    % ans =
+    % 
+    %   3×1 cell array
+    % 
+    %     {'DNA ptet--utr1--deGFP'}
+    %     {'DNA plac--utr1--tetR' }
+    %     {'aTc'                  }
+    
+    ndoses = length(mi(i).dosedNames);
+    doseOrderingIx = zeros(ndoses, 1);
+    for q = 1:ndoses
+        
+        doseOrderingIx(q) = find(cellfun(@(x) strcmp({ds(q).Name}, x),...
+            mi(i).dosedNames,...
+            'UniformOutput', true));
+        %IE, mi(i).dosedNames(doseOrderingIx(q)) == ds(q).Name
+        % ie, use doseOrderingIx to transform mi(i).dosedNames ---> the
+        % ordering in ds(q).Name, ie, expected by the exported model
+        % object. 
+    end
+    
+    
     emo{i} = export(mobj, [ep; es; ds]); % exported model object, dosed species names. 
     SI = emo{i}.SimulationOptions;
 
@@ -101,7 +146,9 @@ for i = 1:nTopo % each topology
     mi(i).orderingIx = orderingIx; % these two arrays will be VERY useful. 
     mi(i).orderingIx2 = orderingIx2; % this one being the second. 
     mi(i).namesOrd = eno; % est names ordered. 
+    mi(i).doseReordering = doseOrderingIx; % dose names that were used to reorder the doses. 
+    mi(i).dosedNames = mi(i).dosedNames(doseOrderingIx);
+    mi(i).dosedVals = mi(i).dosedVals(doseOrderingIx,:);
 end
-
 end
 

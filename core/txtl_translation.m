@@ -37,7 +37,7 @@ function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 if strcmp(mode.add_dna_driver, 'Setup Species')
     % Set up the species for translation
     Ribobound_term = ['term_' Ribobound.Name ];
-    coreSpecies = {'AA',['AA:2AGTP:' Ribobound.Name],Ribobound_term, 'Ribo'};
+    coreSpecies = {'AA',['AA:AGTP:' Ribobound.Name],Ribobound_term, 'Ribo'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     

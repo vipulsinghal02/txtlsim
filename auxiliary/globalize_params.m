@@ -40,7 +40,9 @@ for r = 1:R
         
         % now if reversible, setup the Kd parameter and the rule that Kd=kr/kf
         if rx.Reversible
+            
             parname_base = parnames{1}(1:end-2);
+
             % assume a form like TXTL_UTR_UTR1_F, and so we want to remove the '_F' at the end.
             %todo: check if this is the format of all the parameters. 
             if isempty(sbioselect(m,'Type','Parameter', 'Name', [parname_base '_Kd']))
