@@ -66,7 +66,7 @@ for i = 1:7
 end
 
 % load S5 data 
-load('/Users/vipulsinghal/Dropbox/110114/Vipul_computational/Computational Tools/S5/S5data.mat');
+%load('/Users/vipulsinghal/Dropbox/110114/Vipul_computational/Computational Tools/S5/S5data.mat');
 load([dataPath '/S5/S5data.mat'], 'Set5Data');
 for i = 1:7
     offset = 28;
