@@ -1,17 +1,47 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase1(mtet)
-% Phase 1 of the estimation procedure of the tetR system parameters from
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase2(mtet, mlac)
+% !! todo -- set the parameters estimated from phase 1. then this will be
+% ready to run. 
+% Phase 2 of the estimation procedure of the tetR system parameters from
 % Zach's tetR data.
-%
+% 
+% The topologies involved in this estimataion probem are: 
 % plac - UTR1 - tetR, ptet - UTR1 - deGFP, aTc; This has three
 % topologies, the constitutive expression geometry, the repression
 % geometry, and the aTc induction geometry.
-
-%
-% The parameters are shared between these five circuits (experiments).
 %
 % A lot of the core parameters are set from those estimated from the
 % constitutive expression fits to the data in the VNPRL2011 and ACS 2014 papers.
+% 
+% In phase 1, we estimated 7 parameters: 
+%     {'TXTL_PTET_RNAPbound_Kd'    }
+%     {'TXTL_PTET_sequestration_Kd'}
+%     {'TXTL_PTET_sequestration_F' }
+%     {'TXTL_INDUCER_TETR_ATC_Kd'  }
+%     {'TXTL_INDUCER_TETR_ATC_F'   }
+%     {'TXTL_DIMER_tetR_Kd'        }
+%     {'TXTL_DIMER_tetR_F'         }
 %
+% In this phase, we will fix the values of
+%     {'TXTL_PTET_sequestration_F' }
+%     {'TXTL_INDUCER_TETR_ATC_F'   }
+%     {'TXTL_DIMER_tetR_Kd'        }
+%     {'TXTL_DIMER_tetR_F'         }
+% 
+% and estimate:
+% 
+%     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
+%     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2% from est params above
+%     'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 % from est params above
+%     'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 % TO BE ESTIMATED HERE
+%     'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
+%     'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 % TO BE ESTIMATED HERE
+%     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
+%     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
+%     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
+%     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 % from est params above
+%
+% and we also include the pLac data into the estimation problem, since the
+% plac part is involved. 
 %
 %
 % mcmc_info has the following substructures:
@@ -50,9 +80,7 @@ tetrinfo = ['This is the tetR repressing ptet circuit. \n '];
 
 atcinfo = ['This is the aTc inducing (derepressing) the tetR ptet repression circuit. \n '];
 
-
-
-
+placinfo = ['This is the plac constitutive expression circuit. \n '];
 
 % activeNames has the mRNA parameters and the protein parameters.
 % first half (up to RNase) are TX and the rest are TL.
@@ -127,6 +155,10 @@ atcinfo = ['This is the aTc inducing (derepressing) the tetR ptet repression cir
 %     {'Ribo_{term}' } 28
 %     {'Ribo'        } 33
 
+
+% The following were parameters esitmated in vnprl_F2, and were extracted
+% carefully from the accompanying analysis script. see the code there to
+% understand how they were picked. Need to document this before I forget. 
 EstimatedParams =[...
     2.5234    2.4464    2.6231    2.5976    2.4650    2.4277    2.4806    2.6010    2.4301    2.5499    2.6991    2.4356
     8.8054    8.9024    8.8097    8.8014    8.8483    8.8642    8.8394    8.8427    8.8616    8.7634    8.8621    8.7910
@@ -141,46 +173,46 @@ EstimatedParams =[...
     8.2565    0.0542    4.5196   -2.2731   -1.6399   -1.7370   -2.9377    0.6546   -1.7598    3.9814    6.7136   -0.3827
     2.5533    2.8328    2.8292    2.7929    2.9282    2.8804    2.9859    2.9519    2.8087    2.7650    2.7130    2.9940
     3.9583    4.1863    4.1261    4.0012    4.1922    3.9954    4.0318    3.7330    3.8616    4.1038    3.8526    3.8081];
-% !! NEED TO CHECK IF AT THE PICKED POINT THE TRAJECTORIES LOOK OK. 
+
 
 ParamColumnToUse = 2;
 paramVecToUse = EstimatedParams(:, ParamColumnToUse);
 indicesMasterVectorEstimated = [1 3 5 21 23 15 30 31 32 2 6 28 33];
 
 activeNames = {... % param name, nominal value, rage of parameters for uniform prior,
-    'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
-    'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2% from est params above
-    'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 % from est params above
-    'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 % fixed in mcmc_info_vnprl_F2
+    'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 from est params above
+    'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2 from est params above
+    'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 from est params above
+    'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 fixed in mcmc_info_vnprl_F2
     'AGTPdeg_rate'                       , exp(-9.9),  [exp(-13) exp(-7)]       %5 from est params above
     'TXTL_UTR_UTR1_Kd'                   , exp(11),   [exp(-3) exp(15)]         %6 from est params above 
-    'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 % TO BE ESTIMATED HERE
+    'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 TO BE ESTIMATED HERE
     'TXTL_PTET_RNAPbound_F'              , exp(1.5),   [exp(0) exp(4)]          %8 fixed in mcmc_info_vnprl_F2
     'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
-    'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 % fixed in mcmc_info_vnprl_F2
+    'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 fixed in mcmc_info_vnprl_F2
     'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
     'TXTL_PTET_sequestration_F'          , exp(1.5),   [exp(-2) exp(5)]         %12 TO BE ESTIMATED HERE
-    'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 % fixed in mcmc_info_vnprl_F2
+    'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 fixed in mcmc_info_vnprl_F2
     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 % TO BE ESTIMATED HERE
+    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 TO BE ESTIMATED HERE
     'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),   [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
     'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(7) exp(17)]          %18 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19% TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19 TO BE ESTIMATED HERE
     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
-    'TXTL_PLAC_RNAPbound_F'              , exp(2.6),   [exp(-2) exp(5)]         %22% fixed in mcmc_info_vnprl_F2
+    'TXTL_PLAC_RNAPbound_F'              , exp(2.6),   [exp(-2) exp(5)]         %22 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAPBOUND_TERMINATION_RATE'    , exp(1.8),   [exp(-3) exp(6)]         %23 from est params above
     'TXTL_NTP_RNAP_1_F'                  , exp(0),   [exp(-2) exp(3)]           %24 fixed in mcmc_info_vnprl_F2
-    'TXTL_NTP_RNAP_2_F'                  , exp(0),   [exp(-2) exp(3)]           %25% fixed in mcmc_info_vnprl_F2
+    'TXTL_NTP_RNAP_2_F'                  , exp(0),   [exp(-2) exp(3)]           %25 fixed in mcmc_info_vnprl_F2
     'TL_AA_F'                            , exp(-0.3),   [exp(-3) exp(3)]        %26 fixed in mcmc_info_vnprl_F2
     'TL_AGTP_F'                          , exp(-1.2),   [exp(-4) exp(2)]        %27 fixed in mcmc_info_vnprl_F2
-    'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 % from est params above
+    'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
-    'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 % from est params above
+    'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 from est params above
     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
 
 % Set the master vector values that are set from the values estimated in "vnprl_F2"
@@ -239,56 +271,38 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 %        -1.2     -4        2       27        3.2       2.8    13    'TL_AGTP_F'                 
 %           0     -3        3       29          3         3    14    'TXTL_RNAdeg_F'    
 
-%% 
-% Names of parameters and species to actually estimate.
-% As mentioned above, I have planned this out in the file 
-% ZachIFFL_estimation_strategy.txt
 
-% 'TX_elong_glob'                      ,     'fix'  
-% 'TL_elong_glob'                      ,     'fix'  
-% 'AGTPdeg_time'                       ,     'fix'  
-% 'AGTPreg_ON'                         ,     'fix'  
-% 'AGTPdeg_rate'                       ,     'fix'  
-% 'TXTL_PROT_deGFP_MATURATION'         ,     'fix'  
-% 'TXTL_UTR_UTR1_Kd'                   ,     'fix'  
-% 'TXTL_PTET_RNAPbound_Kd'             ,     'est'  
-% 'TXTL_PTET_RNAPbound_F'              ,     'fix'  
-% 'TXTL_NTP_RNAP_1_Kd'                 ,     'fix'  
-% 'TXTL_NTP_RNAP_2_Kd'                 ,     'fix'  
-% 'TXTL_PTET_sequestration_Kd'         ,     'est'  
-% 'TXTL_PTET_sequestration_F'          ,     'est'  
-% 'TL_AA_Kd'                           ,     'fix'  
-% 'TL_AGTP_Kd'                         ,     'fix'  
-% 'TXTL_RNAdeg_Kd'                     ,     'fix'  
-% 'TXTL_INDUCER_TETR_ATC_Kd'           ,     'est'  
-% 'TXTL_INDUCER_TETR_ATC_F'            ,     'est'  
-% 'TXTL_DIMER_tetR_Kd'                 ,     'est'  
-% 'TXTL_DIMER_tetR_F'                  ,     'est'  
-% 'TXTL_UTR_UTR1_F'                    ,     'fix'  
-% 'TXTL_PLAC_RNAPbound_Kd'             ,     'fix'  
-% 'TXTL_PLAC_RNAPbound_F'              ,     'fix'  
-% 'TXTL_RNAPBOUND_TERMINATION_RATE'    ,     'fix'  
-% 'TXTL_NTP_RNAP_1_F'                  ,     'fix'  
-% 'TXTL_NTP_RNAP_2_F'                  ,     'fix'  
-% 'TL_AA_F'                            ,     'fix'  
-% 'TL_AGTP_F'                          ,     'fix'  
-% 'TXTL_RIBOBOUND_TERMINATION_RATE'    ,     'fix'  
-% 'TXTL_RNAdeg_F'                      ,     'fix'  
-% 'TXTL_RNAdeg_kc'                     ,     'fix' 
+%% Next set the parameters estimated in mcmc_info_ZSIFFL_mtet_phase1.m
+%
+% The values estimated are: 
+mtet_phase1_params = ...
+{...
+1		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)		, 		[exp(0)	exp(17)]
+1		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(12)		, 		[exp(3)	exp(15)]
+1		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.5)		, 		[exp(-2)	exp(5)]
+1		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(13)		, 		[exp(0)	exp(18)]
+1		, 	    'TXTL_INDUCER_TETR_ATC_F'   	, 		exp(2.6)		, 		[exp(-2)	exp(5)]
+1		, 	    'TXTL_DIMER_tetR_Kd'        	, 		exp(13)		, 		[exp(7)	exp(17)]
+1		, 	    'TXTL_DIMER_tetR_F'         	, 		exp(2.6)		, 		[exp(-2)	exp(5)]...
+};
+activeNames(cell2mat(mtet_phase1_params(:,1)),2) = mtet_phase1_params(:,3);
 
-% Thus, the 7 estimated parameters are:   
-% 'TXTL_PTET_RNAPbound_Kd'             ,     'est'   
-% 'TXTL_PTET_sequestration_Kd'         ,     'est'  
-% 'TXTL_PTET_sequestration_F'          ,     'est'   
-% 'TXTL_INDUCER_TETR_ATC_Kd'           ,     'est'  
-% 'TXTL_INDUCER_TETR_ATC_F'            ,     'est'  
-% 'TXTL_DIMER_tetR_Kd'                 ,     'est'  
-% 'TXTL_DIMER_tetR_F'                  ,     'est'  
+% Thus, the 10 estimated parameters are:   
+
+%     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
+%     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2% from est params above
+%     'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 % from est params above
+%     'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 % TO BE ESTIMATED HERE
+%     'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
+%     'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 % TO BE ESTIMATED HERE
+%     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
+%     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
+%     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
+%     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 % from est params above
+% 
 
 
-
-
-estParamsIX = [7, 11, 12, 16:19]';
+estParamsIX = [1 2 3 7 11 16 21 31 32 33]';
 estParams = activeNames(estParamsIX,1);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector
@@ -316,7 +330,36 @@ masterVector = log(cell2mat(activeNames(:,2))); % log transformed.
 paramMap_ptet = [1:10 13:15 20 23:34]';
 paramMap_tetR = [1:15 18:34]';
 paramMap_aTc = (1:34)';
+paramMap_plac = [1:6 9 10 13:15 20:34]';
 
+%     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 from est params above
+%     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2 from est params above
+%     'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 from est params above
+%     'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 fixed in mcmc_info_vnprl_F2
+%     'AGTPdeg_rate'                       , exp(-9.9),  [exp(-13) exp(-7)]       %5 from est params above
+%     'TXTL_UTR_UTR1_Kd'                   , exp(11),   [exp(-3) exp(15)]         %6 from est params above 
+%     'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
+%     'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 fixed in mcmc_info_vnprl_F2
+%     'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 fixed in mcmc_info_vnprl_F2
+%     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
+%     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
+%     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
+%     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
+%     'TXTL_PLAC_RNAPbound_F'              , exp(2.6),   [exp(-2) exp(5)]         %22 fixed in mcmc_info_vnprl_F2
+%     'TXTL_RNAPBOUND_TERMINATION_RATE'    , exp(1.8),   [exp(-3) exp(6)]         %23 from est params above
+%     'TXTL_NTP_RNAP_1_F'                  , exp(0),   [exp(-2) exp(3)]           %24 fixed in mcmc_info_vnprl_F2
+%     'TXTL_NTP_RNAP_2_F'                  , exp(0),   [exp(-2) exp(3)]           %25 fixed in mcmc_info_vnprl_F2
+%     'TL_AA_F'                            , exp(-0.3),   [exp(-3) exp(3)]        %26 fixed in mcmc_info_vnprl_F2
+%     'TL_AGTP_F'                          , exp(-1.2),   [exp(-4) exp(2)]        %27 fixed in mcmc_info_vnprl_F2
+%     'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
+%     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
+%     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
+%     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
+%     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
+%     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 from est params above
+%     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
+
+    
 % parameter ranges (for the to-be-estimated parameters in the master
 % vector)
 paramRanges = log(cell2mat(activeNames(estParamsIX,3)));
@@ -326,10 +369,8 @@ paramRanges = log(cell2mat(activeNames(estParamsIX,3)));
 
 dosedNames1 = {'DNA ptet--utr1--deGFP'};
 dosedVals1 = [4 2 1 0.5 0.25 0.125 0.0625];
-
 %     dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
 doseWeights1 = ones(1,size(dosedVals1,2)); %dtempvec/(sum(dtempvec));
-
 
 dosedNames2 = {'DNA ptet--utr1--deGFP'; 
     'DNA plac--utr1--tetR'};
@@ -346,6 +387,12 @@ dosedVals3 = [1 1 1 1 1 1 1;
     10000 1000 100 10 1 0.1 0.01];
 doseWeights3 = ones(1,size(dosedVals3,2)); %dtempvec/(sum(dtempvec));
 
+
+
+dosedNames4 = {'DNA plac--utr1--deGFP'};
+dosedVals4 = [2 1 0.5 0.25 0.125 0.0625 0.0313];
+
+doseWeights4 = ones(1,size(dosedVals4,2)); %dtempvec/(sum(dtempvec));
 %% create the measured species cell array
 % remember to change this! esp the 2AGTP.
 measuredSpecies = {{'protein deGFP*'}};
@@ -377,25 +424,25 @@ mtet1 = copyobj(mtet);
 mtet2 = copyobj(mtet);
 mtet3 = copyobj(mtet);
 model_info = struct(...
-    'circuitInfo',{ptetinfo, tetrinfo, atcinfo},...
-    'modelObj', {mtet1, mtet2, mtet3},... % array of model objects (different topologies)
-    'modelName',  mtet.name,...; % model names.
-    'namesUnord', {activeNames(paramMap_ptet,1),activeNames(paramMap_tetR,1),activeNames(paramMap_aTc,1)}, ... % names of parameters per model, unordered.
-    'paramMaps', {paramMap_ptet, paramMap_tetR, paramMap_aTc}, ... % paramMap is a matrix mapping master vector elements to namesUnord
-    'dosedNames', {dosedNames1, dosedNames2, dosedNames3},... % cell arrays of species. cell array corresponds
+    'circuitInfo',{ptetinfo, tetrinfo, atcinfo, placinfo},...
+    'modelObj', {mtet1, mtet2, mtet3, mlac},... % array of model objects (different topologies)
+    'modelName',  {mtet1.name, mtet2.name, mtet3.name, mlac.name},...; % model names.
+    'namesUnord', {activeNames(paramMap_ptet,1),activeNames(paramMap_tetR,1),activeNames(paramMap_aTc,1),activeNames(paramMap_plac,1)}, ... % names of parameters per model, unordered.
+    'paramMaps', {paramMap_ptet, paramMap_tetR, paramMap_aTc, paramMap_plac}, ... % paramMap is a matrix mapping master vector elements to namesUnord
+    'dosedNames', {dosedNames1, dosedNames2, dosedNames3, dosedNames4},... % cell arrays of species. cell array corresponds
     ...                               % to a model.
-    'dosedVals', {dosedVals1, dosedVals2, dosedVals3},...  % matrices of dose vals
-    'doseWeighting', {doseWeights1, doseWeights2, doseWeights3}, ...
+    'dosedVals', {dosedVals1, dosedVals2, dosedVals3, dosedVals4},...  % matrices of dose vals
+    'doseWeighting', {doseWeights1, doseWeights2, doseWeights3, doseWeights4}, ...
     ... % OPTIONAL FIELD. reweight the importance of the curves corresponding to the different doses.
-    'measuredSpecies', {measuredSpecies, measuredSpecies, measuredSpecies }, ... % cell array of cell arrays of
+    'measuredSpecies', {measuredSpecies, measuredSpecies, measuredSpecies , measuredSpecies}, ... % cell array of cell arrays of
     ...                  % species names. the elements of the inner
     ...                  % cell array get summed.
-    'measuredSpeciesIndex', {msIx, msIx,msIx},...  % maps measuredSpecies to the species in data array
-    'experimentWeighting', {1, 1, 1}, ... %
+    'measuredSpeciesIndex', {msIx, msIx,msIx, msIx},...  % maps measuredSpecies to the species in data array
+    'experimentWeighting', {1, 1, 1, 1}, ... %
     ... % relative importance of the different topologies.
     ... %geometries in a given topology are weighted with
     ...% the same level of importance for now.
-    'dataToMapTo', {1,3,4}); % each dataToMapTo property within an element of the
+    'dataToMapTo', {1,3,4, 2}); % each dataToMapTo property within an element of the
 % model_info array is a vector of length # of geometries.
 % data indices tell us which data set to use for each topology (model) - geometry pair
 % from the data_info struct array.

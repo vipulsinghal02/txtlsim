@@ -1,4 +1,4 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase1(mtet)
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase1_b(mtet)
 % Phase 1 of the estimation procedure of the tetR system parameters from
 % Zach's tetR data.
 %
@@ -147,6 +147,7 @@ ParamColumnToUse = 2;
 paramVecToUse = EstimatedParams(:, ParamColumnToUse);
 indicesMasterVectorEstimated = [1 3 5 21 23 15 30 31 32 2 6 28 33];
 
+
 activeNames = {... % param name, nominal value, rage of parameters for uniform prior,
     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2% from est params above
@@ -158,14 +159,14 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_PTET_RNAPbound_F'              , exp(1.5),   [exp(0) exp(4)]          %8 fixed in mcmc_info_vnprl_F2
     'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
     'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 % fixed in mcmc_info_vnprl_F2
-    'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
+    'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(-5) exp(15)]          %11 TO BE ESTIMATED HERE
     'TXTL_PTET_sequestration_F'          , exp(1.5),   [exp(-2) exp(5)]         %12 TO BE ESTIMATED HERE
     'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 % fixed in mcmc_info_vnprl_F2
     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 % TO BE ESTIMATED HERE
+    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(25)]          %16 % TO BE ESTIMATED HERE
     'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),   [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(7) exp(17)]          %18 TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(-5) exp(17)]          %18 TO BE ESTIMATED HERE
     'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19% TO BE ESTIMATED HERE
     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
@@ -209,6 +210,14 @@ preFixedParams = {...
 % prefixed params. 
 % 
 activeNames(cell2mat(preFixedParams(:,1)),2) = preFixedParams(:,3);
+
+% fixed as a result of mcmc_info_ZSIFFL_mtet_phase1
+preFixedParams2 = {...
+7     'TXTL_PTET_RNAPbound_Kd'             , exp(14)
+12    'TXTL_PTET_sequestration_F'          , exp(1.314)
+17      'TXTL_INDUCER_TETR_ATC_F'            , exp(1.577)
+19      'TXTL_DIMER_tetR_F'                  , exp(1.447)};
+activeNames(cell2mat(preFixedParams2(:,1)),2) = preFixedParams2(:,3);
 
 format short g; 
 aa = [log(cell2mat(activeNames(cell2mat(preFixedParams(:,1)),2))) log(cell2mat(activeNames(cell2mat(preFixedParams(:,1)),3)))]
@@ -288,7 +297,7 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 
 
 
-estParamsIX = [7, 11, 12, 16:19]';
+estParamsIX = [ 11, 16 18]';
 estParams = activeNames(estParamsIX,1);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector

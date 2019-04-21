@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_mtet(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_mtet_phase2(varargin)
 % proj_acs_dsg2014
 % In this project, we fit RNA degradation and mRNA expression to data from
 % the paper
@@ -37,9 +37,9 @@ p = p.Results;
 % proj_acs_dsg2014_regen_A('nW', 6400, 'nPoints', 6400*10*20, 'nIter', 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
 %% construct simbiology model object(s)
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
-
+mlac = model_txtl_pLacdeGFP;
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_mtet_phase1_b(mtet); % cange to  mcmc_info_ZSIFFL_mtet_phase1 for the original.
+mcmc_info = mcmc_info_ZSIFFL_mtet_phase2(mtet, mlac);
 
 mi = mcmc_info.model_info;
 
