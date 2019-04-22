@@ -63,14 +63,15 @@ switch tsIDtouse
     case 3
         ts1 = '20190421_155749_1_773';
         ts2 = '20190421_155749_2_309';
+        ts3 = '20190422_142534_1_773'
         
-        tstamp = {ts1 ts2};
-        nIterID = {1:10 1:2};
+        tstamp = {ts1 ts2 ts3};
+        nIterID = {1:10 1:2 1:4};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');  
 end
-tsToSave = ts2;
+tsToSave = ts3;
 mai.masterVector
 
 
@@ -102,7 +103,7 @@ parnames = ...
 if plotflag
 %     close all
     % Plot trace and corner (posterior distribution) plots
-    mcmc_plot(marray(:, 1:40:end,1:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-20):end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllWalkers');
 %%
