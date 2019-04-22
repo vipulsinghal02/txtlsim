@@ -164,9 +164,9 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 % fixed in mcmc_info_vnprl_F2
     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(25)]          %16 % TO BE ESTIMATED HERE
+    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(-10) exp(25)]          %16 % TO BE ESTIMATED HERE
     'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),   [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(-5) exp(17)]          %18 TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(-10) exp(17)]          %18 TO BE ESTIMATED HERE
     'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19% TO BE ESTIMATED HERE
     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above

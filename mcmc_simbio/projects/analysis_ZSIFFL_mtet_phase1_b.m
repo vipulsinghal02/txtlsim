@@ -1,6 +1,6 @@
 
 
-
+clear all
 % Set working directory to the txtlsim toolbox directory.
 projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_mtet'];
 addpath(projdir)
@@ -18,7 +18,7 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
-tsIDtouse = 2;
+tsIDtouse = 3;
 plotflag = true;
 switch tsIDtouse
     case 1
@@ -45,8 +45,8 @@ switch tsIDtouse
 %         tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
 %         nIterID = {1:2, 1:10 1:8 1:5 1:5 1:5 1:5 1:5, 1:5 1:5 1:5};
         
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
-        nIterID = {1:2, 1:10 1:8 1:5 1:5 1:5 1:5 1:5, 1:5 1:5 1:5};
+        tstamp = {ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
+        nIterID = {1:5 1:5 1:5 1:5 1:5, 1:5 1:5 1:5};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');   
@@ -60,8 +60,17 @@ switch tsIDtouse
 %     {'dim_{Kd}'        } expand lower bound from 7 to -3
 %     {'dim_F'         } 
 
+    case 3
+        ts1 = '20190421_155749_1_773';
+        ts2 = '20190421_155749_2_309';
+        
+        tstamp = {ts1 ts2};
+        nIterID = {1:10 1:2};
+        load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri');  
 end
-tsToSave = ts11;
+tsToSave = ts2;
 mai.masterVector
 
 
@@ -71,14 +80,9 @@ clear marray_full
 
     
 parnames = ...
-    [{'pol_{Kd, tet}'     }
-    {'rep_{Kd}'}
-    {'rep_F' }  
+    [    {'rep_{Kd}'}
     {'ATC_{Kd}'  }
-    {'ATC_F'   }
-    {'dim_{Kd}'        }
-    {'dim_F'         }
-    ];
+    {'dim_{Kd}'        }    ];
 % 
 %     {'TX_elong_glob'                  }
 %     {'AGTPdeg_time'                   }
