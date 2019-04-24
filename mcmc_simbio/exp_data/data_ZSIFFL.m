@@ -100,7 +100,7 @@ dv3 = [2        .2      .02     .002    .0002   .00002  0];
 dv4 = [10000    1000    100     10      1       .1      0];
 dv5 = [10000    1000    100     10      1       .1      0];
 
-mn = {{'deGFP'}};
+mn = {'deGFP'};
 dosedNames1 = {'pTet-deGFP DNA'};
 dosedNames2 = {'pLac-deGFP DNA'};
 dosedNames3 = {'pLac-TetR DNA'};
