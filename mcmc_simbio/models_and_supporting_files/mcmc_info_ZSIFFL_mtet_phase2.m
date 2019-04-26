@@ -277,13 +277,13 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 % The values estimated are: 
 mtet_phase1_params = ...
 {...
-1		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)		, 		[exp(0)	exp(17)]
-1		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(12)		, 		[exp(3)	exp(15)]
-1		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.5)		, 		[exp(-2)	exp(5)]
-1		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(13)		, 		[exp(0)	exp(18)]
-1		, 	    'TXTL_INDUCER_TETR_ATC_F'   	, 		exp(2.6)		, 		[exp(-2)	exp(5)]
-1		, 	    'TXTL_DIMER_tetR_Kd'        	, 		exp(13)		, 		[exp(7)	exp(17)]
-1		, 	    'TXTL_DIMER_tetR_F'         	, 		exp(2.6)		, 		[exp(-2)	exp(5)]...
+7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)		, 		[exp(0)	exp(17)]
+11		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(-1)		, 		[exp(-5)	exp(5)]
+12		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.314)		, 		[exp(-2)	exp(5)]
+16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(-2)		, 		[exp(-15)	exp(5)]
+17		, 	    'TXTL_INDUCER_TETR_ATC_F'   	, 		exp(1.577)		, 		[exp(-2)	exp(5)]
+18		, 	    'TXTL_DIMER_tetR_Kd'        	, 		exp(-10)		, 		[exp(-20)	exp(-7)]
+19		, 	    'TXTL_DIMER_tetR_F'         	, 		exp(1.447)		, 		[exp(-2)	exp(5)]...
 };
 activeNames(cell2mat(mtet_phase1_params(:,1)),2) = mtet_phase1_params(:,3);
 
