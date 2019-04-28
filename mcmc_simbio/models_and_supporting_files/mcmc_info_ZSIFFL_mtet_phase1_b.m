@@ -50,10 +50,6 @@ tetrinfo = ['This is the tetR repressing ptet circuit. \n '];
 
 atcinfo = ['This is the aTc inducing (derepressing) the tetR ptet repression circuit. \n '];
 
-
-
-
-
 % activeNames has the mRNA parameters and the protein parameters.
 % first half (up to RNase) are TX and the rest are TL.
 % TX params are fixed from previous sims.
@@ -159,14 +155,14 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_PTET_RNAPbound_F'              , exp(1.5),   [exp(0) exp(4)]          %8 fixed in mcmc_info_vnprl_F2
     'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
     'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 % fixed in mcmc_info_vnprl_F2
-    'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(-5) exp(15)]          %11 TO BE ESTIMATED HERE
+    'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(-5) exp(15)]         %11 TO BE ESTIMATED HERE
     'TXTL_PTET_sequestration_F'          , exp(1.5),   [exp(-2) exp(5)]         %12 TO BE ESTIMATED HERE
     'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 % fixed in mcmc_info_vnprl_F2
     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(-25) exp(25)]          %16 % TO BE ESTIMATED HERE
+    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(-25) exp(25)]        %16 % TO BE ESTIMATED HERE
     'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),   [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(-25) exp(17)]          %18 TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(-25) exp(17)]        %18 TO BE ESTIMATED HERE
     'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19% TO BE ESTIMATED HERE
     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
@@ -188,8 +184,6 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
 activeNames(indicesMasterVectorEstimated, 2) = num2cell(exp(paramVecToUse));
 
 % Set the master vector values that were already fixed in "vnprl_F2"
-
-
 preFixedParams = {...
 4     'AGTPreg_ON'                         , exp( -3.9120)
 34    'TXTL_PROT_deGFP_MATURATION'         , exp( -6.0748)
@@ -211,10 +205,12 @@ preFixedParams = {...
 % 
 activeNames(cell2mat(preFixedParams(:,1)),2) = preFixedParams(:,3);
 
-% fixed as a result of mcmc_info_ZSIFFL_mtet_phase1
+% fixed as a result of mcmc_info_ZSIFFL_mtet_phase1 --> estimated [7, 11, 12, 16:19]
+% of these, [7, 12, 17, 19] are fixed, and in this estimation we estimate
+% 11, 16, 18. 
 preFixedParams2 = {...
-7     'TXTL_PTET_RNAPbound_Kd'             , exp(14)
-12    'TXTL_PTET_sequestration_F'          , exp(1.314)
+7       'TXTL_PTET_RNAPbound_Kd'             , exp(14)
+12      'TXTL_PTET_sequestration_F'          , exp(1.314)
 17      'TXTL_INDUCER_TETR_ATC_F'            , exp(1.577)
 19      'TXTL_DIMER_tetR_F'                  , exp(1.447)};
 activeNames(cell2mat(preFixedParams2(:,1)),2) = preFixedParams2(:,3);
@@ -226,76 +222,8 @@ pdiagnostic = cell2table([num2cell(aa) preFixedParams(:,1) num2cell([-aa(:,1)+aa
     aa(:,1)-aa(:,2) (1:length(aa))']) (activeNames(cell2mat(preFixedParams(:,1)),1))],...
     'VariableNames', {'logval', 'loglb', 'logub', 'mvix', 'ubdiff', 'lbdiff', 'ix', 'name'})
 pdiagnostic.lbdiff./pdiagnostic.ubdiff
-% pdiagnostic =
-% 
-%   14×8 table
-% 
-%     logval     loglb    logub    mvix    ubdiff    lbdiff    ix                name            
-%     _______    _____    _____    ____    ______    ______    __    ____________________________
-% 
-%      -3.912     -6       -1        4      2.912     2.088     1    'AGTPreg_ON'                
-%     -6.0748     -9       -3       34     3.0748    2.9252     2    'TXTL_PROT_deGFP_MATURATION'
-%         1.5      0        4        8        2.5       1.5     3    'TXTL_PTET_RNAPbound_F'     
-%      2.9459      0        5        9     2.0541    2.9459     4    'TXTL_NTP_RNAP_1_Kd'        
-%      13.997     10       20       10      6.003     3.997     5    'TXTL_NTP_RNAP_2_Kd'        
-%      6.5566      3       10       13     3.4434    3.5566     6    'TL_AA_Kd'                  
-%      14.509     10       18       14      3.491     4.509     7    'TL_AGTP_Kd'                
-%        -0.2     -4        2       20        2.2       3.8     8    'TXTL_UTR_UTR1_F'           
-%         1.5     -2        5       22        3.5       3.5     9    'TXTL_PLAC_RNAPbound_F'     
-%           0     -2        3       24          3         2    10    'TXTL_NTP_RNAP_1_F'         
-%           0     -2        3       25          3         2    11    'TXTL_NTP_RNAP_2_F'         
-%        -0.3     -3        3       26        3.3       2.7    12    'TL_AA_F'                   
-%        -1.2     -4        2       27        3.2       2.8    13    'TL_AGTP_F'                 
-%           0     -3        3       29          3         3    14    'TXTL_RNAdeg_F'    
 
 %% 
-% Names of parameters and species to actually estimate.
-% As mentioned above, I have planned this out in the file 
-% ZachIFFL_estimation_strategy.txt
-
-% 'TX_elong_glob'                      ,     'fix'  
-% 'TL_elong_glob'                      ,     'fix'  
-% 'AGTPdeg_time'                       ,     'fix'  
-% 'AGTPreg_ON'                         ,     'fix'  
-% 'AGTPdeg_rate'                       ,     'fix'  
-% 'TXTL_PROT_deGFP_MATURATION'         ,     'fix'  
-% 'TXTL_UTR_UTR1_Kd'                   ,     'fix'  
-% 'TXTL_PTET_RNAPbound_Kd'             ,     'est'  
-% 'TXTL_PTET_RNAPbound_F'              ,     'fix'  
-% 'TXTL_NTP_RNAP_1_Kd'                 ,     'fix'  
-% 'TXTL_NTP_RNAP_2_Kd'                 ,     'fix'  
-% 'TXTL_PTET_sequestration_Kd'         ,     'est'  
-% 'TXTL_PTET_sequestration_F'          ,     'est'  
-% 'TL_AA_Kd'                           ,     'fix'  
-% 'TL_AGTP_Kd'                         ,     'fix'  
-% 'TXTL_RNAdeg_Kd'                     ,     'fix'  
-% 'TXTL_INDUCER_TETR_ATC_Kd'           ,     'est'  
-% 'TXTL_INDUCER_TETR_ATC_F'            ,     'est'  
-% 'TXTL_DIMER_tetR_Kd'                 ,     'est'  
-% 'TXTL_DIMER_tetR_F'                  ,     'est'  
-% 'TXTL_UTR_UTR1_F'                    ,     'fix'  
-% 'TXTL_PLAC_RNAPbound_Kd'             ,     'fix'  
-% 'TXTL_PLAC_RNAPbound_F'              ,     'fix'  
-% 'TXTL_RNAPBOUND_TERMINATION_RATE'    ,     'fix'  
-% 'TXTL_NTP_RNAP_1_F'                  ,     'fix'  
-% 'TXTL_NTP_RNAP_2_F'                  ,     'fix'  
-% 'TL_AA_F'                            ,     'fix'  
-% 'TL_AGTP_F'                          ,     'fix'  
-% 'TXTL_RIBOBOUND_TERMINATION_RATE'    ,     'fix'  
-% 'TXTL_RNAdeg_F'                      ,     'fix'  
-% 'TXTL_RNAdeg_kc'                     ,     'fix' 
-
-% Thus, the 7 estimated parameters are:   
-% 'TXTL_PTET_RNAPbound_Kd'             ,     'est'   
-% 'TXTL_PTET_sequestration_Kd'         ,     'est'  
-% 'TXTL_PTET_sequestration_F'          ,     'est'   
-% 'TXTL_INDUCER_TETR_ATC_Kd'           ,     'est'  
-% 'TXTL_INDUCER_TETR_ATC_F'            ,     'est'  
-% 'TXTL_DIMER_tetR_Kd'                 ,     'est'  
-% 'TXTL_DIMER_tetR_F'                  ,     'est'  
-
-
-
 
 estParamsIX = [ 11, 16 18]';
 estParams = activeNames(estParamsIX,1);

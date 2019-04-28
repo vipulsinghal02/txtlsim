@@ -146,7 +146,9 @@ if plotflag
 %         ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
 %     title('Markov Chain Auto Correlation')
 %     
-    %% need to sort this part out. 
+   %%
+   
+   
     mvarray = masterVecArray(marray_cut, mai);
     clear marray
     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);

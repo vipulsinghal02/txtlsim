@@ -1,6 +1,10 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase2(mtet, mlac)
-% !! todo -- set the parameters estimated from phase 1. then this will be
-% ready to run. 
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_mtet_phase2b(mtet, mlac)
+% 
+% this is different from phase 2 in that the 
+% - tetR dimerization Kd parameter is also estimable. 
+%
+%
+%
 % Phase 2 of the estimation procedure of the tetR system parameters from
 % Zach's tetR data.
 % 
@@ -219,8 +223,6 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
 activeNames(indicesMasterVectorEstimated, 2) = num2cell(exp(paramVecToUse));
 
 % Set the master vector values that were already fixed in "vnprl_F2"
-
-
 preFixedParams = {...
 4     'AGTPreg_ON'                         , exp( -3.9120)
 34    'TXTL_PROT_deGFP_MATURATION'         , exp( -6.0748)
@@ -282,11 +284,13 @@ mtet_phase1_params = ...
 12		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.314)          , 		[exp(-2)	exp(5)]
 16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(-2)             , 		[exp(-15)	exp(5)]
 17		, 	    'TXTL_INDUCER_TETR_ATC_F'   	, 		exp(1.577)          , 		[exp(-2)	exp(5)]
-18		, 	    'TXTL_DIMER_tetR_Kd'        	, 		exp(-10)            , 		[exp(-20)	exp(-7)]
+18		, 	    'TXTL_DIMER_tetR_Kd'        	, 		exp(-10)            , 		[exp(-25)	exp(-7)]
 19		, 	    'TXTL_DIMER_tetR_F'         	, 		exp(1.447)          , 		[exp(-2)	exp(5)]...
 };
+
 activeNames(cell2mat(mtet_phase1_params(:,1)),2) = mtet_phase1_params(:,3);
 activeNames(cell2mat(mtet_phase1_params(:,1)),3) = mtet_phase1_params(:,4);
+
 % Thus, the 10 estimated parameters are:   
 
 %     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
@@ -302,7 +306,7 @@ activeNames(cell2mat(mtet_phase1_params(:,1)),3) = mtet_phase1_params(:,4);
 % 
 
 
-estParamsIX = [1 2 3 7 11 16 21 31 32 33]';
+estParamsIX = [1 2 3 7 11 16 18 21 31 32 33]';
 estParams = activeNames(estParamsIX,1);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector
