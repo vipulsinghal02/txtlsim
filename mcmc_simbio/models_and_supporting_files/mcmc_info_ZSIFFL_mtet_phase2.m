@@ -210,7 +210,7 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
-    'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
+    'RNAP'                               , exp(1.4419),  [exp(-1) exp(8)]       %31 31% from est params above
     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 from est params above
     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
@@ -278,7 +278,7 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 mtet_phase1_params = ...
 {...
 7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)             , 		[exp(0)     exp(17)]
-11		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(-1)             , 		[exp(-5)	exp(5)]
+11		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(-1)             , 		[exp(-10)	exp(5)]
 12		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.314)          , 		[exp(-2)	exp(5)]
 16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(-2)             , 		[exp(-15)	exp(5)]
 17		, 	    'TXTL_INDUCER_TETR_ATC_F'   	, 		exp(1.577)          , 		[exp(-2)	exp(5)]
