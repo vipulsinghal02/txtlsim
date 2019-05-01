@@ -8,7 +8,7 @@ projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_mtet_phase2'];
 addpath(projdir)
 sls = regexp(projdir, '/', 'split');
 extrastring = sls{end};
-jpgsave = false;
+jpgsave = true;
 figsave = false;
 
 % Load model, mcmc_info, and data_info.
@@ -25,7 +25,7 @@ ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
-tsIDtouse = 1;
+tsIDtouse = 2;
 plotflag = true;
 switch tsIDtouse
     
@@ -37,11 +37,26 @@ switch tsIDtouse
         nIterID = {1:10 1:3};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
-            'mcmc_info', 'data_info', 'mai', 'ri');  
+            'mcmc_info', 'data_info', 'mai', 'ri'); 
+        
+    case 2
+        ts1 = '20190428_142033_1_2058';
+        ts2 = '20190428_142033_2_1029';
+        ts3 = '20190429_083138_1_1029';
+        ts4 = '20190429_200219_1_1029';
+        ts5='20190429_200219_2_412';
+        ts6='20190430_141254_1_412';
+        ts7='20190430_141254_2_206';
+        ts8 = '20190501_042829_1_617';
+        
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8};
+        nIterID = {1:10 1:2 1:4 1:5 1:3 1:5 1:5 1};
+        load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info', 'mai', 'ri'); 
 end
-tsToSave = ts2;
+tsToSave = ts8;
 mai.masterVector
-
 
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
 marray = marray_full(:,:,1:end);
@@ -73,12 +88,16 @@ parnames = ...
 %     {'Ribo'                      }
 %
 %%
-if plotflag
-%     close all
+% if plotflag
+%    close all
     % Plot trace and corner (posterior distribution) plots
-    mcmc_plot(marray(:, 1:end,1:5:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-10):end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllWalkers');
+    %%
+        mcmc_plot(marray(:, 1:5:end,1:end), parnames(:),...
+        'savematlabfig', figsave, 'savejpeg', jpgsave,...
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
 %%
 
 % {'rep_{Kd}'} -1.16, -0.92
@@ -157,7 +176,7 @@ if plotflag
     %     mvarray = masterVecArray(marray_cut, mai);
     mvarray = masterVecArray(marray, mai);
     clear marray
-    %%
+    %
     for miID = 1:length(mi)
         currmi = mi(miID);
         dvStr = arrayfun(@num2str, currmi.dosedVals, 'UniformOutput', false);
@@ -195,7 +214,7 @@ if plotflag
             end
         end
         titls_array
-        samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
+        samplePoints = ceil(size(mvarray, 3) * [.95, 1]);
         
         marrayOrd = mvarray(currmi.paramMaps(currmi.orderingIx),:,samplePoints);
         
@@ -207,8 +226,8 @@ if plotflag
             'projdir', projdir, 'tstamp', tsToSave,...
             'extrafignamestring', [extrastring num2str(miID) ' ' num2str(msID)]);
     end
-    
-end
+    %
+% end
 marrayOrd(:,1:5,end)
 clear marrayOrd
 % flagz = ones(26, 1);

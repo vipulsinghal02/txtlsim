@@ -1,18 +1,13 @@
 function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_training(varargin)
-% proj_acs_dsg2014
-% In this project, we fit RNA degradation and mRNA expression to data from
-% the paper
-% Gene Circuit Performance Characterization and Resource Usage in a Cell-Free “Breadboard”
-% ACS Synth. Biol., 2014, 3 (6), pp 416–425, DOI: 10.1021/sb400203p,
-
+% data collected by Zach Sun and Shaobin Guo. 
 % Vipul Singhal,
 % California Institute of Technology
-% 2018
+% 2019
 
 p = inputParser;
 p.addParameter('prevtstamp', []);
 p.addParameter('prevtstampID', []);
-p.addParameter('stepSize', 1.2);
+p.addParameter('stepSize', 1.4);
 p.addParameter('nW', 30);
 p.addParameter('nPoints', 30*100);
 p.addParameter('thinning', 1);
@@ -26,7 +21,7 @@ p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multi
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.01]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.001]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
@@ -41,12 +36,12 @@ mlas = model_txtl_pLacLasR_pLasdeGFP;
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training(mlac, mlas, mtet);
+mcmc_info = mcmc_info_ZSIFFL_training_full(mtet, mlac, mlas);
 
 mi = mcmc_info.model_info;
 
 %% setup the data_info struct
-di = data_test015;
+di = data_ZSIFFL;
 % modify di to only contain the mRNA data.
 % di.dataArray = di.dataArray(:, 1, :, :); % pick out only the mrna
 % di.measuredNames = di.measuredNames(1);
