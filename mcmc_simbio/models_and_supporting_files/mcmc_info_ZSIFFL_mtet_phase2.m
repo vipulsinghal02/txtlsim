@@ -182,7 +182,7 @@ indicesMasterVectorEstimated = [1 3 5 21 23 15 30 31 32 2 6 28 33];
 activeNames = {... % param name, nominal value, rage of parameters for uniform prior,
     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 from est params above
     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2 from est params above
-    'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 from est params above
+    'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(18)]         %3 from est params above
     'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 fixed in mcmc_info_vnprl_F2
     'AGTPdeg_rate'                       , exp(-9.9),  [exp(-13) exp(-7)]       %5 from est params above
     'TXTL_UTR_UTR1_Kd'                   , exp(11),   [exp(-3) exp(15)]         %6 from est params above 
@@ -210,9 +210,9 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
-    'RNAP'                               , exp(1.4419),  [exp(-1) exp(8)]       %31 31% from est params above
-    'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
-    'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 from est params above
+    'RNAP'                               , exp(1.4419),  [exp(-1) exp(15)]       %31 31% from est params above
+    'RNase'                              , exp(8.5),  [exp(5) exp(12)]          %32 from est params above
+    'Ribo'                               , exp(3.75),  [exp(1) exp(12)]          %33 from est params above
     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
 
 % Set the master vector values that are set from the values estimated in "vnprl_F2"
@@ -277,7 +277,7 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 % The values estimated are: 
 mtet_phase1_params = ...
 {...
-7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)             , 		[exp(0)     exp(17)]
+7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, 		exp(14)             , 		[exp(0)     exp(25)]
 11		, 	    'TXTL_PTET_sequestration_Kd'	, 		exp(-1)             , 		[exp(-10)	exp(5)]
 12		, 	    'TXTL_PTET_sequestration_F' 	, 		exp(1.314)          , 		[exp(-2)	exp(5)]
 16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, 		exp(-2)             , 		[exp(-15)	exp(5)]
