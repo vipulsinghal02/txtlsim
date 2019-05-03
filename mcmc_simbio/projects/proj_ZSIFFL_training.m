@@ -16,12 +16,12 @@ p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
 p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multipliers for the
+p.addParameter('stepLadder', linspace(1.1, 1, 4), @isnumeric); % A vector of multipliers for the
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.001]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.00005]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});

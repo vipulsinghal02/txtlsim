@@ -406,8 +406,13 @@ dosedVals4 = [2 1 0.5 0.25 0.125 0.0625 0.0313];
 doseWeights4 = ones(1,size(dosedVals4,2)); %dtempvec/(sum(dtempvec));
 
 
-dosedNames5 = {'OC12HSL'};
-dosedVals5 = [10000 , 1000, 100, 10, 1, 0.1, 0];
+dosedNames5 = {...
+    'DNA plac--utr1--lasR';
+    'DNA plas--utr1--deGFP';
+    'OC12HSL'};
+dosedVals5 = [1 1 1 1 1 1 1;
+    1 1 1 1 1 1 1;
+    10000 , 1000, 100, 10, 1, 0.1, 0.01];
 
 doseWeights5 = ones(1,size(dosedVals5,2)); %dtempvec/(sum(dtempvec));
 
