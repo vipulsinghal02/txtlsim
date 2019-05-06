@@ -210,9 +210,9 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
-    'RNAP'                               , exp(1.4419),  [exp(-1) exp(15)]       %31 31% from est params above
+    'RNAP'                               , exp(1.4419),  [exp(-1) exp(15)]      %31 31% from est params above
     'RNase'                              , exp(8.5),  [exp(5) exp(12)]          %32 from est params above
-    'Ribo'                               , exp(3.75),  [exp(1) exp(12)]          %33 from est params above
+    'Ribo'                               , exp(3.75),  [exp(1) exp(12)]         %33 from est params above
     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
 
 % Set the master vector values that are set from the values estimated in "vnprl_F2"
@@ -304,6 +304,7 @@ activeNames(cell2mat(mtet_phase1_params(:,1)),3) = mtet_phase1_params(:,4);
 
 estParamsIX = [1 2 3 7 11 16 21 31 32 33]';
 estParams = activeNames(estParamsIX,1);
+activeNames
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector
 fixedParamsIX =  setdiff((1:size(activeNames, 1))', estParamsIX);

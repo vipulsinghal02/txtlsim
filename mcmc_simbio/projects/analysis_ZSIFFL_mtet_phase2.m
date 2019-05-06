@@ -49,14 +49,15 @@ switch tsIDtouse
         ts7='20190430_141254_2_206';
         ts8 = '20190501_042829_1_617';
         ts9 = '20190501_123015_1_617';
+        ts10 = '20190502_105714_1_412'
         
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9};
-        nIterID = {1:10 1:2 1:4 1:5 1:3 1:5 1:5 1:4 1:8};
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10};
+        nIterID = {1:10 1:2 1:4 1:5 1:3 1:5 1:5 1:4 1:8 1:9};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri'); 
 end
-tsToSave = ts9;
+tsToSave = ts10;
 mai.masterVector
 
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
@@ -93,13 +94,13 @@ parnames = ...
 close all
 %    close all
     % Plot trace and corner (posterior distribution) plots
-    mcmc_plot(marray(:, 1:end,(end-120):5:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-210):10:end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllWalkers');
     %%
-        mcmc_plot(marray(:, 1:5:end,1:end), parnames(:),...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
+%         mcmc_plot(marray(:, 1:5:end,1:end), parnames(:),...
+%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
 %%
 
 % {'rep_{Kd}'} -1.16, -0.92
@@ -177,7 +178,7 @@ close all
     
     %     mvarray = masterVecArray(marray_cut, mai);
     mvarray = masterVecArray(marray, mai);
-    clear marray
+%     clear marray
     %
     for miID = 1:length(mi)
         currmi = mi(miID);

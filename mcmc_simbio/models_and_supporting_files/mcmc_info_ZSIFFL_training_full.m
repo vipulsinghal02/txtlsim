@@ -181,35 +181,35 @@ paramVecToUse = EstimatedParams(:, ParamColumnToUse);
 indicesMasterVectorEstimated = [1 3 5 21 23 15 30 31 32 2 6 28 33];
 
 activeNames = {... % param name, nominal value, rage of parameters for uniform prior,
-    'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 from est params above
-    'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2 from est params above
-    'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 from est params above
+    'TX_elong_glob'                      , exp(2.6),    [exp(0) exp(5)]          %1 from est params above
+    'TL_elong_glob'                      , exp(3.5),    [exp(0) exp(6)]          %2 from est params above
+    'AGTPdeg_time'                       , exp(8.8),    [exp(6) exp(11)]         %3 from est params above
     'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 fixed in mcmc_info_vnprl_F2
-    'AGTPdeg_rate'                       , exp(-9.9),  [exp(-13) exp(-7)]       %5 from est params above
-    'TXTL_UTR_UTR1_Kd'                   , exp(11),   [exp(-3) exp(15)]         %6 from est params above 
-    'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 TO BE ESTIMATED HERE
-    'TXTL_PTET_RNAPbound_F'              , exp(1.5),   [exp(0) exp(4)]          %8 fixed in mcmc_info_vnprl_F2
-    'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
-    'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 fixed in mcmc_info_vnprl_F2
-    'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
-    'TXTL_PTET_sequestration_F'          , exp(1.5),   [exp(-2) exp(5)]         %12 TO BE ESTIMATED HERE
-    'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 fixed in mcmc_info_vnprl_F2
+    'AGTPdeg_rate'                       , exp(-9.9),   [exp(-13) exp(-7)]       %5 from est params above
+    'TXTL_UTR_UTR1_Kd'                   , exp(11),     [exp(-3) exp(15)]         %6 from est params above 
+    'TXTL_PTET_RNAPbound_Kd'             , exp(14),     [exp(0) exp(17)]          %7 TO BE ESTIMATED HERE
+    'TXTL_PTET_RNAPbound_F'              , exp(1.5),    [exp(0) exp(4)]          %8 fixed in mcmc_info_vnprl_F2
+    'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),    [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
+    'TXTL_NTP_RNAP_2_Kd'                 , exp(14),     [exp(10) exp(20)]         %10 fixed in mcmc_info_vnprl_F2
+    'TXTL_PTET_sequestration_Kd'         , exp(12),     [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
+    'TXTL_PTET_sequestration_F'          , exp(1.5),    [exp(-2) exp(5)]         %12 TO BE ESTIMATED HERE
+    'TL_AA_Kd'                           , exp(6.6),    [exp(3) exp(10)]         %13 fixed in mcmc_info_vnprl_F2
     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 TO BE ESTIMATED HERE
-    'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),   [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_Kd'                 , exp(13),   [exp(7) exp(17)]          %18 TO BE ESTIMATED HERE
-    'TXTL_DIMER_tetR_F'                  , exp(2.6),   [exp(-2) exp(5)]         %19 TO BE ESTIMATED HERE
-    'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
+    'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),     [exp(0) exp(18)]          %16 TO BE ESTIMATED HERE
+    'TXTL_INDUCER_TETR_ATC_F'            , exp(2.6),    [exp(-2) exp(5)]         %17 TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_Kd'                 , exp(13),     [exp(7) exp(17)]          %18 TO BE ESTIMATED HERE
+    'TXTL_DIMER_tetR_F'                  , exp(2.6),    [exp(-2) exp(5)]         %19 TO BE ESTIMATED HERE
+    'TXTL_UTR_UTR1_F'                    , exp(-.2),    [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
-    'TXTL_PLAC_RNAPbound_F'              , exp(2.6),   [exp(-2) exp(5)]         %22 fixed in mcmc_info_vnprl_F2
-    'TXTL_RNAPBOUND_TERMINATION_RATE'    , exp(1.8),   [exp(-3) exp(6)]         %23 from est params above
-    'TXTL_NTP_RNAP_1_F'                  , exp(0),   [exp(-2) exp(3)]           %24 fixed in mcmc_info_vnprl_F2
-    'TXTL_NTP_RNAP_2_F'                  , exp(0),   [exp(-2) exp(3)]           %25 fixed in mcmc_info_vnprl_F2
+    'TXTL_PLAC_RNAPbound_F'              , exp(2.6),    [exp(-2) exp(5)]         %22 fixed in mcmc_info_vnprl_F2
+    'TXTL_RNAPBOUND_TERMINATION_RATE'    , exp(1.8),    [exp(-3) exp(12)]         %23 from est params above
+    'TXTL_NTP_RNAP_1_F'                  , exp(0),      [exp(-2) exp(3)]           %24 fixed in mcmc_info_vnprl_F2
+    'TXTL_NTP_RNAP_2_F'                  , exp(0),      [exp(-2) exp(3)]           %25 fixed in mcmc_info_vnprl_F2
     'TL_AA_F'                            , exp(-0.3),   [exp(-3) exp(3)]        %26 fixed in mcmc_info_vnprl_F2
     'TL_AGTP_F'                          , exp(-1.2),   [exp(-4) exp(2)]        %27 fixed in mcmc_info_vnprl_F2
-    'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
-    'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
+    'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),    [exp(0) exp(12)]          %28 from est params above
+    'TXTL_RNAdeg_F'                      , exp(0),      [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
     'RNAP'                               , exp(1.4419),  [exp(-1) exp(8)]       %31 31% from est params above
     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
@@ -218,11 +218,11 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_INDUCER_LASR_AHL_Kd'           , exp(-2), [exp(-20) exp(20)] %36-1
     'TXTL_INDUCER_LASR_AHL_F'            , exp(1.3), [exp(-6) exp(6)] %37-1
     'TXTL_PLAS_RNAPbound_Kd'             , exp(-2), [exp(-20) exp(20)]%38-1
-    'TXTL_PLAS_RNAPbound_F'              , exp(1.3), [exp(-6) exp(6)]%39-1
-    'TXTL_PLAS_TFBIND_Kd'                , exp(-2), [exp(-20) exp(20)]%40-1
-    'TXTL_PLAS_TFRNAPbound_Kd'           , exp(2), [exp(-20) exp(20)]%41-1
-    'TXTL_PLAS_TFRNAPbound_F'            , exp(1.3), [exp(-6) exp(6)]%42-1
-    'TXTL_PLAS_TFBIND_F'                 , exp(1.3), [exp(-6) exp(6)]}%43-1
+    'TXTL_PLAS_RNAPbound_F'              , exp(1.3), [exp(-6) exp(6)]%39-1 pol_{F,las}
+    'TXTL_PLAS_TFBIND_Kd'                , exp(-2), [exp(-20) exp(20)]%40-1 plas_{tf, Kd} <
+    'TXTL_PLAS_TFRNAPbound_Kd'           , exp(2), [exp(-20) exp(20)]%41-1 plas-pol_{tf, Kd} <
+    'TXTL_PLAS_TFRNAPbound_F'            , exp(1.3), [exp(-6) exp(6)]%42-1 plas-pol_{tf, F}
+    'TXTL_PLAS_TFBIND_F'                 , exp(1.3), [exp(-6) exp(6)]};%43-1 plas_{tf, F}
 % Set the master vector values that are set from the values estimated in "vnprl_F2"
 activeNames(indicesMasterVectorEstimated, 2) = num2cell(exp(paramVecToUse));
 
@@ -313,7 +313,21 @@ mtet_phase2_params = ...
 activeNames(cell2mat(mtet_phase2_params(:,1)),2) = mtet_phase2_params(:,3);
 activeNames(cell2mat(mtet_phase2_params(:,1)),3) = mtet_phase2_params(:,4);
 
-estParamsIX = [7 21 31 33 35:42]';
+%% we also set the forward rate parameters, since those should not matter much, and any value around 1 is good
+% the F rate parameters just set the timescale. 
+
+mtet_phase2_params = ...
+{...
+36      ,       'TXTL_INDUCER_LASR_AHL_F'     	,   exp(0)        , [exp(-3)    exp(5)] 
+38      ,       'TXTL_PLAS_RNAPbound_F'         ,   exp(0)        , [exp(-3)    exp(5)] 
+41      ,       'TXTL_PLAS_TFRNAPbound_F'       ,   exp(0)        , [exp(-3)    exp(5)] 
+42      ,       'TXTL_PLAS_TFBIND_F'            ,   exp(0)        , [exp(-3)    exp(5)] };
+activeNames(cell2mat(mtet_phase2_params(:,1)),2) = mtet_phase2_params(:,3);
+activeNames(cell2mat(mtet_phase2_params(:,1)),3) = mtet_phase2_params(:,4);
+
+
+
+estParamsIX = [7 21 23 28 31 33 35 37 39 40]';
 estParams = activeNames(estParamsIX,1);
 activeNames(estParamsIX,:);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION

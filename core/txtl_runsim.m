@@ -1,41 +1,41 @@
-
-
+%
+%
 % Written by Zoltan A Tuza and Vipul Singhal, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
-
-
+%
+%
 %%%%%% DEFAULT MODE %%%%%%
 % [t_ode, x_ode, modelObj, simData] = txtl_runsim(modelObj, configsetObj, time_vector, data, simData)
-
+%
 % Input combinations:
 % modelObj (this runs a parameter estimation mode, no simulation)
 % modelObj, configsetObj
 % modelObj, configsetObj, simData
 % modelObj, configsetObj, time_vector, data
-
-
+%
+%
 % Output combinations:
 % simData
 % t_ode, x_ode
 % t_ode, x_ode, modelObj
 % t_ode, x_ode, modelObj, simData
-
+%
 %%%%%% EVENTS MODE %%%%%%
 % [t_ode, x_ode, modelObj, simData] = txtl_runsim(modelObj, configsetObj, eventTriggers, eventFcns, time_vector, data, simData, 'events')
-
+%
 % Input combinations:
 % modelObj, configsetObj, eventTriggers, eventFcns, 'events'
 % modelObj, configsetObj, eventTriggers, eventFcns, time_vector, data, 'events'
 % modelObj, configsetObj, eventTriggers, eventFcns, time_vector, data, simData, 'events'
-
-
+%
+%
 % when using this, it is Necessary to use the model object returned by this
 % function in subsequent calls / plotting. This is because the first call to
 % this function sets the reactions in the modelObject.
-
+%
 
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
