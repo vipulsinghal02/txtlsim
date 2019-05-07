@@ -217,7 +217,7 @@ activeNames = {... % param name, nominal value, rage of parameters for uniform p
     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]    %34 fixed in mcmc_info_vnprl_F2
     'TXTL_INDUCER_LASR_AHL_Kd'           , exp(-2), [exp(-20) exp(20)] %36-1
     'TXTL_INDUCER_LASR_AHL_F'            , exp(1.3), [exp(-6) exp(6)] %37-1
-    'TXTL_PLAS_RNAPbound_Kd'             , exp(-2), [exp(-20) exp(20)]%38-1
+    'TXTL_PLAS_RNAPbound_Kd'             , exp(30), [exp(-5) exp(40)]%38-1
     'TXTL_PLAS_RNAPbound_F'              , exp(1.3), [exp(-6) exp(6)]%39-1 pol_{F,las}
     'TXTL_PLAS_TFBIND_Kd'                , exp(-2), [exp(-20) exp(20)]%40-1 plas_{tf, Kd} <
     'TXTL_PLAS_TFRNAPbound_Kd'           , exp(2), [exp(-20) exp(20)]%41-1 plas-pol_{tf, Kd} <
