@@ -4,7 +4,7 @@
 close all
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_training'];
+projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingB'];
 addpath(projdir)
 sls = regexp(projdir, '/', 'split');
 extrastring = sls{end};
@@ -14,45 +14,36 @@ figsave = false;
 % Load model, mcmc_info, and data_info.
 % construct simbiology model object(s)
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
-
 mlas = model_txtl_pLacLasR_pLasdeGFP;
 mlac = model_txtl_pLacdeGFP;
 % setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_full(mtet, mlac, mlas);
-
+mcmc_info = mcmc_info_ZSIFFL_training_fullB(mtet, mlac, mlas);
 di = data_ZSIFFL;
-
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
-%
 % plot data from existing simulations.
 tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
-    
-        
     case 1 % this is after including the termination parameters. 
-        ts1 = '';
-        
-        
-        tstamp = {ts1};
-        nIterID = {1:1};
+        ts1 = '20190508_001705_1_1845';
+        ts2 = '20190508_213950_1_1107';
+        ts3 = '20190509_024244_1_738';
+        ts4 = '20190509_062932_1_738';
+        tstamp = {ts1 ts2 ts3 ts4};
+        nIterID = {1:7 1:9 1:6 1:2};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri'); 
-        
 end
-tsToSave = ts1;
+tsToSave = ts4;
 mai.masterVector
-
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
 marray = marray_full(:,:,1:end);
 clear marray_full
-
-    
 parnames = ...
-    {'pol_{term}'}
+    [{'pol_{term}'}
     {'Ribo_{term}'}
     {'pol'}
     {'Ribo'}
@@ -160,7 +151,7 @@ parnames = ...
 
     % actually i think it is better to just set te parameters using gaussian balls, 
     % and fix as many as possible, and jsut explore the Plas and OC12 Kds. 
-%%   
+%  
 %     % mean and sd parameter. 
 %     gaussianMeanSD = ...
 %         [16.57 0.1; ...%
@@ -195,7 +186,7 @@ parnames = ...
     mvarray = masterVecArray(marray, mai);
 %     clear marray
     %
-    for miID = length(mi)%1:
+    for miID = 1:length(mi)%1:
         currmi = mi(miID);
         dvStr = arrayfun(@num2str, currmi.dosedVals, 'UniformOutput', false);
         
