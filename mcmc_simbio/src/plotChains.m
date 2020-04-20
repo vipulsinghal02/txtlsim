@@ -23,13 +23,20 @@ ss = get(0, 'screensize');
 set(gcf, 'Position', [ss(3)*(1-1/1.1) ss(4)*(1-1/1.15) ss(3)/1.1 ss(4)/1.15]);
 for i = 1:nParam
     subplot(n1, n2, i)
+
     for j = 1:length(wix)
         plot(1:nSamples, squeeze(m(i, j, :)),...
             'LineWidth', 0.1,...
             'color', [0.2 0.7 0.1].^2)
         hold on       
     end
-    title(legends{i})
+    title(legends{i}, 'fontsize', 18);
+    xlabel('Iteration', 'fontsize', 16);
+    ylabel('log-value', 'fontsize', 16);
+    ax = gca;
+    ax.FontSize = 16;
+    
+    
 end
 
 end

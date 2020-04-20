@@ -309,32 +309,33 @@ found1 = [       5.5354
         5.398
        2.7081]; % mrna expression shape is fantastic. expression level is a bit high. manually adjusting: 
    mod1 = [      ...
-       4.9354 % tx elong
-         9.17
-      -9.5172
-       -3.912
-        9.514
-          1.5
-       3.3005 % rnap termination rate
-       2.9459
-            0
-       13.997
-            0
-        9.237 %freeze
-            0 % freeze
-         -4.4 %freeze
-       1.4419 % rnap
-       6.4899 %freeze
-       0.5219
-      -6.0748
-       11.189
-         -0.2
-       6.5566
-         -0.3
-       14.509
-         -1.2
-        5.398 % ribo termination rate
-       7.3081]; 
+       4.9354 % tx elong, verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+         9.17 % AGTPdeg_time, verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+      -9.5172 % AGTPdeg_rate, verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+       -3.912 % AGTPreg_ON, verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+        9.514 % 'TXTL_P70_RNAPbound_Kd', verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+          1.5 % 'TXTL_P70_RNAPbound_F', verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+       3.3005 % rnap termination rate, verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019
+       2.9459%'TXTL_NTP_RNAP_1_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019         
+            0%'TXTL_NTP_RNAP_1_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019     
+       13.997%'TXTL_NTP_RNAP_2_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019        
+            0%'TXTL_NTP_RNAP_2_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019     
+        9.237%'TXTL_RNAdeg_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019         %freeze
+            0%'TXTL_RNAdeg_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019      % freeze
+         -4.4%'TXTL_RNAdeg_kc' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019         %freeze
+       1.4419%'RNAP' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019       % rnap
+       6.4899%'RNase' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019      %freeze
+       0.5219%'TL_elong_glob' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019     
+      -6.0748%'TXTL_PROT_deGFP_MATURATION' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019        
+       11.189%'TXTL_UTR_UTR1_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019      
+         -0.2%'TXTL_UTR_UTR1_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019       
+       6.5566%'TL_AA_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019      
+         -0.3%'TL_AA_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019       
+       14.509%'TL_AGTP_Kd' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019        
+         -1.2%'TL_AGTP_F' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019     
+        5.398%'TXTL_RIBOBOUND_TERMINATION_RATE' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019        % ribo termination rate
+       7.3081 ]; %'Ribo' , verified in mcmc_info_dsg2014_regen_D.m on Aug 26, 2019 
+           
 % wow there is a trade off between the ribo number and the tl elongation
 % rate. thats awesome. there is a linear vs saturation regime argument that
 % needs to be made here. 

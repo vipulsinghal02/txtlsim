@@ -290,6 +290,8 @@ pdiagnostic.lbdiff./pdiagnostic.ubdiff
 
 estParamsIX = [7, 11, 12, 16:19]';
 estParams = activeNames(estParamsIX,1);
+[estParams num2cell(log(cell2mat(activeNames(estParamsIX,3))))]
+
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector
 fixedParamsIX =  setdiff((1:size(activeNames, 1))', estParamsIX);

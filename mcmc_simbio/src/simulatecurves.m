@@ -31,6 +31,7 @@ for i = 1:nICs
     end
     
 end
+
 idxnotused = find(kknotused);
 if p.sbioplot
     sbioplot(sd)

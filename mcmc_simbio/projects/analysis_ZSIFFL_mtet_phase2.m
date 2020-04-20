@@ -44,9 +44,9 @@ switch tsIDtouse
         ts2 = '20190428_142033_2_1029';
         ts3 = '20190429_083138_1_1029';
         ts4 = '20190429_200219_1_1029';
-        ts5='20190429_200219_2_412';
-        ts6='20190430_141254_1_412';
-        ts7='20190430_141254_2_206';
+        ts5 = '20190429_200219_2_412';
+        ts6 = '20190430_141254_1_412';
+        ts7 = '20190430_141254_2_206';
         ts8 = '20190501_042829_1_617';
         ts9 = '20190501_123015_1_617';
         ts10 = '20190502_105714_1_412';
@@ -91,9 +91,9 @@ parnames = ...
 %     {'Ribo'                      }
 
 % if plotflag
-    mcmc_plot(marray(:, 1:end,(end-(210+20)):10:end), parnames(:),...
+    mcmc_plot(marray(:, 1:end,(end-(100)):10:end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllWalkers');
+        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllW_last150_thin10');
     %%
 %         mcmc_plot(marray(:, 1:5:end,1:end), parnames(:),...
 %         'savematlabfig', figsave, 'savejpeg', jpgsave,...

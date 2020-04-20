@@ -120,7 +120,6 @@ eno = cell(length(aps), 1);% est names ordered
 for i = 1:length(aps)
     eno{i} = aps(i).Name;
 end
-
 % 
 ds = sbioselect(mobj, 'Type', 'species', 'Name', mi.dosedNames);
 

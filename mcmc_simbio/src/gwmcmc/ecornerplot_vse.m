@@ -62,22 +62,16 @@ p.addOptional('nbins', [], @isnumeric);
 p.parse(varargin{:});
 p=p.Results;
 
-
 if (size(m,1)<size(m,2))&&(ismatrix(m)), m=m'; end %Consider this behaviour further....
-
 
 if isempty(p.ess)
     [~,~,p.ess]=eacorr(m);
     p.ess=mean(p.ess);
 end
 
-
-
 if ndims(m)==3
     m=m(:,:)'; 
 end
-
-
 
 
 M=size(m,2);
@@ -124,7 +118,8 @@ for r=1:M
             if p.ks
                 [F,X,bw]=ksdensity(m(:,r),'support',p.support(:,r)); %TODO: use ESS 
                 if p.ess<Np
-                    [F,X,bw]=ksdensity(m(:,r),'width',bw*(Np/p.ess)^.2,'support',p.support(:,r)); %(the power 1/5 comes from examining the bandwidth calculation in ksdensity)
+                    [F,X,bw]=ksdensity(m(:,r),'width',bw*(Np/p.ess)^.2,'support',p.support(:,r)); 
+                    %(the power 1/5 comes from examining the bandwidth calculation in ksdensity)
                 end
                 X=X([1,1:end,end]);F=[0,F,0];
             else
@@ -143,6 +138,9 @@ for r=1:M
             fill(X,F,p.color,'edgecolor','none')
             set(gca,'ytick',[],'YLim',[0 max(F)*1.1])
             set(gca,'XGrid',p.grid)
+            ax = gca;
+            ax.FontSize = p.fontsize-4;
+        
         else
             if p.scatter
                 scplot = scatter(m(:,c),m(:,r),'.','CData',p.color);
@@ -170,6 +168,8 @@ for r=1:M
                 %                 shading interp
             end
             set(gca,'XGrid',p.grid,'YGrid',p.grid)
+            ax = gca;
+            ax.FontSize = p.fontsize-4;
             if diff(p.support(1:2,r))>0, set(gca,'Ylim',p.support(1:2,r)); end
             %!VSE: changed p.range to p.support
         end

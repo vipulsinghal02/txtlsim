@@ -93,20 +93,6 @@ parnames = ...
     {'ATC_{Kd}'  }
     {'dim_{Kd}'        }    ];
 %
-%     {'TX_elong_glob'                  }
-%     {'AGTPdeg_time'                   }
-%     {'AGTPdeg_rate'                   }
-%     {'TXTL_P70_RNAPbound_Kd'          }
-%     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
-%     {'TXTL_RNAdeg_Kd'                 }
-%     {'TXTL_RNAdeg_kc'                 }
-%     {'RNAP'                           }
-%     {'RNase'                          }
-%     {'TL_elong_glob'                  }
-%     {'TXTL_UTR_UTR1_Kd'               }
-%     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
-%     {'Ribo'                           }
-%
 %%
 if plotflag
     %     close all

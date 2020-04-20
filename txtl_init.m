@@ -12,5 +12,7 @@ addpath([filedir '/examples/CompanionFiles'])
 addpath([filedir '/tests'])
 addpath([filedir '/data'])
 addpath([filedir '/mcmc_simbio'])
+addpath([filedir '/generate_paper_figs'])
+
 txtldir = filedir;
 end

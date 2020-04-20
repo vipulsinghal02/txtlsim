@@ -75,7 +75,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % Protein monomer binds with protein ClpX*P protease
     reactionRate = varargin{1};
     
-    p1 = regexp(listOfSpecies,'^protein ClpX(-lva)*?$', 'match'); % test whether the star causes problems
+    p1 = regexp(listOfSpecies,'^protein ClpX(-lva)?*$', 'match'); % test whether the star causes problems
     listOfProtein = vertcat(p1{:});
     
     for k = 1:size(listOfProtein,1)

@@ -50,14 +50,6 @@ for i = 1:nTopo % each topology
     % simbiology-parameter-estimation-in-parallel-part-i.html
 
     
-    
-    
-    
-    
-
-
-    
-    
     mobj = mi(i).modelObj;
 
     enuo = mi(i).namesUnord; % estimated names unordered

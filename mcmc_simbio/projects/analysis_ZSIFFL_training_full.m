@@ -1,7 +1,7 @@
 
 
 % clear all
-
+close all
 
 % Set working directory to the txtlsim toolbox directory.
 projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_training'];
@@ -25,28 +25,39 @@ di = data_ZSIFFL;
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
-
+%
 % plot data from existing simulations.
-tsIDtouse = 1;
+tsIDtouse = 2;
 plotflag = true;
 switch tsIDtouse
     
-    case 1
-        ts1 = '20190501_074926_1_1107';
-        ts2 = '20190501_123434_1_1107';
-        ts3 = '20190501_123434_2_1845';
-        ts4 = '20190501_123434_3_3691';
-        ts5 = '20190502_120418_1_3691';
+    case 1 % was hitting an expression ceiling here. also, not really activating. 
+        ts1 = '20190503_170158_1_3691';
+        ts2 = '20190503_170158_2_1845';
+        ts3 = '20190503_170158_3_1107';
+        ts4 = '20190504_153702_1_1107';
+        ts5 = '20190504_153702_2_738';
+        ts6 = '20190505_023615_1_738';
         
-        tstamp = {ts1 ts2 ts3 ts4 ts5};
-        nIterID = {1 1:5 1:5 1:2 1};
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6};
+        nIterID = {1:10 1:10 1:7 1:10 1:10 1:7};
         load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
             'mi',...
-            'mcmc_info', 'data_info', 'mai', 'ri'); 
+            'mcmc_info', 'data_info',  'ri'); 
         
-    
+        
+    case 2 % this is after including the termination parameters. 
+        ts1 = '20190507_064919_1_1845';
+        ts2 = '20190507_102955_1_1845';
+        
+        tstamp = {ts1 ts2};
+        nIterID = {1:6 1:6};
+        load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
+            'mi',...
+            'mcmc_info', 'data_info',  'ri'); 
+        
 end
-tsToSave = ts5;
+tsToSave = ts2;
 mai.masterVector
 
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
@@ -55,20 +66,16 @@ clear marray_full
 
     
 parnames = ...
-    [...
-    {'pol_{Kd,tet}'}
+    [{'pol_{Kd,tet}'}
     {'pol_{Kd,lac}'}
+    {'pol_{term}'}
+    {'Ribo_{term}'}
     {'pol'}
     {'Ribo'}
     {'3OC12_{Kd}'}
-    {'3OC12_{F}'}
     {'pol_{Kd,las}'}
-    {'pol_{F,las}'}
     {'plas_{tf, Kd}'}
-    {'plas-pol_{tf, Kd}'}
-    {'plas-pol_{tf, F}'}
-    {'plas_{tf, F}'}
-    ];
+    {'plas-pol_{tf, Kd}'}    ];
 % activeNames(estParamsIX,:)
 % 
 % ans =
@@ -89,17 +96,19 @@ parnames = ...
 %     {'TXTL_PLAS_TFBIND_F'      }    {[    3.6693]}    {1×2 double}
 %
 % if plotflag
-close all
-%    close all
-    % Plot trace and corner (posterior distribution) plots
-    mcmc_plot(marray(:, 1:end,(end-120):5:end), parnames(:),...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'AllWalkers');
-    %%
-        mcmc_plot(marray(:, 1:5:end,1:end), parnames(:),...
+% % % % 
+% % % % close all
+% % % % % %    close all
+% % % % %%     % Plot trace and corner (posterior distribution) plots
+% % % %     mcmc_plot(marray(:, 1:end,(end-120):5:end), parnames(:),...
+% % % %         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+% % % %         'projdir', projdir, 'tstamp', tsToSave,...
+% % % %         'extrafignamestring', 'AllWalkers');
+% % % % %% 
+        mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
         'savematlabfig', figsave, 'savejpeg', jpgsave,...
         'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
-%%
+% % % % %
 
 % {'rep_{Kd}'} -1.16, -0.92
 % 
@@ -136,49 +145,73 @@ close all
 %     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
 %     mcut = marray_cut([6 7 9], 1:end,ceil(end/4):end);
 %     mcmc_3D(mcut(:,:)', parnames([6 7 9]), 'RNA deg covariation')
+
+% Here, we try to plot the trajectories for different sets of parameters. 
+% I will basically cut the parameters to different subsets, and plot the
+% results to check if the lasR model is even working. if it is, then it
+% will be clear that it just needs more simulation / fixing of the F rates
+% and an estimation of the Kds. 
+%
+
+
+
+% % % % 
+% % % %     paramIndices = (1:12);
+% % % %     parRanges(paramIndices, :) = [...
+% % % %         10.5 20.5; %1 pol_{Kd,tet}
+% % % %         7 13; %2 pol_{Kd,lac}
+% % % %         4 6.1; %3 pol % 5.9 in mcmc_info_ZSIFFL_training_full (from mtet phase 1, 2 etc)
+% % % %         5.7 12; %4 Ribo % 5.9 in mcmc_info_ZSIFFL_training_full (from mtet phase 1, 2 etc)
+% % % %        -20 20 ; %5 3OC12_{Kd} % correlated with plas_{tf, F}
+% % % %         0 2; %6 3OC12_{F} % just gaussian. 
+% % % %         -20 20; %7 pol_{Kd,las}
+% % % %         -2 2.2; %8 pol_{F,las}
+% % % %         -20.5 20;%9 plas_{tf, Kd} <
+% % % %         -20 20; % 10 -- plas-pol_{tf, Kd} <
+% % % %         -2 5;% plas-pol_{tf, F}
+% % % %         -2.5 1.5;% plas_{tf, F}
+% % % %         ];
+% % % %     marray_cut = mcmc_cut(marray, paramIndices, flipud((parRanges(paramIndices, :))'));
+% % % %     size(marray_cut)
+
+    % actually i think it is better to just set te parameters using gaussian balls, 
+    % and fix as many as possible, and jsut explore the Plas and OC12 Kds. 
+%%   
+%     % mean and sd parameter. 
+%     gaussianMeanSD = ...
+%         [16.57 0.1; ...%
+%         10.5 0.1; ...% pol_{Kd,lac}
+%         5.9 0.1; ...% pol
+%         5.9 0.1; ...% Ribo
+%         12 1; ...% 3OC12_{Kd}
+%         0 1 ; ...% 3OC12_{F} 
+%         35 4; ...% pol_{Kd,las}
+%         3 2; ...% pol_{F,las}
+%         5 5; ...% plas_{tf, Kd} <
+%         8 5; ...% plas-pol_{tf, Kd} <
+%         0 2; ...% plas-pol_{tf, F}
+%         0 4; ...%plas_{tf, F}
+%         ];
 %     
-%     paramIndices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-%     parRanges(paramIndices, :) = [...
-%         2.3 2.95; %1
-%         8.6 8.95; %2
-%         -10.1 -9.7; %3
-%         13 15; %4
-%         -1 5 ; %5
-%         15.59 15.73; %6
-%         -0.2966 0.1031; %7
-%         0.7 2.2; %8 pol
-%         8.385 8.622;%9 RNase
-%         3.18 3.69; % 10 -- TLcat
-%         -3 13.5;%RiboKd
-%         2 3;% Ribo term
-%         3 4.6 ];% Ribo
-%     marray_cut = mcmc_cut(marray, paramIndices, flipud((parRanges(paramIndices, :))'));
+%    marray_gauss =  cell2mat(arrayfun(@(mu, sig) mu + sig*randn(1, 100),...
+%        gaussianMeanSD(:, 1), gaussianMeanSD(:, 2), ...
+%        'UniformOutput', false));
+%    
 %     
-%     mcmc_plot(marray_cut(:, 1:end,ceil(end/4):end), parnames(:),...
-%     'savematlabfig', figsave, 'savejpeg', false,...
-%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
-% 
-%  CandidateParams = marray_cut(:,1:100:end,end)
-%     figure
-%     [C,lags,ESS]=eacorr(marray(:, :,1:end));%10000:end
-%     plot(lags,C,'.-',lags([1 end]),[0 0],'k');
-%     grid on
-%     xlabel('lags')
-%     ylabel('autocorrelation');
-%     text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',...
-%         ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
-%     title('Markov Chain Auto Correlation')
-%     
-    %% Plot trajectories.
+    
+    
+    % Plot trajectories.
     
     % rebuild the master vector array, either via mcmc_cut or just using
     % all estimated points.
     
-    %     mvarray = masterVecArray(marray_cut, mai);
+    
+%         mvarray = masterVecArray(marray_gauss, mai);
+%         mvarray = masterVecArray(marray_cut', mai);
     mvarray = masterVecArray(marray, mai);
-    clear marray
+%     clear marray
     %
-    for miID = 1:length(mi)
+    for miID = length(mi)%1:
         currmi = mi(miID);
         dvStr = arrayfun(@num2str, currmi.dosedVals, 'UniformOutput', false);
         
@@ -230,6 +263,7 @@ close all
     %
 % end
 marrayOrd(:,1:5,end)
+[(1:42)' mvarray(:,1:5,end)]
 clear marrayOrd
 % flagz = ones(26, 1);
 % flagz([1 5 7 8 10 12 15 16 17 19 21 23 25 26]) = 0;

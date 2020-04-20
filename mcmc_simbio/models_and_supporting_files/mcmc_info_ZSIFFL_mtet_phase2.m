@@ -304,6 +304,9 @@ activeNames(cell2mat(mtet_phase1_params(:,1)),3) = mtet_phase1_params(:,4);
 
 estParamsIX = [1 2 3 7 11 16 21 31 32 33]';
 estParams = activeNames(estParamsIX,1);
+
+[estParams num2cell(log(cell2mat(activeNames(estParamsIX,3))))]
+
 activeNames
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
 % fixedParams vector

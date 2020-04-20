@@ -97,8 +97,22 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
     listOftetRdimer = vertcat(matchStr{:});
     
-    % we dont allow for activation by non inducer bound activator. in a
-    % future leaky expression mode, those type of reactions would get activated.
+    
+    % June 8, 2019: add leaky expression. Maybe in a future release this
+    % will be a mode. But for now we just have it as the default. The leaky
+    % expression parameter was estimated to be 35 in log space. This is the
+    % value being put into the txtlsim paper. 
+    % Note that based on the logic of the combinatorial promoter, 
+    % this parameter value cannot be the ptet promoter
+    % unrepressed expression value. that is too high to be leaky. This is
+    % the plas leaky espression value.
+    %
+    %   leaky expression
+    parameters = {'TXTL_PLAS_RNAPbound_F',paramObj.RNAPbound_Forward;...
+        'TXTL_PLAS_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
+    
     p = regexp(listOfSpecies,'^OC12HSL:protein lasR(-lva)?$', 'match');
     listOfactivators = vertcat(p{:});
     
@@ -119,8 +133,8 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % bound
     listOfSpecies_justAdded = get(tube.species, 'name');
     activ_bound = ['^(RNAP:' dna.name '|' dna.name '):(OC12HSL:protein lasR(-lva)?)$'];
-%     tetR dimer binds to the string after the activated lasR binds. and
-%     the AGTP and CUTP bind before. 
+%     tetR dimer binds to the string after (at the end of the string) the activated lasR. and
+%     the AGTP and CUTP bind before (ie, at the start of the string, / earlier in the string). 
 %     I.e., dont want the following species to to get recognized
 %     'RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR:protein tetRdimer'
 %     'AGTP:CUTP:RNAP:DNA plas_ptet--utr1--deGFP:OC12HSL:protein lasR:protein tetRdimer'
@@ -147,16 +161,16 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         % repressor binding to DNA
         txtl_addreaction(tube,...
             ['[' dna.name '] + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
-            'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
-            'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
+            'MassAction',{'TXTL_PTET_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+            'TXTL_PTET_sequestration_R',getDNASequestrationRates(paramObj,'R')});
         for i = 1:size(list_of_repressible_dna)
             
             %repressor binding to activated dna
             txtl_addreaction(tube,...
                 [list_of_repressible_dna{i} ' + ' listOftetRdimer{k} ' <-> ['...
                 list_of_repressible_dna{i} ':' listOftetRdimer{k} ']'],...
-                'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
-                          'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
+                'MassAction',{'TXTL_PTET_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+                          'TXTL_PTET_sequestration_R',getDNASequestrationRates(paramObj,'R')});
                       
 %            repressor knocking off activator
             % use the tokens captured previously to set up the reacion
@@ -224,7 +238,9 @@ end
 function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
     prom_spec, rbs_spec, gene_spec, TF, paramObj)
 % !TODO generalize this function to be used with all activator files. remove any
-% plas specificity. VS aug 2017
+% plas specificity. VS aug 2017 -- Note to future self: an activator class
+% would work really well here. Basically we must have activator, repressor,
+% etc classes. 
 
 txtl_addreaction(tube, ...
     [dna.Name ' + ' TF ' <-> [' dna.Name ':' TF ']' ],...
@@ -236,6 +252,10 @@ txtl_addreaction(tube, ...
     'MassAction',{'TXTL_PLAS_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
     'TXTL_PLAS_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
 
+txtl_addreaction(tube, ...
+    [RNAPbound ' + ' TF ' <-> [' RNAPbound ':' TF ']' ],...
+    'MassAction',{'TXTL_PLAS_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLAS_TFBIND_R',paramObj.activation_R}); % this line was added Jun 8, 2019
 % 
 % if mode.utr_attenuator_flag
 %     mode.add_dna_driver = 'Setup Species';
@@ -244,8 +264,12 @@ txtl_addreaction(tube, ...
 %     txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
 % else
     mode.add_dna_driver = 'Setup Species';
+    
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);  %added on Jun 30, 2019
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
     mode.add_dna_driver = 'Setup Reactions';
+    
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %added on Jun 30, 2019
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
 % end
 

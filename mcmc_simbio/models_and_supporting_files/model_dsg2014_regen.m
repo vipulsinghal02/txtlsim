@@ -64,6 +64,8 @@ function m = model_dsg2014_regen(varargin)
 p = inputParser;
 p.addParameter('paramInfo', [], @isstruct);
 p.addParameter('timeVector', 1:100, @isnumeric);
+p.addParameter('plotmode', false, @islogical);
+p.addParameter('initialDNA', 0, @isnumeric);
 p.parse(varargin{:});
 p = p.Results;
 tv = p.timeVector;
@@ -80,10 +82,10 @@ tube1 = txtl_extract('Emcmc2018');
 tube2 = txtl_buffer('Emcmc2018');
 tube3 = txtl_newtube('gene_expression');
 txtl_add_dna(tube3, ...
-  'p70(50)', 'utr1(20)', 'deGFP(1000)', 0, 'plasmid');	
+  'p70(50)', 'utr1(20)', 'deGFP(1000)', p.initialDNA, 'plasmid');	
 m = txtl_combine([tube1, tube2, tube3]);
 m.UserData.energymode = 'regeneration';
-%% MOST LIKELY YOU WILL NOT NEED TO TOUCH THIS SECTION
+% MOST LIKELY YOU WILL NOT NEED TO TOUCH THIS SECTION
 % See: 
 % https://www.mathworks.com/help/simbio/ug/selecting-absolute-
 % tolerance-and-relative-tolerance-for-simulation.html
@@ -98,6 +100,10 @@ set(cs1.SolverOptions, 'RelativeTolerance', 1.0e-6);
 tic
     [~] = txtl_runsim(m,tv(end));
 toc
+if p.plotmode
+    [simData] = txtl_runsim(m,14*60*60);
+    txtl_plot(simData,m);
+end
 
 
 
@@ -119,10 +125,11 @@ globalize_params(m)
 if ~isempty(p.paramInfo)
     pinf = p.paramInfo;
     % set the parameters
-    for i = 1:length(pinf, 1) 
-        setparam(m, pinf.reactionString(i), pinf.paramNames(i), pinf.paramVals(i));
+    for i = 1:size(pinf, 1) 
+        setparam(m, pinf(i).reactionString, pinf(i).paramNames, pinf(i).paramVals);
     end
 end
+
 
 
 end

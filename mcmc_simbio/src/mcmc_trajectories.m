@@ -195,15 +195,18 @@ p.addParameter('nSimCurves', 50, @isnumeric);
 p.addParameter('collateDoses', false, @islogical);
 p.addParameter('separateExpSim', false, @islogical);
 p.addParameter('just_data_info', false, @islogical);
-p.addParameter('subplot_arrangement', [], @isnumeric); % [nrows ncols]. Must have nrows*ncols = ndoses. only gets used if collate doses is false
+p.addParameter('subplot_arrangement', [], @isnumeric); % [nrows ncols]. 
+% Must have nrows*ncols = ndoses. only gets used if collate doses is false
 % Modes for the next two inputs: 'mean', 'median' 'meanstd', 'medianstd'
 % 'mediancurves', 'curves'
 p.addParameter('ExpMode', 'median', @ischar);
 p.addParameter('SimMode', 'meanstd', @ischar);
 p.addParameter('title', {}, @iscell);
 p.addParameter('legends', {}, @iscell);
-p.addParameter('savematlabfig', false, @islogical); % if this is true, then projdir and tstamp must be specified.
-p.addParameter('savejpeg', false, @islogical); % if this is true, then projdir and tstamp must be specified.
+p.addParameter('savematlabfig', false, @islogical); 
+% if this is true, then projdir and tstamp must be specified.
+p.addParameter('savejpeg', false, @islogical); 
+% if this is true, then projdir and tstamp must be specified.
 p.addParameter('projdir', [], @ischar);
 p.addParameter('tstamp', [], @ischar);
 p.addParameter('extrafignamestring', [], @ischar);
@@ -228,7 +231,8 @@ if p.just_data_info
         currdi = di(dID);
         [expsummst, expspreadst] = computeDataStats(currdi.dataArray, p.ExpMode);
         %         dimensionLabels = currdi.dimensionLabels;
-        %         expmax = computeMaxes(expsummst, expspreadst, p.ExpMode, dimensionLabels);
+        %         expmax = computeMaxes(expsummst, ...
+        % expspreadst, p.ExpMode, dimensionLabels);
         dNames = currdi.dosedNames;
         dVals = currdi.dosedVals;
         [ndNames, nICs] = size(dVals);
@@ -260,10 +264,12 @@ if p.just_data_info
                 legendentry{i} = [];
                 
                 for dnID = 1:ndNames-1
-                    legendentry{i} = [legendentry{i} dNames{dnID} ' = ' num2str(dVals(dnID, i)) ', '];
+                    legendentry{i} = ...
+                    [legendentry{i} dNames{dnID} ' = ' num2str(dVals(dnID, i)) ', '];
                 end
                 
-                legendentry{i} = [legendentry{i} dNames{ndNames} ' = ' num2str(dVals(ndNames,i ))];
+                legendentry{i} = ...
+                [legendentry{i} dNames{ndNames} ' = ' num2str(dVals(ndNames,i ))];
             end
             legend(linehandle, legendentry);
             %title(currdi.measuredNames{msnum}{1:end}) % what was I thinking here?
@@ -383,7 +389,7 @@ else
                         'FaceAlpha', 0.25);
                 end
                 
-                legends([linehandle], legs(1,:));
+%                 legends([linehandle], legs(1,:));
                 title(titl{1, 1, msnum});
                 % !! p.legends must be a cell array of size 2 x nICs
                 % p.title must be a 2 x nMS cell array containing titles
@@ -405,7 +411,7 @@ else
                 end
                 % legends([linehandle(1); ptchhandle(1); linehandle(2:end)],
                 % legs(2,:));
-                legends([linehandle], legs(2,:));
+%                 legends([linehandle], legs(2,:));
                 title(titl{1, 2, msnum})
                 
             else
@@ -469,7 +475,8 @@ else
                     colIX = i-floor((i-1)/ncols)*ncols;
                    
                     if p.separateExpSim
-                        warning('Both subplot arrangement and separate experiment and sim are specified.\n Not going to do anything')
+                        warning('Both subplot arrangement and separate experiment and sim are specified.\n ' ...
+                            'Not going to do anything')
                         % future version : just make two figures. 
                         
                         % SEPARATEEXPSIM 1 , COLLATEDOSES 0,

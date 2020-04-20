@@ -3,10 +3,12 @@
 
 % Set working directory to the txtlsim toolbox directory.
 projdir = [pwd '/mcmc_simbio/projects/proj_vnprl'];
+saveFinalFigs = '/Users/vipulsinghal/Dropbox/Documents/a_Journal_Papers/Drafts/txtl_bmc_bioinformatics/figs/Jul20_2019/'
+
 addpath(projdir)
 
 jpgsave = false;
-figsave = true;
+figsave = false;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_dsg2014_regen;
@@ -89,19 +91,26 @@ parnames = ...
 %     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
 %     {'Ribo'                           }
 %
+
+
+%% 
 %%
 if plotflag
-%     close all
+    close all
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
-    mcmc_plot(marray(:, 1:end,10000:500:end), parnames(:),...
+%     mcmc_plot(marray(:, 1:5:end,10000:500:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedInAllWalkers');
+% 
+%%
+    mcmc_plot(marray(:, 1:10:end,1:100:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedInAllWalkers');
-
-
-    mcmc_plot(marray(:, 1:end,(end-18000):100:end), parnames(:),...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTransient_jul31');
+%%
+    mcmc_plot(marray(:, 1:end,(end-12000):600:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn_jul31');
     
 %% Stepwise restriction of parameter ranges to get a point that exists in the joint parameter space. 
     % cleaning up the parameters by removing any parameters that are 
@@ -233,8 +242,15 @@ if plotflag
 %         ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
 %     title('Markov Chain Auto Correlation')
 %     
-    %%
-    mvarray = masterVecArray(marray_cut, mai);
+%%
+%     mvarray = masterVecArray(marray_cut, mai); % instead of marray_cut,
+%     lets see what trajectories we get with just marray. 
+% this is because marray_cut is, in some sense, biased because we had
+% human-in-the-loop eyeballing. 
+
+% CRITICAL: the arrays can be quite large, and eat up all the ram in the
+% computer. For this reason, delete arrays as you no longer need them. 
+    mvarray = masterVecArray(marray(:,:,1:50:end), mai);
     clear marray
     samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
     %
@@ -248,15 +264,15 @@ if plotflag
             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial RNA, MCMC samples']};
         end
     end
-    mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo), mi(1), marrayOrd,...
-        titls_array, {},...
-        'SimMode', 'meanstd', 'separateExpSim', true,...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave,...
-        'extrafignamestring', 'RNAspike');
+%     mcmc_trajectories(mi(1).emo, data_info(mi(1).dataToMapTo), mi(1), marrayOrd,...
+%         titls_array, {},...
+%         'SimMode', 'meanstd', 'separateExpSim', true,...
+%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%         'projdir', projdir, 'tstamp', tsToSave,...
+%         'extrafignamestring', 'RNAspike');
     
     marrayOrd = mvarray(mi(2).paramMaps(mi(2).orderingIx),:,samplePoints);
-    clear mvarray
+%     clear mvarray
     titls = arrayfun(@num2str, mi(2).dosedVals, 'UniformOutput', false);
     titls_array = cell(length(titls), 2, length(mi(2).measuredSpeciesIndex));
     ms = {'MG aptamer', 'deGFP'};
@@ -266,15 +282,290 @@ if plotflag
             titls_array(j, 2, i) = {[ms{i} ', ' titls{j} 'nM initial DNA, MCMC samples']};
         end
     end
-    mcmc_trajectories(mi(2).emo, data_info(mi(2).dataToMapTo), mi(2), marrayOrd,...
-        titls_array, {},...
-        'SimMode', 'meanstd', 'separateExpSim', true,...
-        'savematlabfig', figsave, 'savejpeg', jpgsave,...
-        'projdir', projdir, 'tstamp', tsToSave,...
-        'extrafignamestring', 'MGa_deGFP');
+    
+%     mcmc_trajectories(mi(2).emo, data_info(mi(2).dataToMapTo), mi(2), marrayOrd,...
+%         titls_array, {},...
+%         'SimMode', 'meanstd', 'separateExpSim', true,...
+%         'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%         'projdir', projdir, 'tstamp', tsToSave,...
+%         'extrafignamestring', 'MGa_deGFP');
 end
-marrayOrd(:,1:5,end)
+% marrayOrd(:,1:5,end)
 clear marrayOrd
 % flagz = ones(26, 1);
 % flagz([1 5 7 8 10 12 15 16 17 19 21 23 25 26]) = 0;
 % [mvarray(:,1:6,end) log(cell2mat(activeNames2(:, 2))) flagz]
+
+%% remake the trajectory plots so that they are 1. collated and 2. less broad. 
+% same type of code as analysis_ZSIFFL_training_fullE.m
+
+
+% resimulate, 
+% ms = {{'protein deGFP*'}};
+for miID = 1:length(mi)
+    
+    currmi = mi(miID);
+    ms = currmi.measuredSpecies;
+    currdi = data_info(currmi.dataToMapTo);
+    tv = currdi.timeVector;
+    marrayOrd = mvarray(currmi.paramMaps(currmi.orderingIx),:,samplePoints);
+    dose  = currmi.dosedVals';
+    vi = get(currmi.emo, 'ValueInfo');
+    for i = 1:length(vi)
+        vi(i)
+    end
+    currmi.dosedNames
+    currmi.dosedVals
+    
+    dose
+    
+    [da{miID}, idxnotused{miID}] = ...
+        simulatecurves(currmi.emo,marrayOrd(:,:)', 50, dose, tv, currmi.measuredSpecies);
+end
+%%
+
+
+ylims = [1000 50 12000];
+
+% here, each of the two mi have different length data. 
+% the first mi is the spike in rna 
+% the second mi is the mrna and gfp expression 
+lengthToPlotArray = [21, 76, 76]; 
+    
+    figure
+    ss = get(0, 'screensize');
+    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3.5 ss(4)/1.6]);
+    miToUse = [1 2 2]; % mi 1 has one plot (RNA) and mi 2 has 2 plots (RNA and protein)
+    msToPlot = [1 1 2];
+    timeinterval = [6 8 8];
+    % 
+    titleArray = {'RNA deg';
+        'mRNA expression';
+        'deGFP expression'};
+    legLoc = {'NorthEast','NorthEast','NorthWest'};
+    
+    legends = [{fliplr({'1000nM', '800nM', '600nM', '200nM', '75nM', '37.5nM'})};
+        {{'0.5nM', '2nM', '5nM', '20nM'}};
+        {{'0.5nM', '2nM', '5nM', '20nM'}};];
+    dosesToPlot = {{[1 2 4 5 7 9]}
+        {[1 2 3 4]}
+        {[1 2 3 4]}};
+    
+    %     clear marray
+    yLab = {'RNA, nM', 'RNA, nM', 'deGFP, nM'}
+    
+    
+    for count = 1:length(miToUse)  %1:length(mi)%1:
+        colorz = flipud(parula(max(dosesToPlot{count}{:})+2));
+        currmi = mi(miToUse(count)); 
+        currdi = data_info(currmi.dataToMapTo);
+        tv = currdi.timeVector;
+        lengthToPlot = lengthToPlotArray(count);
+        subplot(3, 2, (count-1)*2+1)
+        for dID = dosesToPlot{count}{:}
+            plot(tv(1:lengthToPlot)/60,...
+                mean(currdi.dataArray(1:lengthToPlot, msToPlot(count), 1, dID),3),...
+                'LineWidth', 1.5,...
+                'Color', colorz(dID+2, :))
+            
+            hold on
+        end
+        title([titleArray{count} ' (Exp)'])
+        ylabel(yLab{count}, 'FontSize', 14)
+        axis([0 (lengthToPlot-1)*timeinterval(count), 0 ylims(count)])
+        if count ==length(miToUse)
+            xlabel('time, minutes', 'FontSize', 14)
+        end
+        ax = gca;
+        ax.FontSize = 14;
+        
+        subplot(3, 2, (count-1)*2+2)
+        for dID = dosesToPlot{count}{:}
+            plot(tv(1:lengthToPlot)/60,...
+                mean(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID), 3),...
+                'LineWidth', 1.5,...
+                'Color', colorz(dID+2, :))
+            hold on
+        end
+        title([titleArray{count} ' (Fit)'])
+        
+        legend(legends{count, :}, 'Location', legLoc{count}, 'FontSize', 14)
+        legend('boxoff')
+         axis([0 (lengthToPlot-1)*timeinterval(count) 0 ylims(count)])
+        if count ==length(miToUse)
+            xlabel('time, minutes', 'FontSize', 14)
+        end
+        ax = gca;
+        ax.FontSize = 14;
+    end
+    
+%     print([saveFinalFigs 'vnprl_F2_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
+%     print([saveFinalFigs 'vnprl_F2_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+%     
+%     print([saveFinalFigs 'vnprl_F2_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+    
+% end
+
+%% redo the plot in the previous cell, but with shading of the standard deviation
+% the experimental data is actually from Dan Gaskins and Zoltan Tuza's
+% paper. 
+
+% The data is stored in the directory
+% mcmc_simbio/exp_data/public_data/
+% and the code is in the file all_data_compare.m 
+% We adapt the code 
+
+
+    % code we will use is: 
+    [linehandle, ptchhandle] =...
+        boundedline(tv, summst(:,msi,1, dosei),...
+        spreadst(:,msi,1, dosei));
+    set(ptchhandle, ...
+        'FaceColor', p.SpreadColor,...
+        'FaceAlpha', p.FaceAlpha);
+    set(linehandle, ...
+        'Color', p.LineColor,...
+        'LineStyle', p.LineStyle,...
+        'LineWidth', p.LineWidth);
+    hold on
+    
+    
+
+ylims = [1000 50 12000];
+
+% here, each of the two mi have different length data. 
+% the first mi is the spike in rna 
+% the second mi is the mrna and gfp expression 
+lengthToPlotArray = [21, 76, 76]; 
+    
+    figure
+    ss = get(0, 'screensize');
+    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3.5 ss(4)/1.6]);
+    miToUse = [1 2 2]; % mi 1 has one plot (RNA) and mi 2 has 2 plots (RNA and protein)
+    msToPlot = [1 1 2];
+    timeinterval = [6 8 8];
+    % 
+    titleArray = {'RNA deg';
+        'mRNA expression';
+        'deGFP expression'};
+    legLoc = {'NorthEast','NorthEast','NorthWest'};
+    
+    legends = [{fliplr({'1000nM', '800nM', '600nM', '200nM', '75nM', '37.5nM'})};
+        {{'0.5nM', '2nM', '5nM', '20nM'}};
+        {{'0.5nM', '2nM', '5nM', '20nM'}};];
+    dosesToPlot = {{[1 2 4 5 7 9]}
+        {[1 2 3 4]}
+        {[1 2 3 4]}};
+    
+    %     clear marray
+    yLab = {'RNA, nM', 'RNA, nM', 'deGFP, nM'}
+    
+    
+    for count = 1:length(miToUse)  %1:length(mi)%1:
+        colorz = flipud(parula(max(dosesToPlot{count}{:})+2));
+        currmi = mi(miToUse(count)); 
+        currdi = data_info(currmi.dataToMapTo);
+        tv = currdi.timeVector;
+        lengthToPlot = lengthToPlotArray(count);
+        subplot(3, 2, (count-1)*2+1)
+        for dID = dosesToPlot{count}{:}
+            
+            [linehandle, ptchhandle] = ...
+                boundedline(tv(1:lengthToPlot)/60, summst(:,msi,1, dosei),...
+                spreadst(:,msi,1, dosei));
+            
+            plot(tv(1:lengthToPlot)/60, ...
+                mean(currdi.dataArray(1:lengthToPlot, msToPlot(count), 1, dID),3),...
+                'LineWidth', 1.5,...
+                'Color', colorz(dID+2, :))
+            
+            hold on
+        end
+            [linehandle, ptchhandle] =...
+        boundedline(tv, summst(:,msi,1, dosei),...
+        spreadst(:,msi,1, dosei));
+    
+    
+        title([titleArray{count} ' (Exp)'])
+        ylabel(yLab{count}, 'FontSize', 14)
+        axis([0 (lengthToPlot-1)*timeinterval(count), 0 ylims(count)])
+        if count ==length(miToUse)
+            xlabel('time, minutes', 'FontSize', 14)
+        end
+        ax = gca;
+        ax.FontSize = 14;
+        
+        subplot(3, 2, (count-1)*2+2)
+        for dID = dosesToPlot{count}{:}
+            plot(tv(1:lengthToPlot)/60,...
+                mean(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID), 3),...
+                'LineWidth', 1.5,...
+                'Color', colorz(dID+2, :))
+            hold on
+        end
+        title([titleArray{count} ' (Fit)'])
+        
+        legend(legends{count, :}, 'Location', legLoc{count}, 'FontSize', 14)
+        legend('boxoff')
+         axis([0 (lengthToPlot-1)*timeinterval(count) 0 ylims(count)])
+        if count ==length(miToUse)
+            xlabel('time, minutes', 'FontSize', 14)
+        end
+        ax = gca;
+        ax.FontSize = 14;
+    end
+
+
+
+%% find a parameter point that gives good looking fits
+
+% Reaction Strings
+
+%     [{[    6.0913]}    {'TX_elong_glob'                  }  {'[CUTP:AGTP:RNAP:DNA p70--utr1--deGFP] -> [term_RNAP:DNA p70--utr1--deGFP] + [RNA utr1--deGFP]'}
+%     {[   24.4062]}    {'TL_elong_glob'                  }   {'[AA:AGTP:Ribo:RNA utr1--deGFP] -> [term_Ribo:RNA utr1--deGFP] + [protein deGFP] + AGMP'}
+%     {[5.7776e+03]}    {'AGTPdeg_time'                   }   {'global'}
+%     {[    0.0200]}    {'AGTPreg_ON'                     }   {'global'}
+%     {[4.8661e-05]}    {'AGTPdeg_rate'                   }   {'AGTP -> AGMP'}
+%     {[    0.0023]}    {'TXTL_PROT_deGFP_MATURATION'     }   {'[protein deGFP] -> [protein deGFP*]'}
+%     {[  421.4700]}    {'TXTL_UTR_UTR1_Kd'               }   {''}
+%     {[    0.8187]}    {'TXTL_UTR_UTR1_F'                }
+%     {[  462.8714]}    {'TXTL_P70_RNAPbound_Kd'          }
+%     {[    4.4817]}    {'TXTL_P70_RNAPbound_F'           }
+%     {[   20.0374]}    {'TXTL_RNAPBOUND_TERMINATION_RATE'}
+%     {[   19.0278]}    {'TXTL_NTP_RNAP_1_Kd'             }
+%     {[         1]}    {'TXTL_NTP_RNAP_1_F'              }
+%     {[1.1990e+06]}    {'TXTL_NTP_RNAP_2_Kd'             }
+%     {[         1]}    {'TXTL_NTP_RNAP_2_F'              }
+%     {[  703.8744]}    {'TL_AA_Kd'                       }
+%     {[    0.7408]}    {'TL_AA_F'                        }
+%     {[2.0007e+06]}    {'TL_AGTP_Kd'                     }
+%     {[    0.3012]}    {'TL_AGTP_F'                      }
+%     {[   38.2385]}    {'TXTL_RIBOBOUND_TERMINATION_RATE'}
+%     {[6.5322e+06]}    {'TXTL_RNAdeg_Kd'                 }
+%     {[         1]}    {'TXTL_RNAdeg_F'                  }
+%     {[    0.1453]}    {'TXTL_RNAdeg_kc'                 }
+%     {[    9.0194]}    {'RNAP'                           }
+%     {[   44.3395]}    {'Ribo'                           }
+%     {[3.2219e+04]}    {'RNase'                          }
+    
+
+
+% the parameters to set in the model are the parameters in the mcmc_info
+% constructor file, then we can use the resulting model with the txtl_plot
+% command to generate a prediction. 
+%%
+parvals = struct('paramNames', mi(2).namesOrd,...
+    'paramVals', num2cell((marrayOrd(:, end, end))),...
+    'reactionString', 'global'...
+    );
+% simulate model with that parameter point
+Mobj = model_dsg2014_regen('plotmode', true, 'initialDNA', 30, 'paramInfo', parvals)
+% plot trajectories for that model . 
+
+doseStruct = struct('dosedNames', {{'DNA p70--utr1--deGFP'}}, ...
+    'dosedVals', 30);
+
+mcmc_plot_txtl(Mobj, parvals,doseStruct, ...
+    'model_info', mi(2), 'master_info', mai) % there is only a single geometry, so the
+% 'which_geometry' argument does not need to be specified. 
+

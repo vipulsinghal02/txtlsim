@@ -139,7 +139,7 @@ circuitInfo2 = ...
         'TL_AGTP_F'                         exp(-1.2)   [1e-5 100]  %set to exp(-1.2)
         'TXTL_RIBOBOUND_TERMINATION_RATE'   exp(5.398)          [0.1 1000]
         'Ribo'                              exp(7.3081)          [1 10000]}; %26 
-    
+    displayThings = [activeNames2(:,1) num2cell(log(cell2mat(activeNames2(:,2)))) num2cell(log(cell2mat(activeNames2(:,3)))) ]
     % 
 %     {'AGTPreg_ON'                     }
 %     {'TXTL_P70_RNAPbound_F'           }

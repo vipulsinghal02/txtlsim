@@ -43,11 +43,11 @@ octave-workspace
 *.eps
 *.jpg
 *.svg
-*.fig
+# *.fig
 # data files
 *.gc
 *.xlsx
-*.csv
+# *.csv
 
 # movie files
 *.mp4
