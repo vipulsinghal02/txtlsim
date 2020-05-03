@@ -1,4 +1,4 @@
-function [mcmc_info, varargout] = mcmc_info_dsg2014_regen_H(modelObj)
+function [mcmc_info, varargout] = mcmc_info_vnprl_F3(modelObj)
 % from regen_A1, with the parameters with posterior distributions that are
 % very flat set to some value in that flat distribution. The psoterior
 % distirbutions used are from the parameter set "case 4" in
@@ -107,47 +107,112 @@ circuitInfo2 = ...
     %%
     
     activeNames1 = {...
-        'TXTL_RNAdeg_Kd'                    exp(9.237)        [100 1e5] 
-        'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000]
-        'TXTL_RNAdeg_kc'                    exp(-4.4)      [1e-4 1]
-        'RNase'                             exp(6.4899)         [1 10000]};
-    activeNames2 = {... % changes made to ranges on feb 8, 2019. setting parameters based on 
+        'TXTL_RNAdeg_Kd'                    exp(9.237)        [100 1e7] 
+        'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000] % set to 1 (1 is right in the middle of the broad posterior density, and so not entirely arbitrary. )
+        'TXTL_RNAdeg_kc'                    exp(-4.4)   [1e-7 10]
+        'RNase'                             exp(6.4899)         [1 100000]};
+    activeNames2_F3 = {... % changes made to ranges on feb 8, 2019. setting parameters based on 
+        ...% posterior plots. 
+        'TX_elong_glob'                     exp(2.55)       [exp(0.3) exp(4.8)]        % 1
+        'AGTPdeg_time'                      exp(8.8350)   exp([6.76 10.91]) % DO NOT FIX THIS. 
+        'AGTPdeg_rate'                      exp(-10)     exp([-12.3 -7.6 ]) % set from before
+        'AGTPreg_ON'                        exp(-3.912)        [0.005 0.2]        %4 % set from before
+        'TXTL_P70_RNAPbound_Kd'             exp(13.75)         exp([11.25 16.25]) % 
+        'TXTL_P70_RNAPbound_F'              exp(1.5)    [1e-5 300] % set to exp(1.5)
+        'TXTL_RNAPBOUND_TERMINATION_RATE'   exp(1.95)        exp([-4.1 8])         % 7
+        'TXTL_NTP_RNAP_1_Kd'                exp(2.9459)      [1 1e6]
+        'TXTL_NTP_RNAP_1_F'                 exp(0)      [1e-5 100] % set to 1
+        'TXTL_NTP_RNAP_2_Kd'                exp(13.997)         [0.1 1e7]
+        'TXTL_NTP_RNAP_2_F'                 exp(0)      [1e-6 1000]        %11 % set to 1
+        'TXTL_RNAdeg_Kd'                    exp(15.6)        exp([12.5 18.7]) 
+        'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000] % set to 1 (1 is right in the middle of the broad posterior density, and so not entirely arbitrary. )
+        'TXTL_RNAdeg_kc'                    exp(-2.1)   exp([-5.3 1.1])  %set to exp(-5.4)
+        'RNAP'                              exp(1.4419)         exp([-2.44 5.62]) % 15
+        'RNase'                             exp(10.5)         exp([6.6 14.4])
+        'TL_elong_glob'                     exp(3.35)          exp([0.1 6.6])
+        'TXTL_PROT_deGFP_MATURATION'        exp(-6.0748)      [0.0002 0.02] %18 % set from before
+        'TXTL_UTR_UTR1_Kd'                  exp(5.75)          exp([-5 16.5])
+        'TXTL_UTR_UTR1_F'                   exp(-0.2)   [1e-5 100] % set to exp(-0.2)
+        'TL_AA_Kd'                          exp(6.5566)      [.1 1e6] % 21
+        'TL_AA_F'                           exp(-0.3)   [1e-5 20]   % set to exp(-0.3)
+        'TL_AGTP_Kd'                        exp(14.509)      [.1 1e7] % 23
+        'TL_AGTP_F'                         exp(-1.2)   [1e-5 100]  %set to exp(-1.2)
+        'TXTL_RIBOBOUND_TERMINATION_RATE'   exp(2.45)          exp([1.9 3])
+        'Ribo'                              exp(5)          exp([1 9])}; %26 
+    
+        % this is the expanded set using the F2 parameters as starting
+        % point
+        activeNames2 = {... % changes made to ranges on feb 8, 2019. setting parameters based on 
         ...% posterior plots. 
         'TX_elong_glob'                     exp(4.9354)       [0.5 300]        % 1
-        'AGTPdeg_time'                      exp(9.17)   [1800 42000] 
-        'AGTPdeg_rate'                      exp(-9.5172)      [1e-6 1e-1] 
-        'AGTPreg_ON'                        exp(-3.912)        [0.005 0.2]        %4 
-        'TXTL_P70_RNAPbound_Kd'             exp(9.514)         [0.1 1e6]  % 
+        'AGTPdeg_time'                      exp(9.17)   exp([6.76 10.91])%!CHANGED[1800 42000] 
+        'AGTPdeg_rate'                      exp(-9.5172)      [1e-7 1e-2] % 
+        'AGTPreg_ON'                        exp(-3.912)        [0.005 0.2]        %4 % 
+        'TXTL_P70_RNAPbound_Kd'             exp(9.514)         [0.01 exp(16.25)] %!CHANGED[0.01 1e7]  % 
         'TXTL_P70_RNAPbound_F'              exp(1.5)    [1e-5 300] % 
-        'TXTL_RNAPBOUND_TERMINATION_RATE'   exp(3.3005)        [0.1 100]         % 7
+        'TXTL_RNAPBOUND_TERMINATION_RATE'   exp(3.3005)        exp([-4.1 8])%!CHANGED[0.1 1000]         % 7
         'TXTL_NTP_RNAP_1_Kd'                exp(2.9459)      [1 1e6]
-        'TXTL_NTP_RNAP_1_F'                 exp(0)      [1e-5 100] % 
+        'TXTL_NTP_RNAP_1_F'                 exp(0)      [1e-5 100] %
         'TXTL_NTP_RNAP_2_Kd'                exp(13.997)         [0.1 1e7]
-        'TXTL_NTP_RNAP_2_F'                 exp(0)      [1e-6 1000]        %11 
-        'TXTL_RNAdeg_Kd'                    exp(9.237)        [100 1e5] 
+        'TXTL_NTP_RNAP_2_F'                 exp(0)      [1e-6 1000]        %11
+        'TXTL_RNAdeg_Kd'                    exp(9.237)        [100 1.3222e+08] %!CHANGED[100 1e7] 
         'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000] % 
-        'TXTL_RNAdeg_kc'                    exp(-4.4)   [1e-4 1]  %
-        'RNAP'                              exp(1.4419)         [0.1 5000] % 15
-        'RNase'                             exp(6.4899)         [1 10000]
-        'TL_elong_glob'                     exp(0.5219)          [0.1 500]
-        'TXTL_PROT_deGFP_MATURATION'        exp(-6.0748)      [0.0001 0.2] %18 
-        'TXTL_UTR_UTR1_Kd'                  exp(11.189)          [0.5 1e5]
-        'TXTL_UTR_UTR1_F'                   exp(-0.2)   [1e-5 100] % 
+        'TXTL_RNAdeg_kc'                    exp(-4.4)   [1e-5 10]  %
+        'RNAP'                              exp(1.4419)         exp([-2.44 5000])% !cCHANGED [0.1 5000] % 15
+        'RNase'                             exp(6.4899)         [1 1.7941e+06]%!CHANGED[1 100000]
+        'TL_elong_glob'                     exp(0.5219)         [0.1 735.1] %!CHNAGED [0.1 500]
+        'TXTL_PROT_deGFP_MATURATION'        exp(-6.0748)      [0.0002 0.02] %18
+        'TXTL_UTR_UTR1_Kd'                  exp(11.189)          [0.005 1.4651e+07]%!CHANGED [0.005 1e7]
+        'TXTL_UTR_UTR1_F'                   exp(-0.2)   [1e-5 100] %
         'TL_AA_Kd'                          exp(6.5566)      [.1 1e6] % 21
-        'TL_AA_F'                           exp(-0.3)   [1e-5 20]   % 
+        'TL_AA_F'                           exp(-0.3)   [1e-5 20]   %
         'TL_AGTP_Kd'                        exp(14.509)      [.1 1e7] % 23
         'TL_AGTP_F'                         exp(-1.2)   [1e-5 100]  %
-        'TXTL_RIBOBOUND_TERMINATION_RATE'   exp(5.398)          [0.1 200]
+        'TXTL_RIBOBOUND_TERMINATION_RATE'   exp(5.398)          [0.1 1000]
         'Ribo'                              exp(7.3081)          [1 10000]}; %26 
-   
+    displayThings = [activeNames2(:,1) num2cell(log(cell2mat(activeNames2(:,2)))) num2cell(log(cell2mat(activeNames2(:,3)))) ]
+    % 
+%     {'AGTPreg_ON'                     }
+%     {'TXTL_P70_RNAPbound_F'           }
+%     {'TXTL_NTP_RNAP_1_Kd'             }
+%     {'TXTL_NTP_RNAP_1_F'              }
+%     {'TXTL_NTP_RNAP_2_Kd'             }
+%     {'TXTL_NTP_RNAP_2_F'              }
+%     {'TXTL_RNAdeg_F'                  }    
+%     {'TXTL_UTR_UTR1_F'                }
+%     {'TL_AA_Kd'                       }
+%     {'TL_AA_F'                        }  
+%     {'TL_AGTP_Kd'                     }
+%     {'TL_AGTP_F'                      }  
+%     {'TXTL_PROT_deGFP_MATURATION'     }
+% are fixed at the values above. 
+
+% 3. regen_F:
+% estimate all 13 remaining params:
+%     {'TX_elong_glob'                  }
+%     {'AGTPdeg_time'                   }
+%     {'AGTPdeg_rate'                   }
+%     {'TXTL_P70_RNAPbound_Kd'          }
+%     {'TXTL_RNAPBOUND_TERMINATION_RATE'}
+%     {'TXTL_RNAdeg_Kd'                 }
+%     {'TXTL_RNAdeg_kc'                 }
+%     {'RNAP'                           }
+%     {'RNase'                          }
+%     {'TL_elong_glob'                  }
+%     {'TXTL_UTR_UTR1_Kd'               }
+%     {'TXTL_RIBOBOUND_TERMINATION_RATE'}
+%     {'Ribo'                           }
 
     %%
     % Names of parameters and species to actually estimate.
-    estParamsIX = [1 2 3 4 5 7 8 10 12 14 15 16 17 18 19 21 23 25 26]';
+    estParamsIX = [1 2 3 5 7 12 14 15 16 17 19 25 26]';
     estParams = activeNames2(estParamsIX,1);
     % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
     % fixedParams vector
     fixedParamsIX =  setdiff((1:26)', estParamsIX);
+    
+    estARRAY = [activeNames2(estParamsIX,[1]) num2cell(log(cell2mat(activeNames2(estParamsIX,2))))]
+    fixARRAY = [activeNames2(fixedParamsIX,[1]) num2cell(log(cell2mat(activeNames2(fixedParamsIX,2))))]
     
     % for troubleshooting / visualizing the fixed params:
 %     log(cell2mat(activeNames2(fixedParamsIX,[2])))
