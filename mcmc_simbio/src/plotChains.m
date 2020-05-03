@@ -12,8 +12,8 @@ p=p.Results;
 [n1 n2] = twofactors(nParam);
 
 if isprime(nParam)
-    n1 = ceil(nParam/5); % 5 columns
-    n2 = 5;
+    n1 = ceil(nParam/3); % 5 columns
+    n2 = 3;
 end
 
 wix = unique(ceil(rand(nW, 1)*nWalkers));
