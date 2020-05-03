@@ -15,20 +15,20 @@ p.addParameter('ver', 'F2', @ischar);
 p.addParameter('prevtstamp', []);
 p.addParameter('prevtstampID', []);
 p.addParameter('stepSize', 1.2);
-p.addParameter('nW', 800);
-p.addParameter('nPoints', 800*200);
-p.addParameter('thinning', 1);
+p.addParameter('nW', 1000);
+p.addParameter('nPoints', 1000*200);
+p.addParameter('thinning', 10);
 p.addParameter('nIter', 10);
 p.addParameter('parallel', true);
 p.addParameter('stdev', 1);
 p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multipliers for the
+p.addParameter('stepLadder',1 , @isnumeric); % A vector of multipliers for the..linspace(2, 1, 4)
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.1 0.01]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.01 0.002]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
