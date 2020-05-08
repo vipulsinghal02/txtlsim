@@ -158,7 +158,7 @@ circuitInfo2 = ...
         'TXTL_RNAdeg_Kd'                    exp(9.237)        [100 1.3222e+08] %!CHANGED[100 1e7] 
         'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000] % 
         'TXTL_RNAdeg_kc'                    exp(-4.4)   [1e-5 10]  %
-        'RNAP'                              exp(1.4419)         exp([-2.44 5000])% !cCHANGED [0.1 5000] % 15
+        'RNAP'                              exp(1.4419)         exp([-2.44 10])% !cCHANGED [0.1 5000] % 15
         'RNase'                             exp(6.4899)         [1 1.7941e+06]%!CHANGED[1 100000]
         'TL_elong_glob'                     exp(0.5219)         [0.1 735.1] %!CHNAGED [0.1 500]
         'TXTL_PROT_deGFP_MATURATION'        exp(-6.0748)      [0.0002 0.02] %18
