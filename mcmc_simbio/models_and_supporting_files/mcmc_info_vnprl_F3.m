@@ -111,8 +111,7 @@ circuitInfo2 = ...
         'TXTL_RNAdeg_F'                     exp(0)        [0.01 10000] % set to 1 (1 is right in the middle of the broad posterior density, and so not entirely arbitrary. )
         'TXTL_RNAdeg_kc'                    exp(-4.4)   [1e-7 10]
         'RNase'                             exp(6.4899)         [1 100000]};
-    activeNames2_F3 = {... % changes made to ranges on feb 8, 2019. setting parameters based on 
-        ...% posterior plots. 
+    activeNames2_F3 = {...
         'TX_elong_glob'                     exp(2.55)       [exp(0.3) exp(4.8)]        % 1
         'AGTPdeg_time'                      exp(8.8350)   exp([6.76 10.91]) % DO NOT FIX THIS. 
         'AGTPdeg_rate'                      exp(-10)     exp([-12.3 -7.6 ]) % set from before

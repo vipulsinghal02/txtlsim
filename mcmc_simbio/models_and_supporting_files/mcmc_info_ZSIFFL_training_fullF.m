@@ -343,7 +343,41 @@ training_fullD_params = ...
 activeNames(cell2mat(training_fullD_params(:,1)),2) = training_fullD_params(:,3);
 activeNames(cell2mat(training_fullD_params(:,1)),3) = training_fullD_params(:,4);
 
+%% Here, we set all the parameters from the "distribution C" in 
+% the evernote note 050 MAR 2020 parameter csv setting notes
+% Thing we will set is the parameter ranges from distribution C. 
 
+original_estimated_params = ...
+    {...
+ 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    2.4155e+07,   [ 3.269e+06   7.2005e+10]
+	21,      'TXTL_PLAC_RNAPbound_Kd'         ,         36316,   [    148.41   7.2005e+10]
+	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        78.241,   [         1   1.6275e+05]
+	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        16.993,   [         1   1.6275e+05]
+	31,      'RNAP'                           ,        365.04,   [    2.7183    3.269e+06]
+	33,      'Ribo'                           ,        365.04,   [    2.7183    3.269e+06]
+	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    1.0686e+13,   [7.2005e+10   2.3539e+17]
+	39,      'TXTL_PLAS_TFBIND_Kd'            ,        148.41,   [         1        22026]
+	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          2981,   [         1    3.269e+06]
+    };
+    
+new_estimated_params = ...
+    {...
+ 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 25])
+	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 25])
+	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([2, 10.5]) 
+	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([2 10])
+	31,      'RNAP'                           ,        exp(6),   exp([4 8])
+	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
+	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
+	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 9])
+	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 12])
+    };
+
+activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);
+activeNames(cell2mat(new_estimated_params(:,1)),3) = new_estimated_params(:,4);
+
+%% 
+%%
 
 estParamsIX = [7 21 23 28 31 33 37 39 40]';
 estParams = activeNames(estParamsIX,1);
