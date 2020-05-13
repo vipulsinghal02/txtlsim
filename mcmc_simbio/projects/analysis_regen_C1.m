@@ -431,7 +431,7 @@ found1 = [       5.5354
 % 11 parameters to estimate. RNA deg here allows the algorithm to tune the RNA timescale.  
 
 % 3. regen_F:
-% estimate all 14 remaining params:
+% estimate all 13 remaining params:
 %     {'AGTPdeg_time'                   }
 %     {'AGTPdeg_rate'                   }
 %     {'TX_elong_glob'                  }
