@@ -3,7 +3,7 @@
 saveFinalFigs = [pwd '/']
 finafigmode = true
 
-trainingEdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE'];
+trainingEdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE_v2'];
 projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'];
 
 
@@ -27,8 +27,10 @@ ts2 = '20190512_064547_1_1476';
 ts3 = '20190512_094712_1_1845';
 ts4 = '20190512_113712_1_1845';
 ts5 = '20190512_155207_1_1845';
-tstamp = {ts1 ts2 ts3 ts4 ts5};
-nIterID = {1:3 1:8 1:2 1:5 1:7};
+ts6 = '20200525_181748_1_1845';% changed the tau from 10.1 to 9.7. E_v2
+ts7 = '20200525_201859_1_1845';
+tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7};
+nIterID = {1:3 1:8 1:2 1:5 1:7 1:2 1:5};
 tsToSave = '20190720_124011_1_327';
 load([pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'...
     '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...

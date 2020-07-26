@@ -2,16 +2,16 @@
 
 clear all
 close all
-saveFinalFigs = '/Users/vipulsinghal/Dropbox/Documents/a_Journal_Papers/Drafts/txtl_bmc_bioinformatics/figs/Jul20_2019/'
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\trainingE_v2\'
 
 finafigmode = true
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE'];
+projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE_v2'];
 addpath(projdir)
 sls = regexp(projdir, '/', 'split');
 extrastring = sls{end};
-jpgsave = false;
-figsave = false;
+jpgsave = true;
+figsave = true;
 
 % Load model, mcmc_info, and data_info.
 % construct simbiology model object(s)
@@ -29,14 +29,26 @@ tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1 % this is after including the termination parameters.
-        ts1 = '20190512_033129_1_1476';
-        ts2 = '20190512_064547_1_1476';
-        ts3 = '20190512_094712_1_1845';
-        ts4 = '20190512_113712_1_1845';
-        ts5 = '20190512_155207_1_1845';
-        tstamp = {ts1 ts2 ts3 ts4 ts5};
-        nIterID = {1:3 1:8 1:2 1:5 1:7};
-        load([projdir '/simdata_' ts1 '/full_variable_set_' ts1 '.mat'], ...
+        ts1 = '20190512_033129_1_1476';%5 iters per run, so 30/2
+        ts2 = '20190512_064547_1_1476';%110/2
+        ts3 = '20190512_094712_1_1845';%130/2
+        ts4 = '20190512_113712_1_1845';%180/2
+        ts5 = '20190512_155207_1_1845';%250/2=125
+        
+        ts6 = '20200525_181748_1_1845';%145 changed the tau from 10.1 to 9.7. E_v2 
+        ts7 = '20200525_201859_1_1845'; %195
+        ts8 = '20200525_201859_2_1476';%215
+        ts9 = '20200526_033216_1_738'; %315
+        ts10 = '20200526_033216_2_369';%375
+        ts11 = '20200526_204312_1_258';% 435
+        ts12 = '20200527_033000_1_37'; % 445
+        ts13 = '20200527_045239_1_74';% 485
+        ts14 = '20200527_045239_2_52';% 525
+        ts15 = '20200527_045239_3_74'; %535
+        
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ts12 ts13 ts14 ts15};
+        nIterID = {1:3 1:8 1:2 1:5 1:7 1:2 1:5 1:2 1:10 1:6 1:6 1 1:4 1:4 1};
+        load([projdir '/simdata_' tstamp{end} '/full_variable_set_' tstamp{end} '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri');
 end
@@ -86,15 +98,17 @@ parnames = [...
 % % % % %%
 %
 %%
-close all
-mcmc_plot(marray(:, 1:end,(end - 100):10:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
 
 %%
-mcmc_plot(marray(:, 1:end,1:10:end), parnames(:),...
+mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'wit_transient');
+
+%%
+close all
+mcmc_plot(marray(:, 1:end,(end - 50):10:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
 
 % % % % %
 %%
@@ -244,7 +258,7 @@ for miID = 1:length(mi)%1:
         end
     end
     titls_array
-    samplePoints = ceil(size(mvarray, 3) * [.95, 1]);
+    samplePoints = ceil(size(mvarray, 3) * [1]);
     
     marrayOrd = mvarray(currmi.paramMaps(currmi.orderingIx),:,samplePoints);
     
@@ -295,7 +309,6 @@ end
 
 
 %% here
-close all
 
 ylims = {[7.5, 2, 2, 5, 7.5];
     [7.5, 2, 2, 5, 7.5];

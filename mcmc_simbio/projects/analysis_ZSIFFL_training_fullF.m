@@ -2,13 +2,13 @@
 
 clear all
 close all
-saveFinalFigs = '/Users/vipulsinghal/Dropbox/Documents/a_Journal_Papers/Drafts/txtl_bmc_bioinformatics/figs/May_2020/'
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\May_2020'
 
 finafigmode = true
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingF'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF'];
 addpath(projdir)
-sls = regexp(projdir, '/', 'split');
+sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
 jpgsave = false;
 figsave = false;
@@ -34,9 +34,28 @@ switch tsIDtouse
         ts3 = '20200511_052714_2_738';
         ts4 = '20200511_052714_3_369';
         ts5 = '20200511_052714_4_148';
-        tstamp = {ts1 ts2 ts3 ts4 ts5};
-        nIterID = {1:2 1:10 1:10 1:10 1:6};
-        load([projdir '/simdata_' ts5 '/full_variable_set_' ts5 '.mat'], ...
+        ts6 = '20200513_222442_1_738';
+        ts7 = '20200514_165204_1_738';
+        ts8 = '20200514_183027_1_738';
+        ts9 = '20200515_023833_1_738';
+        ts10 = '20200515_052639_1_738';
+        ts11 = '20200515_184104_1_738';
+        ts12 = '20200516_062411_1_738';
+        ts13 = '20200516_175823_1_738';
+        ts14 = '20200516_183508_1_738';
+        ts15 = '20200517_054605_1_738';
+        ts16 = '20200517_072406_1_738';
+        ts17 = '20200517_172041_1_738';
+        ts18 = '20200518_002303_1_738';
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ...
+            ts12 ts13 ts14 ts15 ts16};
+        tstamp = {ts1 ts2 ts3 ts6 ts7 ts8 ts9 ts10 ts11 ...
+            ts12 ts13 ts14 ts15 ts16 ts17 ts18};
+        nIterID = {1:2 1:10 1:10 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
+            1:12 1 1 1:2 1:15};
+        nIterID = {1:2 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
+            1:12 1 1 1:2 1:15 1:7 1:25};        
+        load([projdir '\simdata_' ts18 '\full_variable_set_' ts18 '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri');
 end
@@ -87,14 +106,19 @@ parnames = [...
 %
 %%
 close all
-mcmc_plot(marray(:, 1:end,(end - 100):10:end), parnames(:),...
+mcmc_plot(marray(:, 1:end,300:250:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
 
 %%
-mcmc_plot(marray(:, 1:50:end,1:10:end), parnames(:),...
+mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'thinned');
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters');
+
+%%
+mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
+    'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'notsofewChains_all_iters');
 
 % % % % %
 %%

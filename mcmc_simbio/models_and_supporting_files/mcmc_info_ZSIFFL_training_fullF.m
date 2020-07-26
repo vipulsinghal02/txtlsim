@@ -369,8 +369,8 @@ new_estimated_params = ...
 	31,      'RNAP'                           ,        exp(6),   exp([4 8])
 	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
 	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 9])
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 12])
+	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 20])
+	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 20])
     };
 
 activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);
