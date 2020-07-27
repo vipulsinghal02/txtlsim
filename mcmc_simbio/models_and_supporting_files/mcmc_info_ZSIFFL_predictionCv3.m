@@ -1,45 +1,11 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas)
-% Same as training E, but with better parameter search ranges. 
-% This uses Distribution C defined in the evernote note 050 MAR 2020 parameter csv setting notes
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_predictionCv3(mIFFL)
+% This file is, in some sense, "fake". Essentially we set up an estimation
+% problem so we can use all the functions and machinery to generate
+% prediction plots. There is no estimation happening here. We will use
+% parameters estimated from trainingE, which is also the example this file
+% is based on. 
 % 
-% The topologies involved in this estimataion probem are: 
-% plac - UTR1 - tetR, ptet - UTR1 - deGFP, aTc; This has three
-% topologies, the constitutive expression geometry, the repression
-% geometry, and the aTc induction geometry.
-%
-% A lot of the core parameters are set from those estimated from the
-% constitutive expression fits to the data in the VNPRL2011 and ACS 2014 papers.
-% 
-% In phase 1, we estimated 7 parameters: 
-%     {'TXTL_PTET_RNAPbound_Kd'    }
-%     {'TXTL_PTET_sequestration_Kd'}
-%     {'TXTL_PTET_sequestration_F' }
-%     {'TXTL_INDUCER_TETR_ATC_Kd'  }
-%     {'TXTL_INDUCER_TETR_ATC_F'   }
-%     {'TXTL_DIMER_tetR_Kd'        }
-%     {'TXTL_DIMER_tetR_F'         }
-%
-% In this phase, we will fix the values of
-%     {'TXTL_PTET_sequestration_F' }
-%     {'TXTL_INDUCER_TETR_ATC_F'   }
-%     {'TXTL_DIMER_tetR_Kd'        }
-%     {'TXTL_DIMER_tetR_F'         }
-% 
-% and estimate:
-% 
-%     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 % from est params above
-%     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2% from est params above
-%     'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 % from est params above
-%     'TXTL_PTET_RNAPbound_Kd'             , exp(14),   [exp(0) exp(17)]          %7 % TO BE ESTIMATED HERE
-%     'TXTL_PTET_sequestration_Kd'         , exp(12),   [exp(3) exp(15)]          %11 TO BE ESTIMATED HERE
-%     'TXTL_INDUCER_TETR_ATC_Kd'           , exp(13),   [exp(0) exp(18)]          %16 % TO BE ESTIMATED HERE
-%     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
-%     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
-%     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
-%     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 % from est params above
-%
-% and we also include the pLac data into the estimation problem, since the
-% plac part is involved. 
+% There is only one topology in this example: the IFFL. 
 %
 %
 % mcmc_info has the following substructures:
@@ -72,19 +38,24 @@ function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, ml
 
 
 % Some human readable descriptive text.
-ptetinfo = ['This is the ptet constitutive expression circuit. \n '];
+oc12info = ['This is the 3OC12 perturbation in the IFFL. \n '];
+lasrinfo = ['This is the pLac-lasR DNA perturbation in the IFFL. \n '];
+atcinfo = ['This is the aTc perturbation in the IFFL. \n '];
+tetrinfo = ['This is the pLas-tetR DNA perturbation in the IFFL. \n '];
+gfpinfo = ['This is the pLas-tetO-deGFP DNA perturbation in the IFFL. \n '];
 
-tetrinfo = ['This is the tetR repressing ptet circuit. \n '];
 
-atcinfo = ['This is the aTc inducing (derepressing) the tetR ptet repression circuit. \n '];
 
-placinfo = ['This is the plac constitutive expression circuit. \n '];
 
-plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
-% activeNames has the mRNA parameters and the protein parameters.
-% first half (up to RNase) are TX and the rest are TL.
-% TX params are fixed from previous sims.
-%
+
+
+
+
+
+
+
+
+
 % ordering requirements:
 % ensure that the following two orderings match up:
 % activeNames(orderingIX) == masterVector(paramMaps(orderingIX))
@@ -93,11 +64,11 @@ plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
 %
 % This gets satisfied when two conditions hold:
 %
-% The fixed parameters in the master vector must be arranged to that
+% The fixed parameters in the master vector must be arranged so that
 % for every paramMap and every corresponding activeNames list, the
 % fixed params subset of the elements gets mapped correctly.
 %
-% for the estimaed parameters, again, the estimated parameters need to
+% for the estimated parameters, again, the estimated parameters need to
 % populate the master vector in a way such that the condition
 % activeNames == masterVector(paramMaps) holds for all the activeNames
 % arrays (each topology will have one), and for each paramMap column
@@ -118,8 +89,6 @@ plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
 % names of the parameters and species to set allow for setting in the
 % exported model. These are both the set parameters and the to estimate
 % parameters.
-% Here for example we have for the mrna deg sim we only care about
-% setting the rna deg parameters.
 %%
 
 % SEE FILE ZachIFFL_estimation_strategy.txt for the overall strategy. 
@@ -157,11 +126,7 @@ plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
 
 % The following were parameters esitmated in vnprl_F2, and were extracted
 % carefully from the accompanying analysis script. see the code there to
-% understand how they were picked. Need to document this before I forget. 
-
-% This is the set of parameter values from the "%% FINALLY USED VALUES
-% SECTION %%%%%" in the file analysis_vnprl_F2.m
-
+% understand how they were picked. 
 EstimatedParams =[...
     2.5234    2.4464    2.6231    2.5976    2.4650    2.4277    2.4806    2.6010    2.4301    2.5499    2.6991    2.4356
     8.8054    8.9024    8.8097    8.8014    8.8483    8.8642    8.8394    8.8427    8.8616    8.7634    8.8621    8.7910
@@ -343,43 +308,31 @@ training_fullD_params = ...
 activeNames(cell2mat(training_fullD_params(:,1)),2) = training_fullD_params(:,3);
 activeNames(cell2mat(training_fullD_params(:,1)),3) = training_fullD_params(:,4);
 
-%% Here, we set all the parameters from the "distribution C" in 
-% the evernote note 050 MAR 2020 parameter csv setting notes
-% Thing we will set is the parameter ranges from distribution C. 
+% add the combinatorial activator knockoff parameter
+% 'TXTL_PLAS_TFBIND_Kd', exp(6)
+% 'TXTL_PLAS_TFBIND_F', exp(0) % % 
 
-original_estimated_params = ...
-    {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    2.4155e+07,   [ 3.269e+06   7.2005e+10]
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,         36316,   [    148.41   7.2005e+10]
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        78.241,   [         1   1.6275e+05]
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        16.993,   [         1   1.6275e+05]
-	31,      'RNAP'                           ,        365.04,   [    2.7183    3.269e+06]
-	33,      'Ribo'                           ,        365.04,   [    2.7183    3.269e+06]
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    1.0686e+13,   [7.2005e+10   2.3539e+17]
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        148.41,   [         1        22026]
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          2981,   [         1    3.269e+06]
-    };
-    
-new_estimated_params = ...
-    {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 25])
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 25])
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([2, 10.5]) 
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([2 10])
-	31,      'RNAP'                           ,        exp(6),   exp([4 8])
-	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 20])
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 20])
-    };
+multiplier = 1000000;
+plasTFbind_KD = exp(6);
+plasTFbind_F = exp(0);
+activeNames = [activeNames;
+    {'TXTL_COMBINATORIAL_ACTIVATOR_KNOCKOFF_Kd', 1/(plasTFbind_KD*multiplier) , [exp(-20) exp(20)]
+    'TXTL_COMBINATORIAL_ACTIVATOR_KNOCKOFF_F', (plasTFbind_KD*plasTFbind_F*multiplier), [exp(-20) exp(20)]}]; 
+% reverse rate = 1
+% forward rate / reverse rate = exp(6)*100/exp(0) ~= exp(10.5) = 1/kD => KD
+% = exp(-10.6)
+% forward rate = exp(10.5)
+% 
 
-activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);
-activeNames(cell2mat(new_estimated_params(:,1)),3) = new_estimated_params(:,4);
+%% Next, remove the ptet rnap binding and the forward rate reacton parameters. 
+% these parameters are not present in the model 
+activeNames = activeNames(setdiff(1:44, [7, 8]), :);
 
-%% 
+
 %%
-
-estParamsIX = [7 21 23 28 31 33 37 39 40]';
+% subtract 2 from the indices of any parameters that show up after the two
+% deleted parameters. 
+estParamsIX = [1 2 3 [11 16 21 23 28 31 33 35 37 39 40]-2]';
 estParams = activeNames(estParamsIX,1);
 activeNames(estParamsIX,:);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION
@@ -394,7 +347,7 @@ fixedParamsIX =  setdiff((1:size(activeNames, 1))', estParamsIX);
 % since activeNames2 is a superset of activeNames1, we can just use
 % activeNames2 as the master vector.
 masterVector = log(cell2mat(activeNames(:,2))); % log transformed.
-
+[activeNames(:,1) num2cell(log(cell2mat(activeNames(:, 2))))]
 % paramMap is a matrix mapping the parameters in the master vector to the
 % (unordered) list of parameters in the model. (obvioulsy within the code
 % these parameters get ordered before they are used in the exported model)
@@ -404,83 +357,59 @@ masterVector = log(cell2mat(activeNames(:,2))); % log transformed.
 % the model, not just the estimated ones.
 % One such matrix exists for each topology. It has dimnesions
 % length(model_info(i).namesUnord) x number of geometries associated with that topo.
+paramMap = (1:42)';
 
-paramMap_ptet = [1:10 13:15 20 23:34]';
-paramMap_tetR = [1:15 18:34]';
-paramMap_aTc = (1:34)';
-paramMap_plac = [1:6 9 10 13:15 20:34]';
-paramMap_plas = [1:6 9 10 13:15 20:42]';
-
-%     'TX_elong_glob'                      , exp(2.6),   [exp(0) exp(5)]          %1 from est params above
-%     'TL_elong_glob'                      , exp(3.5),   [exp(0) exp(6)]          %2 from est params above
-%     'AGTPdeg_time'                       , exp(8.8),   [exp(6) exp(11)]         %3 from est params above
-%     'AGTPreg_ON'                         , exp(-3.9),   [exp(-6) exp(-1)]       %4 fixed in mcmc_info_vnprl_F2
-%     'AGTPdeg_rate'                       , exp(-9.9),  [exp(-13) exp(-7)]       %5 from est params above
-%     'TXTL_UTR_UTR1_Kd'                   , exp(11),   [exp(-3) exp(15)]         %6 from est params above 
-%     'TXTL_NTP_RNAP_1_Kd'                 , exp(2.9),   [exp(0) exp(5)]          %9 fixed in mcmc_info_vnprl_F2
-%     'TXTL_NTP_RNAP_2_Kd'                 , exp(14),   [exp(10) exp(20)]         %10 fixed in mcmc_info_vnprl_F2
-%     'TL_AA_Kd'                           , exp(6.6),   [exp(3) exp(10)]         %13 fixed in mcmc_info_vnprl_F2
-%     'TL_AGTP_Kd'                         , exp(14.5),   [exp(10) exp(18)]       %14 fixed in mcmc_info_vnprl_F2
-%     'TXTL_RNAdeg_Kd'                     , exp(15.2),   [exp(7) exp(17)]        %15 from est params above
-%     'TXTL_UTR_UTR1_F'                    , exp(-.2),   [exp(-4) exp(2)]         %20 fixed in mcmc_info_vnprl_F2
-%     'TXTL_PLAC_RNAPbound_Kd'             , exp(13.8),   [exp(5) exp(17)]        %21 from est params above
-%     'TXTL_PLAC_RNAPbound_F'              , exp(2.6),   [exp(-2) exp(5)]         %22 fixed in mcmc_info_vnprl_F2
-%     'TXTL_RNAPBOUND_TERMINATION_RATE'    , exp(1.8),   [exp(-3) exp(6)]         %23 from est params above
-%     'TXTL_NTP_RNAP_1_F'                  , exp(0),   [exp(-2) exp(3)]           %24 fixed in mcmc_info_vnprl_F2
-%     'TXTL_NTP_RNAP_2_F'                  , exp(0),   [exp(-2) exp(3)]           %25 fixed in mcmc_info_vnprl_F2
-%     'TL_AA_F'                            , exp(-0.3),   [exp(-3) exp(3)]        %26 fixed in mcmc_info_vnprl_F2
-%     'TL_AGTP_F'                          , exp(-1.2),   [exp(-4) exp(2)]        %27 fixed in mcmc_info_vnprl_F2
-%     'TXTL_RIBOBOUND_TERMINATION_RATE'    , exp(2.3),   [exp(0) exp(5)]          %28 from est params above
-%     'TXTL_RNAdeg_F'                      , exp(0),   [exp(-3) exp(3)]           %29 fixed in mcmc_info_vnprl_F2
-%     'TXTL_RNAdeg_kc'                     , exp(-0.45),   [exp(-5) exp(3)]       %30 from est params above
-%     'RNAP'                               , exp(1.4419),  [exp(-1) exp(4)]       %31 31% from est params above
-%     'RNase'                              , exp(8.5),  [exp(5) exp(10)]          %32 from est params above
-%     'Ribo'                               , exp(3.75),  [exp(1) exp(6)]          %33 from est params above
-%     'TXTL_PROT_deGFP_MATURATION'         , exp(-6.07), [exp(-9) exp(-3)]  };    %34 fixed in mcmc_info_vnprl_F2
-
-    
 % parameter ranges (for the to-be-estimated parameters in the master
 % vector)
 paramRanges = log(cell2mat(activeNames(estParamsIX,3)));
 
-
 %% next we define the dosing strategy.
+dosedNames = {...
+    'OC12HSL';
+    'DNA plac--utr1--lasR';
+    'aTc'
+    'DNA plas--utr1--tetR'; 
+    'DNA plas_ptet--utr1--deGFP';};
 
-dosedNames1 = {'DNA ptet--utr1--deGFP'};
-dosedVals1 = [4 2 1 0.5 0.25 0.125 0.0625];
-%     dtempvec = sqrt(dosedVals1(end)*(ones(size(dosedVals1))./dosedVals1)).*dosedVals1;
+dosedVals = [...
+    1000    1000    1000    1000    1000    1000    1000;
+    1       1       1       1       1       1       1;
+    10000 , 10000,  10000,  10000,  10000,  10000,  10000;
+    0.1,    0.1,    0.1,    0.1,    0.1,    0.1,    0.1;
+    1       1       1       1       1       1       1];
+dosedVals1 = dosedVals;
+dosedVals1(1, :) = [10000    1000    100     10      1       0.1     0];
 doseWeights1 = ones(1,size(dosedVals1,2)); %dtempvec/(sum(dtempvec));
 
-dosedNames2 = {'DNA ptet--utr1--deGFP'; 
-    'DNA plac--utr1--tetR'};
-dosedVals2 = [1 1 1 1 1 1 1; 
-    2 0.2 0.02 0.002 0.0002 0.00002 0.000002];
-%     dtempvec = sqrt(dosedVals2(end)*(ones(size(dosedVals2))./dosedVals2)).*dosedVals2;
+dosedVals2 = dosedVals;
+dosedVals2(2, :) = [2        1       .5      .25     .125    .0625   0];
 doseWeights2 = ones(1,size(dosedVals2,2)); %dtempvec/(sum(dtempvec));
 
-dosedNames3 = {'DNA ptet--utr1--deGFP'; 
-    'DNA plac--utr1--tetR';
-    'aTc'};
-dosedVals3 = [1 1 1 1 1 1 1;
-    0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1;
-    10000 1000 100 10 1 0.1 0.01];
+dosedVals3 = dosedVals;
+dosedVals3(3, :) = [10000    1000    100     10      1       0.1     0];
 doseWeights3 = ones(1,size(dosedVals3,2)); %dtempvec/(sum(dtempvec));
 
-dosedNames4 = {'DNA plac--utr1--deGFP'};
-dosedVals4 = [2 1 0.5 0.25 0.125 0.0625 0.0313];
-
+dosedVals4 = dosedVals;
+dosedVals4(4, :) = [1        0.1    0.01    0.001   0.0001   0.00001 0];
+dosedVals4(3, :) = [0        0      0       0       0        0       0]; %set aTc to 0 too. 
 doseWeights4 = ones(1,size(dosedVals4,2)); %dtempvec/(sum(dtempvec));
 
-
-dosedNames5 = {...
-    'DNA plac--utr1--lasR';
-    'DNA plas--utr1--deGFP';
-    'OC12HSL'};
-dosedVals5 = [1 1 1 1 1 1 1;
-    1 1 1 1 1 1 1;
-    10000 , 1000, 100, 10, 1, 0.1, 0.01];
-
+dosedVals5 = dosedVals;
+dosedVals5(5, :) = [4        2        1       .5      .25     .125   0];
 doseWeights5 = ones(1,size(dosedVals5,2)); %dtempvec/(sum(dtempvec));
+
+
+% OC12HSL = 1uM
+% plac-lasR = 1nM
+% plas-tetR = 0.1nM
+% plastetO - gfp = 1nM
+% aTc = 10uM
+
+% DNA plac--utr1--lasR
+% DNA plas--utr1--tetR
+% DNA plas_ptet--utr1--deGFP
+% OC12HSL
+% aTc 
 
 
 
@@ -490,16 +419,15 @@ doseWeights5 = ones(1,size(dosedVals5,2)); %dtempvec/(sum(dtempvec));
 measuredSpecies = {{'protein deGFP*'}};
 msIx = 1; % this is the index of the measured species in the data array
 
-
 %% setup the MCMC simulation parameters
 stdev = 100; % i have no idea what a good value is
 tightening = 1; % i have no idea what a good value is
-nW = 30; % actual: 200 - 600 ish
+nW = 40; % actual: 200 - 600 ish
 stepsize = 1.2; % actual: 1.1 to 4 ish
-niter =3; % actual: 2 - 30 ish,
-npoints = 1e3; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
+niter =2; % actual: 2 - 30 ish,
+npoints = 4e2; % actual: 2e4 to 2e5 ish (or even 1e6 of the number of
 %                        params is small)
-thinning = 10; % actual: 10 to 40 ish
+thinning = 2; % actual: 10 to 40 ish
 
 %% pull all this together into an output struct.
 
@@ -512,16 +440,18 @@ runsim_info = struct('stdev', {stdev}, ...
     'thinning', {thinning}, ...
     'parallel', false);
 
-mtet1 = copyobj(mtet);
-mtet2 = copyobj(mtet);
-mtet3 = copyobj(mtet);
+mIFFL1 = copyobj(mIFFL);
+mIFFL2 = copyobj(mIFFL);
+mIFFL3 = copyobj(mIFFL);
+mIFFL4 = copyobj(mIFFL);
+mIFFL5 = copyobj(mIFFL);
 model_info = struct(...
-    'circuitInfo',{ptetinfo, tetrinfo, atcinfo, placinfo, plasinfo},...
-    'modelObj', {mtet1, mtet2, mtet3, mlac, mlas},... % array of model objects (different topologies)
-    'modelName',  {mtet1.name, mtet2.name, mtet3.name, mlac.name, mlas.name},...; % model names.
-    'namesUnord', {activeNames(paramMap_ptet,1),activeNames(paramMap_tetR,1),activeNames(paramMap_aTc,1),activeNames(paramMap_plac,1), activeNames(paramMap_plas,1)},... % names of parameters per model, unordered.
-    'paramMaps', {paramMap_ptet, paramMap_tetR, paramMap_aTc, paramMap_plac, paramMap_plas}, ... % paramMap is a matrix mapping master vector elements to namesUnord
-    'dosedNames', {dosedNames1, dosedNames2, dosedNames3, dosedNames4, dosedNames5},... % cell arrays of species. cell array corresponds
+    'circuitInfo',{oc12info, lasrinfo, atcinfo, tetrinfo, gfpinfo},...
+    'modelObj', {mIFFL1, mIFFL2, mIFFL3, mIFFL4, mIFFL5},... % array of model objects (different topologies)
+    'modelName',  {mIFFL1.name, mIFFL2.name, mIFFL3.name, mIFFL4.name, mIFFL5.name},...; % model names.
+    'namesUnord', {activeNames(paramMap,1),activeNames(paramMap,1),activeNames(paramMap,1),activeNames(paramMap,1), activeNames(paramMap,1)},... % names of parameters per model, unordered.
+    'paramMaps', {paramMap, paramMap, paramMap, paramMap, paramMap}, ... % paramMap is a matrix mapping master vector elements to namesUnord
+    'dosedNames', {dosedNames, dosedNames, dosedNames, dosedNames, dosedNames},... % cell arrays of species. cell array corresponds
     ...                               % to a model.
     'dosedVals', {dosedVals1, dosedVals2, dosedVals3, dosedVals4, dosedVals5},...  % matrices of dose vals
     'doseWeighting', {doseWeights1, doseWeights2, doseWeights3, doseWeights4, doseWeights5}, ...
@@ -534,7 +464,7 @@ model_info = struct(...
     ... % relative importance of the different topologies.
     ... %geometries in a given topology are weighted with
     ...% the same level of importance for now.
-    'dataToMapTo', {1,3,4, 2, 5}); % each dataToMapTo property within an element of the
+    'dataToMapTo', {1, 2, 3, 4, 5}); % each dataToMapTo property within an element of the
 % model_info array is a vector of length # of geometries.
 % data indices tell us which data set to use for each topology (model) - geometry pair
 % from the data_info struct array.

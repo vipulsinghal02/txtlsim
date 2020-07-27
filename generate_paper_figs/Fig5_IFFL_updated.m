@@ -1,16 +1,18 @@
 % Generate the IFFL figs (figure 5, and associated Supp files)
 % 
-saveFinalFigs = [pwd '/']
+% saveFinalFigs = [pwd '\']
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\may2020_trainingF'
+saveFinalFigs = [saveFinalFigs '\']
 finafigmode = true
 
-trainingEdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE_v2'];
-projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'];
+trainingEdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_predictionA'];
 
 
 % the array of parameters with all the fixed parameters and the
 % parameters from the training E dataset.
 addpath(projdir)
-sls = regexp(projdir, '/', 'split');
+sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
 jpgsave = true;
 figsave = false;
@@ -21,19 +23,35 @@ mIFFL = model_txtl_lastetIFFL;
 % setup the mcmc_info struct
 mcmc_info = mcmc_info_ZSIFFL_predictionA(mIFFL);
 di = ZachIFFL_testdata('all_trajectories');
+ts1 = '20200510_082735_1_1476';
+ts2 = '20200511_052714_1_1476';
+ts3 = '20200511_052714_2_738';
+ts4 = '20200511_052714_3_369';
+ts5 = '20200511_052714_4_148';
+ts6 = '20200513_222442_1_738';
+ts7 = '20200514_165204_1_738';
+ts8 = '20200514_183027_1_738';
+ts9 = '20200515_023833_1_738';
+ts10 = '20200515_052639_1_738';
+ts11 = '20200515_184104_1_738';
+ts12 = '20200516_062411_1_738';
+ts13 = '20200516_175823_1_738';
+ts14 = '20200516_183508_1_738';
+ts15 = '20200517_054605_1_738';
+ts16 = '20200517_072406_1_738';
+tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ...
+    ts12 ts13 ts14 ts15 ts16};
+tstamp = {ts1 ts2 ts3 ts6 ts7 ts8 ts9 ts10 ts11 ...
+    ts12 ts13 ts14 ts15 ts16};
+nIterID = {1:2 1:10 1:10 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
+    1:12 1 1 1:2 1:15};
+nIterID = {1:2 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
+    1:12 1 1 1:2 1:15};
 
-ts1 = '20190512_033129_1_1476';
-ts2 = '20190512_064547_1_1476';
-ts3 = '20190512_094712_1_1845';
-ts4 = '20190512_113712_1_1845';
-ts5 = '20190512_155207_1_1845';
-ts6 = '20200525_181748_1_1845';% changed the tau from 10.1 to 9.7. E_v2
-ts7 = '20200525_201859_1_1845';
-tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7};
-nIterID = {1:3 1:8 1:2 1:5 1:7 1:2 1:5};
-tsToSave = '20190720_124011_1_327';
-load([pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'...
-    '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
+        
+tsToSave = '20190720_124011_1_327'; % DO NOT CHANGE. this is where the prediction data is kept.
+load([pwd '\mcmc_simbio\projects\proj_ZSIFFL_predictionA'...
+    '\simdata_' tsToSave '\full_variable_set_' tsToSave '.mat'], ...
     'mi',...
     'mcmc_info',  'ri');
 data_info = di; % overwrite with new di, with all three trajectories, not just the mean. 

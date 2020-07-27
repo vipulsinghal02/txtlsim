@@ -1,7 +1,9 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas)
-% Same as training E, but with better parameter search ranges. 
-% This uses Distribution C defined in the evernote note 050 MAR 2020 parameter csv setting notes
-% 
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullE_v2(mtet, mlac, mlas)
+% See evernote note 045 May 2020 IFFL prediction issues
+% for an explanaton. Basically identical to training E , with the exception
+% that the tau parameters is fixed to 9.7 instead of 10.1. this means that
+% the deg time is 4.6 h instead of 6.7 hours. 
+%
 % The topologies involved in this estimataion probem are: 
 % plac - UTR1 - tetR, ptet - UTR1 - deGFP, aTc; This has three
 % topologies, the constitutive expression geometry, the repression
@@ -158,10 +160,6 @@ plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
 % The following were parameters esitmated in vnprl_F2, and were extracted
 % carefully from the accompanying analysis script. see the code there to
 % understand how they were picked. Need to document this before I forget. 
-
-% This is the set of parameter values from the "%% FINALLY USED VALUES
-% SECTION %%%%%" in the file analysis_vnprl_F2.m
-
 EstimatedParams =[...
     2.5234    2.4464    2.6231    2.5976    2.4650    2.4277    2.4806    2.6010    2.4301    2.5499    2.6991    2.4356
     8.8054    8.9024    8.8097    8.8014    8.8483    8.8642    8.8394    8.8427    8.8616    8.7634    8.8621    8.7910
@@ -343,41 +341,14 @@ training_fullD_params = ...
 activeNames(cell2mat(training_fullD_params(:,1)),2) = training_fullD_params(:,3);
 activeNames(cell2mat(training_fullD_params(:,1)),3) = training_fullD_params(:,4);
 
-%% Here, we set all the parameters from the "distribution C" in 
-% the evernote note 050 MAR 2020 parameter csv setting notes
-% Thing we will set is the parameter ranges from distribution C. 
+trainingEv2_params = ...
+{...
+3       ,       'AGTPdeg_time'                  , exp(9.7)    ,[exp(8)    exp(12)]         %3 from est params above
+};
+activeNames(cell2mat(trainingEv2_params(:,1)),2) = trainingEv2_params(:,3);
+activeNames(cell2mat(trainingEv2_params(:,1)),3) = trainingEv2_params(:,4);
 
-original_estimated_params = ...
-    {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    2.4155e+07,   [ 3.269e+06   7.2005e+10]
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,         36316,   [    148.41   7.2005e+10]
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        78.241,   [         1   1.6275e+05]
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        16.993,   [         1   1.6275e+05]
-	31,      'RNAP'                           ,        365.04,   [    2.7183    3.269e+06]
-	33,      'Ribo'                           ,        365.04,   [    2.7183    3.269e+06]
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    1.0686e+13,   [7.2005e+10   2.3539e+17]
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        148.41,   [         1        22026]
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          2981,   [         1    3.269e+06]
-    };
-    
-new_estimated_params = ...
-    {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 25])
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 25])
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([2, 10.5]) 
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([2 10])
-	31,      'RNAP'                           ,        exp(6),   exp([4 8])
-	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 20])
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 20])
-    };
 
-activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);
-activeNames(cell2mat(new_estimated_params(:,1)),3) = new_estimated_params(:,4);
-
-%% 
-%%
 
 estParamsIX = [7 21 23 28 31 33 37 39 40]';
 estParams = activeNames(estParamsIX,1);

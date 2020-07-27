@@ -1,18 +1,20 @@
 % Generate the IFFL figs (figure 5, and associated Supp files)
 % 
-saveFinalFigs = [pwd '/']
+% saveFinalFigs = [pwd '\']
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\may2020_trainingF_v4';
+saveFinalFigs = [saveFinalFigs '\slim_']
 finafigmode = true
 
-trainingEdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_trainingE_v2'];
-projdir = [pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'];
+trainingEdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF_v4'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_predictionA_F_v4'];
 
 
 % the array of parameters with all the fixed parameters and the
 % parameters from the training E dataset.
 addpath(projdir)
-sls = regexp(projdir, '/', 'split');
+sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
-jpgsave = true;
+jpgsave = false;
 figsave = false;
 
 % Load model, mcmc_info, and data_info.
@@ -21,19 +23,24 @@ mIFFL = model_txtl_lastetIFFL;
 % setup the mcmc_info struct
 mcmc_info = mcmc_info_ZSIFFL_predictionA(mIFFL);
 di = ZachIFFL_testdata('all_trajectories');
+ts1 = '20200528_165131_1_738';
+ts2 = '20200528_165131_2_554';
+ts3 = '20200528_165131_3_369';
+ts4 = '20200529_040611_1_369';
+ts5 = '20200529_040611_2_258';
+ts6 = '20200529_040611_3_148';
+ts7 = '20200530_033747_1_148';
+ts8 = '20200530_033747_2_74';
+ts9 = '20200530_163844_1_74';
+ts10='20200530_163844_2_55';
+ts11='20200530_163844_3_37';
+tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11};
+nIterID = {1:10 1:10 1 1:10 1:10 1:5 1:15 1:7 1:20 1:20 1:20};
 
-ts1 = '20190512_033129_1_1476';
-ts2 = '20190512_064547_1_1476';
-ts3 = '20190512_094712_1_1845';
-ts4 = '20190512_113712_1_1845';
-ts5 = '20190512_155207_1_1845';
-ts6 = '20200525_181748_1_1845';% changed the tau from 10.1 to 9.7. E_v2
-ts7 = '20200525_201859_1_1845';
-tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7};
-nIterID = {1:3 1:8 1:2 1:5 1:7 1:2 1:5};
-tsToSave = '20190720_124011_1_327';
-load([pwd '/mcmc_simbio/projects/proj_ZSIFFL_predictionA'...
-    '/simdata_' tsToSave '/full_variable_set_' tsToSave '.mat'], ...
+
+tsToSave = '20200601_082237_1_327'; % DO NOT CHANGE. this is where the prediction data is kept.
+load([projdir...
+    '\simdata_' tsToSave '\full_variable_set_' tsToSave '.mat'], ...
     'mi',...
     'mcmc_info',  'ri');
 data_info = di; % overwrite with new di, with all three trajectories, not just the mean. 
@@ -137,11 +144,10 @@ lengthToPlotArray = [31, 41, 81];
 for outercount = 1:length(lengthToPlotArray)
 %     outercount = outercount+1;
     lengthToPlot = lengthToPlotArray(outercount);
-        
+    set(0,'Units','normalized')
     figure
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3.5 ss(4)/1.1]);
-    
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.05, 0.2, 0.9])
     miToUse = [1 2 3 4 5];
     titleArray = {'3OC12';
         'lasR DNA';
@@ -200,9 +206,12 @@ for outercount = 1:length(lengthToPlotArray)
         ax.FontSize = 14;
     end
     % UNCOMMEENT TO SAVE
-	% print([saveFinalFigs 'prediction_traj_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg')
-
-        
+%  	print([saveFinalFigs 'prediction_traj_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpng', '-r300')
+%     print([saveFinalFigs 'prediction_traj_N_lr' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpng', '-r100')
+%     print([saveFinalFigs 'prediction_traj_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg', '-r300')
+%     print([saveFinalFigs 'prediction_traj_N_lr' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg', '-r100')
+%     print([saveFinalFigs 'prediction_traj_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-depsc')
+    print([saveFinalFigs 'prediction_traj_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpdf')
     figure
     exp_endpoints = zeros(size(legends)); % number of experiments by number of doses.
     sim_endpoints = zeros(size(legends));
@@ -236,10 +245,10 @@ for outercount = 1:length(lengthToPlotArray)
         end
     end
     
+    set(0,'Units','normalized')
     figure
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/2.5 ss(4)/2]);
-    
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.1, 0.35, 0.5])
     
     xTickLabels = [{'10', '10^{-1}', '10^{-3}', '0'};
         {'2', '0.5', '0.125', '0'};
@@ -292,5 +301,10 @@ for outercount = 1:length(lengthToPlotArray)
         
     end
     % UNCOMMEENT TO SAVE
-    %print([saveFinalFigs 'prediction_endpoint_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg')
+%      print([saveFinalFigs 'prediction_endpoint_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpng', '-r300')
+%     print([saveFinalFigs 'prediction_endpoint_N_lr' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpng', '-r100')
+%     print([saveFinalFigs 'prediction_endpoint_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg', '-r300')
+%     print([saveFinalFigs 'prediction_endpoint_N_lr' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-djpeg', '-r100')
+%     print([saveFinalFigs 'prediction_endpoint_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-depsc')
+        print([saveFinalFigs 'prediction_endpoint_N' num2str(NN) '_' num2str((lengthToPlot-1)*6) 'min'],'-dpdf')
 end

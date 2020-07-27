@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingF(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingC_v4(varargin)
 % data collected by Zach Sun and Shaobin Guo. 
 % Vipul Singhal,
 % California Institute of Technology
@@ -12,17 +12,17 @@ p.addParameter('nW', 30);
 p.addParameter('nPoints', 30*100);
 p.addParameter('thinning', 1);
 p.addParameter('nIter', 2);
+p.addParameter('pausemode', true);
 p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
-p.addParameter('poolsize', [2]);
+p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('pausemode', false);
 p.addParameter('stepLadder', linspace(1.1, 1, 4), @isnumeric); % A vector of multipliers for the
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.005]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.00005]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
@@ -37,7 +37,7 @@ mlas = model_txtl_pLacLasR_pLasdeGFP;
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullC_v4(mtet, mlac, mlas);
 
 mi = mcmc_info.model_info;
 
@@ -169,8 +169,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 'pausemode', p.pausemode,...
                 'literalStepLadder', p.literalStepLadder);
         else
-            specificprojdir = [projdir '/simdata_' p.prevtstamp];
-            SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+            specificprojdir = [projdir '\simdata_' p.prevtstamp];
+            SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
             if isempty(p.prevtstampID)
                 marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                     projdir);
@@ -199,8 +199,7 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 2,...
-                'pausemode', p.pausemode,...
-                'stepLadder', p.stepLadder,...
+                'pausemode', p.pausemode, 'stepLadder', p.stepLadder,...
                 'prevtstamp', p.prevtstamp,...
                 'literalStepLadder', p.literalStepLadder);
         end
@@ -208,8 +207,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
         % begin temperature ladder: Initial temp is 10% of the total signal
         % then we do 0.1%, then finally 0.001%
         disp('Using temperature ladder for MCMC at the following temperatures.');
-        tladder = tsig*[0.1 0.001, 0.00001]
-        percentLadder = {'_10pct', '_pt1pct', '_pt001pct'};
+        tladder = tsig*[0.001, 0.0001, 0.00001]
+        percentLadder = {'_pt1pct', '_pt01pct', '_pt001pct'};
         tstamp = datestr(now, 'yyyymmdd_HHMMSS');
         for ll = 1:length(tladder)
             %         tLaddStr = num2str(tladder(ll));
@@ -229,12 +228,12 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 if isempty(p.prevtstamp)
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
-                        'stepLadder', p.stepLadder,...
                         'pausemode', p.pausemode,...
+                        'stepLadder', p.stepLadder,...
                         'literalStepLadder', p.literalStepLadder);
                 else
-                    specificprojdir = [projdir '/simdata_' p.prevtstamp];
-                    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+                    specificprojdir = [projdir '\simdata_' p.prevtstamp];
+                    SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
                     if isempty(p.prevtstampID)
                         marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                             projdir);
@@ -258,6 +257,21 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     else % there are enough points, just pick the number needed.
                         minit = marray_cut(:,1:ri.nW,end);
                     end
+                    
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%% refresh parallel pool to free memory on windows... (sigh)###
+                    if mcmc_info.runsim_info.parallel
+                        if ~isempty(p.poolsize)
+                            delete(gcp('nocreate'))
+                            parpool(p.poolsize)
+                        else
+                            delete(gcp('nocreate'))
+                            parpool
+                        end
+                    end
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    
+                    
                     % now run the simulation.
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'UserInitialize', minit, 'multiplier', 1, ...
@@ -267,8 +281,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 end
             else % subsequent temperatures. 
                 %                 prevtstamp = [percentLadder{ll-1} tstamp];
-                specificprojdir = [projdir '/simdata_' prevtstamp];
-                SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
+                specificprojdir = [projdir '\simdata_' prevtstamp];
+                SS = load([specificprojdir '\full_variable_set_' prevtstamp], 'mcmc_info');
                 
                 marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                     projdir);
@@ -279,6 +293,21 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 pID = 1:length(mai.estNames);
                 marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
                 minit = marray_cut(:,1:ri.nW,end);
+                
+                
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%% refresh parallel pool to free memory on windows... (sigh)###
+                if mcmc_info.runsim_info.parallel
+                    if ~isempty(p.poolsize)
+                        delete(gcp('nocreate'))
+                        parpool(p.poolsize)
+                    else
+                        delete(gcp('nocreate'))
+                        parpool
+                    end
+                end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
@@ -330,8 +359,8 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 % a previous time stamp IS provided, use it as a starting
                 % point. The data for that time stamp must be in the same
                 % directory as the projdir for this project.
-                specificprojdir = [projdir '/simdata_' p.prevtstamp];
-                SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+                specificprojdir = [projdir '\simdata_' p.prevtstamp];
+                SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
                 if isempty(p.prevtstampID)
                     marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                         projdir);
@@ -366,13 +395,14 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
         else
             % get the final location of the walkers from the previous
             % iteration (ll - 1).
-            specificprojdir = [projdir '/simdata_' prevtstamp];
-            SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
+            specificprojdir = [projdir '\simdata_' prevtstamp];
+            SS = load([specificprojdir '\full_variable_set_' prevtstamp], 'mcmc_info');
             marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                 projdir);
             % assume the projdir where this data is stored is the same one as the
             % one created at the start of this file
-            
+
+                    
             pID = 1:length(mai.estNames);
             marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
             minit = marray_cut(:,1:ri.nW,end);

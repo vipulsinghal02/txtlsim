@@ -1,6 +1,5 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas)
-% Same as training E, but with better parameter search ranges. 
-% This uses Distribution C defined in the evernote note 050 MAR 2020 parameter csv setting notes
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullC_v5(mtet, mlac, mlas)
+% Expanded from v3. mainly the lasR and tf kd limits. 
 % 
 % The topologies involved in this estimataion probem are: 
 % plac - UTR1 - tetR, ptet - UTR1 - deGFP, aTc; This has three
@@ -158,10 +157,6 @@ plasinfo = ['This is the plas - 3OC12HSL induction circuit. \n '];
 % The following were parameters esitmated in vnprl_F2, and were extracted
 % carefully from the accompanying analysis script. see the code there to
 % understand how they were picked. Need to document this before I forget. 
-
-% This is the set of parameter values from the "%% FINALLY USED VALUES
-% SECTION %%%%%" in the file analysis_vnprl_F2.m
-
 EstimatedParams =[...
     2.5234    2.4464    2.6231    2.5976    2.4650    2.4277    2.4806    2.6010    2.4301    2.5499    2.6991    2.4356
     8.8054    8.9024    8.8097    8.8014    8.8483    8.8642    8.8394    8.8427    8.8616    8.7634    8.8621    8.7910
@@ -299,14 +294,14 @@ activeNames(cell2mat(mtet_phase1_params(:,1)),3) = mtet_phase1_params(:,4);
 % The values estimated are: 
 mtet_phase2_params = ...
 {...
-1       ,       'TX_elong_glob'                 , exp(2.3)      ,[exp(1)    exp(6)]          %1 from est params above
-2       ,       'TL_elong_glob'                 , exp(3.7)      ,[exp(1)    exp(6)]          %2 from est params above
+1       ,       'TX_elong_glob'                 , exp(2.3)      ,[exp(0)    exp(7)]          %1 from est params above
+2       ,       'TL_elong_glob'                 , exp(3.7)      ,[exp(0)    exp(7)]          %2 from est params above
 3       ,       'AGTPdeg_time'                  , exp(10.05)    ,[exp(8)    exp(12)]         %3 from est params above
 31      ,       'RNAP'                          , exp(5.9)      ,[exp(1)   exp(15)]       %31 31% from est params above
 32      ,       'RNase'                         , exp(9.2)      ,[exp(7)    exp(11)]          %32 from est params above
 33      ,       'Ribo'                          , exp(5.9)      ,[exp(1)    exp(15)]          %33 from est params above
 21      ,       'TXTL_PLAC_RNAPbound_Kd'        , exp(10.5)     ,[exp(5)    exp(25)]        %21 from est params above
-7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, exp(17)    ,[exp(15)    exp(25)]
+7		, 	    'TXTL_PTET_RNAPbound_Kd'    	, exp(17)    ,[exp(5)    exp(25)]
 11		, 	    'TXTL_PTET_sequestration_Kd'	, exp(-2.7)     ,[exp(-10)	exp(10)]
 16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, exp(-6)       ,[exp(-15)	exp(15)]...
 };
@@ -325,15 +320,8 @@ mtet_phase2_params = ...
 activeNames(cell2mat(mtet_phase2_params(:,1)),2) = mtet_phase2_params(:,3);
 activeNames(cell2mat(mtet_phase2_params(:,1)),3) = mtet_phase2_params(:,4);
 
-%%
-training_fullC_params = ...
-{...
-11		, 	    'TXTL_PTET_sequestration_Kd'	, exp(-0.5)     ,[exp(-2)	exp(1)]
-16		, 	    'TXTL_INDUCER_TETR_ATC_Kd'  	, exp(-2)       ,[exp(-10)	exp(5)]
-35      ,       'TXTL_INDUCER_LASR_AHL_Kd'           , exp(13), [exp(5) exp(15)] ...
-};
-activeNames(cell2mat(training_fullC_params(:,1)),2) = training_fullC_params(:,3);
-activeNames(cell2mat(training_fullC_params(:,1)),3) = training_fullC_params(:,4);
+
+%% set the parameter ranges from training D_v2
 
 training_fullD_params = ...
 {...
@@ -343,43 +331,49 @@ training_fullD_params = ...
 activeNames(cell2mat(training_fullD_params(:,1)),2) = training_fullD_params(:,3);
 activeNames(cell2mat(training_fullD_params(:,1)),3) = training_fullD_params(:,4);
 
-%% Here, we set all the parameters from the "distribution C" in 
-% the evernote note 050 MAR 2020 parameter csv setting notes
-% Thing we will set is the parameter ranges from distribution C. 
-
-original_estimated_params = ...
-    {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    2.4155e+07,   [ 3.269e+06   7.2005e+10]
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,         36316,   [    148.41   7.2005e+10]
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        78.241,   [         1   1.6275e+05]
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        16.993,   [         1   1.6275e+05]
-	31,      'RNAP'                           ,        365.04,   [    2.7183    3.269e+06]
-	33,      'Ribo'                           ,        365.04,   [    2.7183    3.269e+06]
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    1.0686e+13,   [7.2005e+10   2.3539e+17]
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        148.41,   [         1        22026]
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          2981,   [         1    3.269e+06]
-    };
-    
 new_estimated_params = ...
     {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 25])
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 25])
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([2, 10.5]) 
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([2 10])
-	31,      'RNAP'                           ,        exp(6),   exp([4 8])
-	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 20])
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 20])
+ 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 28])
+    16, 	 'TXTL_INDUCER_TETR_ATC_Kd'  	 , exp(-6)       ,[exp(-10)	exp(3)]
+	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 28])
+	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([0, 20]) 
+	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([0 20])
+	31,      'RNAP'                           ,        exp(6),   exp([4 12])
+	33,      'Ribo'                           ,        exp(8),   exp([2.5 18])
+	37,      'TXTL_PLAS_RNAPbound_Kd'         ,exp(30),   exp([20 45])
+	39,      'TXTL_PLAS_TFBIND_Kd'            ,exp(7),   exp([0 20])
+	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,exp(7),   exp([0 20])
     };
 
 activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);
 activeNames(cell2mat(new_estimated_params(:,1)),3) = new_estimated_params(:,4);
 
-%% 
 %%
+% the parameters fixed after training full C were rep kd = -0.5, atc kd =
+% -2, 3OC12kd = 13
 
-estParamsIX = [7 21 23 28 31 33 37 39 40]';
+
+fixed_after_training_C = ...
+    {...
+    16, 	        'TXTL_INDUCER_TETR_ATC_Kd'  	 , exp(-6)       ,[exp(-15)	exp(3)]
+    11,             'TXTL_PTET_sequestration_Kd'	 , exp(-2.7)     ,[exp(-10)	exp(10)]
+    35,             'TXTL_INDUCER_LASR_AHL_Kd'       , exp(-2)       ,[exp(0) exp(18)] %36-1
+    };
+
+activeNames(cell2mat(fixed_after_training_C(:,1)),2) = fixed_after_training_C(:,3);
+activeNames(cell2mat(fixed_after_training_C(:,1)),3) = fixed_after_training_C(:,4);
+
+%%
+agtp_time = ...
+    {...
+    3,              'AGTPdeg_time'                   , exp(9.7)    ,[exp(8)    exp(11)]         %3 from est params above
+    };
+
+activeNames(cell2mat(agtp_time(:,1)),2) = agtp_time(:,3);
+activeNames(cell2mat(agtp_time(:,1)),3) = agtp_time(:,4);
+
+%%
+estParamsIX = [1 2 3 7 11 16 21 23 28 31 33 35 37 39 40]'; %relative toD_V2, 11, and 35 are the new ones
 estParams = activeNames(estParamsIX,1);
 activeNames(estParamsIX,:);
 % skipping AGTPdeg_rate, AGTPreg_ON, TXTL_PROT_deGFP_MATURATION

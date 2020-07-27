@@ -2,15 +2,15 @@
 
 clear all
 close all
-saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\May_2020'
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\fullFv5\'
 
 finafigmode = true
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF_v5'];
 addpath(projdir)
 sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
-jpgsave = false;
+jpgsave = true;
 figsave = false;
 
 % Load model, mcmc_info, and data_info.
@@ -19,7 +19,7 @@ mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 mlas = model_txtl_pLacLasR_pLasdeGFP;
 mlac = model_txtl_pLacdeGFP;
 % setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullF_v5(mtet, mlac, mlas);
 di = data_ZSIFFL;
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
@@ -29,33 +29,18 @@ tsIDtouse = 1;
 plotflag = true;
 switch tsIDtouse
     case 1 % this is after including the termination parameters.
-        ts1 = '20200510_082735_1_1476';
-        ts2 = '20200511_052714_1_1476';
-        ts3 = '20200511_052714_2_738';
-        ts4 = '20200511_052714_3_369';
-        ts5 = '20200511_052714_4_148';
-        ts6 = '20200513_222442_1_738';
-        ts7 = '20200514_165204_1_738';
-        ts8 = '20200514_183027_1_738';
-        ts9 = '20200515_023833_1_738';
-        ts10 = '20200515_052639_1_738';
-        ts11 = '20200515_184104_1_738';
-        ts12 = '20200516_062411_1_738';
-        ts13 = '20200516_175823_1_738';
-        ts14 = '20200516_183508_1_738';
-        ts15 = '20200517_054605_1_738';
-        ts16 = '20200517_072406_1_738';
-        ts17 = '20200517_172041_1_738';
-        ts18 = '20200518_002303_1_738';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16};
-        tstamp = {ts1 ts2 ts3 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16 ts17 ts18};
-        nIterID = {1:2 1:10 1:10 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15};
-        nIterID = {1:2 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15 1:7 1:25};        
-        load([projdir '\simdata_' ts18 '\full_variable_set_' ts18 '.mat'], ...
+        ts1 = '20200528_165131_1_738';
+        ts2 = '20200528_165131_2_554';
+        ts3 = '20200528_165131_3_369';
+        ts4 = '20200529_040611_1_369';
+        ts5 = '20200529_040611_2_258';
+        ts6 = '20200529_040611_3_148';        
+        ts7 = '20200529_171720_1_148';
+        ts8 = '20200529_171720_2_74';
+        
+        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8};% 
+        nIterID = {1:10 1:10 1 1:10 1:10 1:5 1:10 1:10};% 
+        load([projdir '\simdata_' tstamp{end} '\full_variable_set_' tstamp{end} '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri');
 end
@@ -74,6 +59,10 @@ parnames = [...
     {'pol_{Kd,las}'}
     {'plas_{tf, Kd}'}
     {'plas-pol_{tf, Kd}'}    ];
+
+mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
+    'savematlabfig', false, 'savejpeg', false,...
+    'projdir', projdir);
 
 %  [activeNames(estParamsIX,1) mat2cell(log(cell2mat(activeNames(estParamsIX,3))), ones(14,1), ones(1, 2))]
 %
@@ -105,18 +94,16 @@ parnames = [...
 % % % % %%
 %
 %%
-close all
-mcmc_plot(marray(:, 1:end,300:250:end), parnames(:),...
+mcmc_plot(marray(:, 1:end,end-300:50:end), parnames(:),...
+    'plotChains', false, ...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
-
 %%
-mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters');
 
-%%
-mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
+close all
+
+mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
+    'plotDistribution', false, ...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'notsofewChains_all_iters');
 
@@ -319,7 +306,7 @@ end
 
 
 %% here
-close all
+
 
 ylims = {[7.5, 2, 2, 5, 7.5];
     [7.5, 2, 2, 5, 7.5];
@@ -331,8 +318,10 @@ for outercount = 1:length(lengthToPlotArray)
     lengthToPlot = lengthToPlotArray(outercount)
     
     figure
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3.5 ss(4)/1.1]);
+    set(0,'Units','normalized')
+    figure
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.1, 0.9, 0.8])
     miToUse = [1 2 3 4 5];
     
     titleArray = {'pTet-deGFP DNA';
@@ -405,10 +394,10 @@ for outercount = 1:length(lengthToPlotArray)
         ax.FontSize = 14;
     end
     
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+    print([saveFinalFigs tsToSave '_fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
+    print([saveFinalFigs tsToSave '_fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
     
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+    print([saveFinalFigs tsToSave '_fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
     % create the endpoint plots
     % The first location is empty, for the IFFL schematic.
     figure
@@ -450,8 +439,10 @@ for outercount = 1:length(lengthToPlotArray)
     % close all
     
     %
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/2.5 ss(4)/2]);
+    set(0,'Units','normalized')
+    figure
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.1, 0.9, 0.8])
     
     
     xTickLabels = [{'4', '1', '2^{-2}',  '2^{-4}'};
@@ -499,9 +490,9 @@ for outercount = 1:length(lengthToPlotArray)
         
     end
     
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+    print([saveFinalFigs tsToSave '_fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
+    print([saveFinalFigs tsToSave '_fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+    print([saveFinalFigs tsToSave '_fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
     
 end
 %

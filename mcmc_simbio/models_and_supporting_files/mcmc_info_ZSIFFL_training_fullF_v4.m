@@ -1,7 +1,5 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas)
-% Same as training E, but with better parameter search ranges. 
-% This uses Distribution C defined in the evernote note 050 MAR 2020 parameter csv setting notes
-% 
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF_v4(mtet, mlac, mlas)
+% %relative to v2, increase the pol limit a bit. 
 % The topologies involved in this estimataion probem are: 
 % plac - UTR1 - tetR, ptet - UTR1 - deGFP, aTc; This has three
 % topologies, the constitutive expression geometry, the repression
@@ -301,7 +299,7 @@ mtet_phase2_params = ...
 {...
 1       ,       'TX_elong_glob'                 , exp(2.3)      ,[exp(1)    exp(6)]          %1 from est params above
 2       ,       'TL_elong_glob'                 , exp(3.7)      ,[exp(1)    exp(6)]          %2 from est params above
-3       ,       'AGTPdeg_time'                  , exp(10.05)    ,[exp(8)    exp(12)]         %3 from est params above
+3       ,       'AGTPdeg_time'                  , exp(9.7)    ,[exp(8)    exp(12)]         %3 from est params above
 31      ,       'RNAP'                          , exp(5.9)      ,[exp(1)   exp(15)]       %31 31% from est params above
 32      ,       'RNase'                         , exp(9.2)      ,[exp(7)    exp(11)]          %32 from est params above
 33      ,       'Ribo'                          , exp(5.9)      ,[exp(1)    exp(15)]          %33 from est params above
@@ -362,15 +360,15 @@ original_estimated_params = ...
     
 new_estimated_params = ...
     {...
- 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([17, 25])
-	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([17, 25])
-	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([2, 10.5]) 
-	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([2 10])
-	31,      'RNAP'                           ,        exp(6),   exp([4 8])
-	33,      'Ribo'                           ,        exp(8),   exp([2.5 12])
-	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([25 40])
-	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([4 20])
-	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([3 20])
+ 	7,      'TXTL_PTET_RNAPbound_Kd'         ,    exp(20),        exp([18, 28])
+	21,      'TXTL_PLAC_RNAPbound_Kd'         ,          exp(20),        exp([18, 28])
+	23,      'TXTL_RNAPBOUND_TERMINATION_RATE',        exp(7),   exp([1, 12]) 
+	28,      'TXTL_RIBOBOUND_TERMINATION_RATE',        exp(7),   exp([5 14])
+	31,      'RNAP'                           ,        exp(6),   exp([5 12])
+	33,      'Ribo'                           ,        exp(8),   exp([4 14])
+	37,      'TXTL_PLAS_RNAPbound_Kd'         ,    exp(30),   exp([22 42])
+	39,      'TXTL_PLAS_TFBIND_Kd'            ,        exp(7),   exp([0 20])
+	40,      'TXTL_PLAS_TFRNAPbound_Kd'       ,          exp(7),   exp([0 20])
     };
 
 activeNames(cell2mat(new_estimated_params(:,1)),2) = new_estimated_params(:,3);

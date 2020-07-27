@@ -1,4 +1,4 @@
-function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas)
+function [mcmc_info, varargout] = mcmc_info_ZSIFFL_training_fullF_v2(mtet, mlac, mlas)
 % Same as training E, but with better parameter search ranges. 
 % This uses Distribution C defined in the evernote note 050 MAR 2020 parameter csv setting notes
 % 
@@ -301,7 +301,7 @@ mtet_phase2_params = ...
 {...
 1       ,       'TX_elong_glob'                 , exp(2.3)      ,[exp(1)    exp(6)]          %1 from est params above
 2       ,       'TL_elong_glob'                 , exp(3.7)      ,[exp(1)    exp(6)]          %2 from est params above
-3       ,       'AGTPdeg_time'                  , exp(10.05)    ,[exp(8)    exp(12)]         %3 from est params above
+3       ,       'AGTPdeg_time'                  , exp(9.7)    ,[exp(8)    exp(12)]         %3 from est params above
 31      ,       'RNAP'                          , exp(5.9)      ,[exp(1)   exp(15)]       %31 31% from est params above
 32      ,       'RNase'                         , exp(9.2)      ,[exp(7)    exp(11)]          %32 from est params above
 33      ,       'Ribo'                          , exp(5.9)      ,[exp(1)    exp(15)]          %33 from est params above

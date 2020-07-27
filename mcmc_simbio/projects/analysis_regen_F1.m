@@ -7,11 +7,16 @@
 % plots as specified by mcmc_info object.
 
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '/mcmc_simbio/projects/proj_acs_dsg2014_regen_F1'];
+
+projdir = './mcmc_simbio/projects/proj_acs_dsg2014_regen_F1';
+
+
+
 addpath(projdir)
 
 jpgsave = true;
 figsave = false;
+plotflag = true;
 
 % Load model, mcmc_info, and data_info.
 mobj = model_dsg2014_regen;
@@ -24,7 +29,6 @@ mai = mcmc_info.master_info;
 
 % plot data from existing simulations.
 tsIDtouse = 1;
-plotflag = true;
 switch tsIDtouse
     case 1
         ts1 = '20190210_184039_1_195';
@@ -32,13 +36,14 @@ switch tsIDtouse
         ts3 = '20190211_054328_1_20';
         ts4 = '20190211_140024_1_20';
         ts5 = '20190212_053457_1_20';
-        tstamp = {ts1 ts2 ts3 ts4};
-        nIterID = {1:10 1:10 1:15 1:27 1:11};
-        load([projdir '/simdata_' ts5 '/full_variable_set_' ts5 '.mat'], ...
+        ts6 = '20190212_114314_1_20';
+        tstamp = {ts1 ts2 ts3 ts4 ts5};
+        nIterID = {1:10 1:10 1:15 1:27 1:11 1:22};
+        load([projdir '/simdata_' tstamp{end} '/full_variable_set_' tstamp{end} '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info', 'mai', 'ri');
 end
-
+tsToSave = tstamp{end};
 mai.masterVector
 
 
@@ -78,28 +83,31 @@ if plotflag
     close all
     % Plot trace and corner (posterior distribution) plots
 %     mcmc_plot(marray(:, 1:3:end,1:50:end), parnames(:));
-    mcmc_plot(marray(:, 1:end,8000:20:end), parnames(:),...
+%     mcmc_plot(marray(:, 1:end,8000:20:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', ts5, 'extrafignamestring', 'BurnedInAllWalkers');
+
+
+mcmc_plot(marray(:, 1:end,(end-4000):1000:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', ts5, 'extrafignamestring', 'BurnedInAllWalkers');
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn');
+% mcmc_plot(marray(:, 1:end,(end-4000):500:end), parnames(:),...
+%     'scatter', false, 'ess', 120, ...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'BurnedIn_ess');
 
-
-    mcmc_plot(marray(:, 1:30:end,8000:10:end), parnames(:),...
+mcmc_plot(marray(:, 1:10:end,1:10:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', ts5, 'extrafignamestring', 'BurnedIn');
-
-
-    mcmc_plot(marray(:, 1:30:end,1:10:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', ts5, 'extrafignamestring', 'WithTransient');
-    figure
-    [C,lags,ESS]=eacorr(marray(:, :,8000:end));%10000:end
-    plot(lags,C,'.-',lags([1 end]),[0 0],'k');
-    grid on
-    xlabel('lags')
-    ylabel('autocorrelation');
-    text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',...
-        ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
-    title('Markov Chain Auto Correlation')
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'WithTransient');
+% figure
+% [C,lags,ESS]=eacorr(marray(:, :,(end-2000):500:end));%10000:end
+% plot(lags,C,'.-',lags([1 end]),[0 0],'k');
+% grid on
+% xlabel('lags')
+% ylabel('autocorrelation');
+% text(lags(end),0,sprintf('Effective Sample Size (ESS): %.0f_ ',...
+%     ceil(mean(ESS))),'verticalalignment','bottom','horizontalalignment','right')
+% title('Markov Chain Auto Correlation')
 %     
     
     mvarray = masterVecArray(marray, mai);

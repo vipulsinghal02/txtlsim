@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingF(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingF_v5(varargin)
 % data collected by Zach Sun and Shaobin Guo. 
 % Vipul Singhal,
 % California Institute of Technology
@@ -37,7 +37,7 @@ mlas = model_txtl_pLacLasR_pLasdeGFP;
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullF_v5(mtet, mlac, mlas);
 
 mi = mcmc_info.model_info;
 

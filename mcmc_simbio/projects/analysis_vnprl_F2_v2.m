@@ -54,6 +54,7 @@ di = data_VNPRL2011; % change this.
 
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
+
 mai = mcmc_info.master_info;
 
 % plot data from existing simulations.

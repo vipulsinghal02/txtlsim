@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingF(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingC_v2(varargin)
 % data collected by Zach Sun and Shaobin Guo. 
 % Vipul Singhal,
 % California Institute of Technology
@@ -14,15 +14,14 @@ p.addParameter('thinning', 1);
 p.addParameter('nIter', 2);
 p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
-p.addParameter('poolsize', [2]);
+p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('pausemode', false);
 p.addParameter('stepLadder', linspace(1.1, 1, 4), @isnumeric); % A vector of multipliers for the
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.005]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.00005]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
@@ -37,7 +36,7 @@ mlas = model_txtl_pLacLasR_pLasdeGFP;
 mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullC_v2(mtet, mlac, mlas);
 
 mi = mcmc_info.model_info;
 
@@ -166,11 +165,10 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                 'stepLadder', p.stepLadder,...
-                'pausemode', p.pausemode,...
                 'literalStepLadder', p.literalStepLadder);
         else
-            specificprojdir = [projdir '/simdata_' p.prevtstamp];
-            SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+            specificprojdir = [projdir '\simdata_' p.prevtstamp];
+            SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
             if isempty(p.prevtstampID)
                 marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                     projdir);
@@ -199,8 +197,7 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 2,...
-                'pausemode', p.pausemode,...
-                'stepLadder', p.stepLadder,...
+                'pausemode', false, 'stepLadder', p.stepLadder,...
                 'prevtstamp', p.prevtstamp,...
                 'literalStepLadder', p.literalStepLadder);
         end
@@ -230,11 +227,10 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                         'stepLadder', p.stepLadder,...
-                        'pausemode', p.pausemode,...
                         'literalStepLadder', p.literalStepLadder);
                 else
-                    specificprojdir = [projdir '/simdata_' p.prevtstamp];
-                    SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+                    specificprojdir = [projdir '\simdata_' p.prevtstamp];
+                    SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
                     if isempty(p.prevtstampID)
                         marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                             projdir);
@@ -261,14 +257,13 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     % now run the simulation.
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'UserInitialize', minit, 'multiplier', 1, ...
-                        'pausemode', p.pausemode,...
                         'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
                         'literalStepLadder', p.literalStepLadder);
                 end
             else % subsequent temperatures. 
                 %                 prevtstamp = [percentLadder{ll-1} tstamp];
-                specificprojdir = [projdir '/simdata_' prevtstamp];
-                SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
+                specificprojdir = [projdir '\simdata_' prevtstamp];
+                SS = load([specificprojdir '\full_variable_set_' prevtstamp], 'mcmc_info');
                 
                 marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                     projdir);
@@ -282,7 +277,6 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'pausemode', p.pausemode,...
                     'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
                     'literalStepLadder', p.literalStepLadder);
             end
@@ -324,14 +318,13 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                     'stepLadder', p.stepLadder,...
-                    'pausemode', p.pausemode,...
                     'literalStepLadder', p.literalStepLadder);
             else
                 % a previous time stamp IS provided, use it as a starting
                 % point. The data for that time stamp must be in the same
                 % directory as the projdir for this project.
-                specificprojdir = [projdir '/simdata_' p.prevtstamp];
-                SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
+                specificprojdir = [projdir '\simdata_' p.prevtstamp];
+                SS = load([specificprojdir '\full_variable_set_' p.prevtstamp], 'mcmc_info');
                 if isempty(p.prevtstampID)
                     marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                         projdir);
@@ -359,15 +352,14 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'pausemode', p.pausemode,...
                     'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
                     'literalStepLadder', p.literalStepLadder);
             end
         else
             % get the final location of the walkers from the previous
             % iteration (ll - 1).
-            specificprojdir = [projdir '/simdata_' prevtstamp];
-            SS = load([specificprojdir '/full_variable_set_' prevtstamp], 'mcmc_info');
+            specificprojdir = [projdir '\simdata_' prevtstamp];
+            SS = load([specificprojdir '\full_variable_set_' prevtstamp], 'mcmc_info');
             marray = mcmc_get_walkers({prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                 projdir);
             % assume the projdir where this data is stored is the same one as the
@@ -379,7 +371,6 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
             % now run the simulation.
             mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 1,...
-                'pausemode', p.pausemode,...
                 'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
                 'literalStepLadder', p.literalStepLadder);
         end

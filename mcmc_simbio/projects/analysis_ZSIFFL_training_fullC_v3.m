@@ -2,16 +2,16 @@
 
 clear all
 close all
-saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\May_2020'
-
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\trainingC_v3\'
+%                  D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\trainingC_v3
 finafigmode = true
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingC_v3'];
 addpath(projdir)
 sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
-jpgsave = false;
-figsave = false;
+jpgsave = true;
+figsave = true;
 
 % Load model, mcmc_info, and data_info.
 % construct simbiology model object(s)
@@ -19,61 +19,76 @@ mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 mlas = model_txtl_pLacLasR_pLasdeGFP;
 mlac = model_txtl_pLacdeGFP;
 % setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullC_v3(mtet, mlac, mlas);
 di = data_ZSIFFL;
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 % plot data from existing simulations.
+
+
+% 
+% ts1 = '20200518_175057_1_7381';
+% nIterID1 = {1:3};
+% marray1 = mcmc_get_walkers({ts1},nIterID1, projdir);
+% marray1 = marray1(:,1:1000, :);
+
 tsIDtouse = 1;
 plotflag = true;
+
 switch tsIDtouse
     case 1 % this is after including the termination parameters.
-        ts1 = '20200510_082735_1_1476';
-        ts2 = '20200511_052714_1_1476';
-        ts3 = '20200511_052714_2_738';
-        ts4 = '20200511_052714_3_369';
-        ts5 = '20200511_052714_4_148';
-        ts6 = '20200513_222442_1_738';
-        ts7 = '20200514_165204_1_738';
-        ts8 = '20200514_183027_1_738';
-        ts9 = '20200515_023833_1_738';
-        ts10 = '20200515_052639_1_738';
-        ts11 = '20200515_184104_1_738';
-        ts12 = '20200516_062411_1_738';
-        ts13 = '20200516_175823_1_738';
-        ts14 = '20200516_183508_1_738';
-        ts15 = '20200517_054605_1_738';
-        ts16 = '20200517_072406_1_738';
-        ts17 = '20200517_172041_1_738';
-        ts18 = '20200518_002303_1_738';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16};
-        tstamp = {ts1 ts2 ts3 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16 ts17 ts18};
-        nIterID = {1:2 1:10 1:10 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15};
-        nIterID = {1:2 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15 1:7 1:25};        
-        load([projdir '\simdata_' ts18 '\full_variable_set_' ts18 '.mat'], ...
+        
+        ts2 = '20200521_154748_1_73814';%100, 100
+        ts3 = '20200521_154748_2_36907'; %100, 200 % mostly random walking until here
+        ts4 = '20200521_154748_3_14763'; %80, 280, % here things slowly start to converge
+        ts5 = '20200522_224032_1_7381'; %50, 330
+        ts6='20200523_044512_1_7381';%50, 380
+        ts7 = '20200523_044512_2_5536'; %30, 410
+        ts8 = '20200523_135237_1_5536'; %50, 460
+        ts9 = '20200523_200855_1_3691'; %100, 560
+        ts10 = '20200523_200855_2_2214';%30 , 590
+        ts11 = '20200524_123605_1_2214';%10, 600
+        ts12 = '20200524_140951_1_2214';%20, 620
+        ts13 = '20200524_163232_1_2214';%20, 640
+        ts14 = '20200524_185508_1_2214';%40, 680
+        ts15 = '20200524_233515_1_2214';%100, 780
+        ts16 = '20200525_114752_1_1329'; %20, 800
+         tstamp = {ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10  ts11 ts12 ts13 ts14 ...
+             ts15 ts16};
+        nIterID = {1:10 1:10 1:8 1:5 1:5 1:3 1:5 1:10 1:4 1 1:2 1:2 1:4 ...
+            1:10 1:2}; 
+        load([projdir '\simdata_' tstamp{end} '\full_variable_set_'...
+            tstamp{end} '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri');
 end
 tsToSave = tstamp{end};
 mai.masterVector
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
-marray = marray_full(:,:,1:end);
+marray =  marray_full;%cat(3, marray1, marray_full(:,:,1:end));
+
 clear marray_full
 parnames = [...
+    {'TX_{cat}'}
+    {'TL_{cat}'}
+    {'\tau_{atp}'}
     {'pol_{Kd, tet}'}
+    {'rep_{Kd, tet}'}
+    {'aTc_{Kd}'}
     {'pol_{Kd, lac}'}
     {'pol_{term}'}
     {'Ribo_{term}'}
     {'pol'}
     {'Ribo'}
+    {'3OC12_{Kd}'}
     {'pol_{Kd,las}'}
     {'plas_{tf, Kd}'}
     {'plas-pol_{tf, Kd}'}    ];
+
+mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
+    'savematlabfig', false, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave);
 
 %  [activeNames(estParamsIX,1) mat2cell(log(cell2mat(activeNames(estParamsIX,3))), ones(14,1), ones(1, 2))]
 %
@@ -105,24 +120,64 @@ parnames = [...
 % % % % %%
 %
 %%
-close all
-mcmc_plot(marray(:, 1:end,300:250:end), parnames(:),...
+mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
+    'savematlabfig', false, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave);
+%%
+mcmc_plot(marray(:, 1:end,580:10:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in_oversampled');
+%%
+mcmc_plot(marray(:, 1:end,end), parnames(:),...
+    'ess', 100, 'scatter', false, 'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in_ess100');
+% %%
+% mcmc_plot(marray(:, 1:20:end,15:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters_');
 
 %%
-mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
+mcmc_plot(marray(:, 1:50:end,1:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters');
-
-%%
-mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'notsofewChains_all_iters');
 
 % % % % %
 %%
 %
+%%
+
+
+marray_thin = marray(:, :, end-300:15:end);
+marray_flat = marray_thin(:,:)';
+
+
+parslices = [...
+    {'TX_{cat}'}        {[0 6]}
+    {'TL_{cat}'}        {[0 6]}
+    {'\tau_{atp}'}      {[9.6 9.9]}
+    {'pol_{Kd, tet}'}   {[17 23]}
+    {'rep_{Kd, tet}'}   {[-4 1]}
+    {'aTc_{Kd}'}        {[-10 5]}
+    {'pol_{Kd, lac}'}   {[16 23]}
+    {'pol_{term}'}      {[2 10.5]}
+    {'Ribo_{term}'}     {[2 10]}
+    {'pol'}             {[4 8]}
+    {'Ribo'}            {[2 12]}
+    {'3OC12_{Kd}'}      {[5 16]}
+    {'pol_{Kd,las}'}    {[25 40]}
+    {'plas_{tf, Kd}'}   {[4 8]}
+    {'plas-pol_{tf, Kd}'}    {[3 10]}];
+% pol kd is cartesian with pol term, rnaseKd, rnase cat. BUT NOT POL. 
+% cartesian with  rnaseKd, rnase cat and POL
+cutted_marray = mcmc_cut(marray_flat, 1:15, flipud(cell2mat(parslices(:, 2))'));
+size(cutted_marray)
+
+%
+mcmc_plot(cutted_marray(:,:), parnames(:))
+
+
+
+
 %
 % parIDs = [4 5 11];
 % %     parRanges(parIDs, :) = [-1 0 ;
@@ -268,7 +323,7 @@ for miID = 1:length(mi)%1:
         end
     end
     titls_array
-    samplePoints = ceil(size(mvarray, 3) * [.95, 1]);
+    samplePoints = ceil(size(mvarray, 3) * [1]);
     
     marrayOrd = mvarray(currmi.paramMaps(currmi.orderingIx),:,samplePoints);
     
@@ -319,7 +374,7 @@ end
 
 
 %% here
-close all
+
 
 ylims = {[7.5, 2, 2, 5, 7.5];
     [7.5, 2, 2, 5, 7.5];
@@ -406,9 +461,9 @@ for outercount = 1:length(lengthToPlotArray)
     end
     
     print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg', '-r600')
     
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r600')
     % create the endpoint plots
     % The first location is empty, for the IFFL schematic.
     figure
@@ -500,8 +555,8 @@ for outercount = 1:length(lengthToPlotArray)
     end
     
     print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg', '-r600')
+    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r600')
     
 end
 %

@@ -17,7 +17,6 @@
 % 2. Coarse-Grained Dynamics of Protein Synthesis in a Cell-Free System
 % Karzbrun et. al
 
-
 % ----------------------------------------------------------------------- %
 % Set data and input directories
 % ----------------------------------------------------------------------- %
@@ -26,7 +25,7 @@ txtldir = txtl_init; % txtl_init is in the trunk, so this sets everything
 % nicely as long as you do not move things around.
 mcmc_init;
 
-projdir = [pwd '/mcmc_simbio/projects/proj_vnprl'];
+projdir = './mcmc_simbio/projects/proj_vnprl';
 
 addpath(projdir)
 
@@ -59,7 +58,8 @@ ts8 = '20200424_135910_1_48'; % up until here is the old F3.
 ts9 = '20200503_231938_1_48';% 130 %this is the first F3 with the union ranges. 
 ts10 = '20200504_063238_1_95'; % 120
 % ts11 = '20200504_141525_1_286'; 
-ts12 = '20200506_045247_1_143'; % 90 % this one skips ts11, and is continued from ts 10, iter 12 (not the full 14)
+ts12 = '20200506_045247_1_143'; % 90 % this one skips ts11, 
+% and is continued from ts 10, iter 12 (not the full 14)
 % the reason was that anything later as a starting point kept leading the
 % MCMC into a parameter set which caused matlab to crash. No idea how or
 % why that is possible, given that I have exception handled the
@@ -67,18 +67,25 @@ ts12 = '20200506_045247_1_143'; % 90 % this one skips ts11, and is continued fro
 ts13 = '20200506_145656_1_48'; %100 % but only using 8. 
 ts14 = '20200510_045912_1_95';
 ts15 = '20200510_045912_2_48';
+ts16 = '20200512_192355_1_43';
+ts17 = '20200512_192355_2_38';
+ts18 = '20200513_063545_1_33';
+ts19 = '20200513_063545_2_29';
+ts20 = '20200513_063545_3_24';
+ts21 = '20200513_063545_4_19';
+
 % tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ts12}; % 
 % nIterID = {1:10 1:10 1:6 1:40 1:30 1:30 1:40 1:40 1:13 1:13 1:2 1:7};% 
 
 tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts12 ts13 ts14 ts15}; % 
-tstamp = {ts14 ts15}; % 
+tstamp = {ts14 ts15 ts16 ts17 ts18 ts19 ts20 ts21}; % 
 nIterID = {1:10 1:10 1:6 1:40 1:30 1:30 1:40 1:40 1:13 1:12 1:9 1:8 1:30 1:21};% 
-nIterID = {1:30 1:21};% 
-load([projdir '/simdata_' ts15 '/full_variable_set_' ts15 '.mat'], ...
+nIterID = {1:30 1:21 1:10  1:10 1:15 1:15 1:15 1:15};% 
+load([projdir '/simdata_' tstamp{end} '/full_variable_set_' tstamp{end} '.mat'], ...
     'mi',...
     'mcmc_info', 'data_info', 'mai', 'ri');
 
-tsToSave = ts15;
+tsToSave = tstamp{end};
 mai.masterVector
 
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
@@ -101,9 +108,9 @@ parnames = ...
 
 %% just the troublesome parameter ranges. 
  close all
-mcmc_plot(marray(:, 1:50:end,(end-500):end), parnames(:),...
+mcmc_plot(marray(:, 1:end,(end-600):200:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'plotChains', true,'fontsize', 22,...
+    'plotChains', true,'fontsize', 12,...
     'projdir', projdir, 'tstamp', tsToSave, ...
     'extrafignamestring', 'troublesome_ranges');
 %%
@@ -175,9 +182,10 @@ RFUumConvertMG = 7.75;  % (7.75 a.u. = 1 nM)
 ylims = [1000 50 12000];
 lengthToPlotArray = [21, 76, 76];
 
-figure
-ss = get(0, 'screensize');
-set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3 ss(4)/1.4]);
+
+% 
+% ss = get(0, 'screensize');
+% set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3 ss(4)/1.4]);
 miToUse = [1 2 2]; % mi 1 has one plot (RNA) and mi 2 has 2 plots (RNA and protein)
 msToPlot = [1 1 2];
 timeinterval = [6 8 8];
@@ -229,8 +237,11 @@ t_vec_mins=mergedExpFile(1).t_vec/60;
 
 
 %%
-close all
 
+figure
+set(0,'Units','normalized')
+set(gcf,'Units', 'normalized')
+set(gcf, 'Position', [0.05, 0.1, 0.4, 0.6])
 for count = 1:length(miToUse)  %1:length(mi)%1:
     colorz = flipud(parula(max(dosesToPlot{count}{:})+2));
     currmi = mi(miToUse(count));
@@ -289,7 +300,8 @@ for count = 1:length(miToUse)  %1:length(mi)%1:
             0.3, ...
             colorzCell);
         title([titleArray{count} ' (Exp)'])
-        %h = stdshade(t_vec_mins,mergedExpFile(1).noBg_mean(:,plotSelect+11,1)/RFUumConvertMG,mergedExpFile(1).noBg_std(:,plotSelect+11)/RFUumConvertMG,0.3,colorCodes);
+        %h = stdshade(t_vec_mins,mergedExpFile(1).noBg_mean(:,plotSelect+11,1)
+%         /RFUumConvertMG,mergedExpFile(1).noBg_std(:,plotSelect+11)/RFUumConvertMG,0.3,colorCodes);
         axis([0 (lengthToPlot-1)*timeinterval(count), ...
             0, ...
             ylims(count)])
@@ -307,7 +319,8 @@ for count = 1:length(miToUse)  %1:length(mi)%1:
         for dID = dosesToPlot{count}{:}
             colorzCell{dID} = colorz(dID+2, :);
         end
-        h = stdshade(t_vec_mins,mergedExpFile(1).noBg_mean(:,11+plotSelect,2)/RFUumConvert/1.8,mergedExpFile(1).noBg_std(:,11+plotSelect,2)/RFUumConvert/sqrt(3)/1.8,0.3,colorzCell);
+        h = stdshade(t_vec_mins,mergedExpFile(1).noBg_mean(:,11+plotSelect,2)/RFUumConvert/1.8,...
+            mergedExpFile(1).noBg_std(:,11+plotSelect,2)/RFUumConvert/sqrt(3)/1.8,0.3,colorzCell);
         axis([0 (lengthToPlot-1)*timeinterval(count),0,ylims(count)])
         title([titleArray{count} ' (Exp)'])
         xlabel('Time [mins]')
@@ -319,20 +332,35 @@ for count = 1:length(miToUse)  %1:length(mi)%1:
         %legend(h,legendStr,'Location','NorthWest')
     end
     
-    
     % simulation results
     subplot(3, 2, (count-1)*2+2)
+
     for dID = dosesToPlot{count}{:}
-        plot(tv(1:lengthToPlot)/60,...
+        
+        [linehandle(dID), ptchhandle] =...
+            boundedline(tv(1:lengthToPlot)/60,...
             mean(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID), 3),...
-            'LineWidth', 1.5,...
-            'Color', colorz(dID+2, :))
+            std(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID)...
+            +eps*randn(lengthToPlot, 1, 50), 0,3));
+        set(ptchhandle, ...
+            'FaceColor', colorz(dID+2, :),...
+            'FaceAlpha', 0.25);
+        set(linehandle(dID), ...
+            'Color', colorz(dID+2, :),...
+            'LineWidth', 1.5);
+        
+%         
+%         plot(tv(1:lengthToPlot)/60,...
+%             mean(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID), 3),...
+%             'LineWidth', 1.5,...
+%             'Color', colorz(dID+2, :))
         hold on
     end
     grid on
     title([titleArray{count} ' (Fit)'])
     
-    legend(legends{count, :}, 'Location', legLoc{count}, 'FontSize', 14)
+    legend(linehandle(dosesToPlot{count}{:}), legends{count, :},...
+        'Location', legLoc{count}, 'FontSize', 14)
     legend('boxoff')
     axis([0 (lengthToPlot-1)*timeinterval(count) 0 ylims(count)])
     if count ==length(miToUse)

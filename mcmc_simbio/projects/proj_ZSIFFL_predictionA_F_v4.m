@@ -1,4 +1,4 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_trainingF(varargin)
+function [mi,mai, ri, tstamp, projdir, di]  = proj_ZSIFFL_predictionA_F_v4(varargin)
 % data collected by Zach Sun and Shaobin Guo. 
 % Vipul Singhal,
 % California Institute of Technology
@@ -8,21 +8,20 @@ p = inputParser;
 p.addParameter('prevtstamp', []);
 p.addParameter('prevtstampID', []);
 p.addParameter('stepSize', 1.4);
-p.addParameter('nW', 30);
-p.addParameter('nPoints', 30*100);
+p.addParameter('nW', 20);
+p.addParameter('nPoints', 20*20);
 p.addParameter('thinning', 1);
-p.addParameter('nIter', 2);
+p.addParameter('nIter', 1);
 p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
-p.addParameter('poolsize', [2]);
+p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-p.addParameter('pausemode', false);
 p.addParameter('stepLadder', linspace(1.1, 1, 4), @isnumeric); % A vector of multipliers for the
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', [0.005]); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.00005]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
 p.parse(varargin{:});
@@ -32,17 +31,14 @@ p = p.Results;
 % proj_acs_dsg2014_regen_A('nW', 50, 'nPoints', 50*10*5, 'nIter', 5, 'parallel', false, 'multiplier', 2, 'thinning', 10)
 % proj_acs_dsg2014_regen_A('nW', 6400, 'nPoints', 6400*10*20, 'nIter', 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
 %% construct simbiology model object(s)
-mlac = model_txtl_pLacdeGFP;
-mlas = model_txtl_pLacLasR_pLasdeGFP;
-mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
+mIFFL = model_txtl_lastetIFFL;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
-
+mcmc_info = mcmc_info_ZSIFFL_predictionA_F_v4(mIFFL);
 mi = mcmc_info.model_info;
 
 %% setup the data_info struct
-di = data_ZSIFFL;
+di = ZachIFFL_testdata;
 % modify di to only contain the mRNA data.
 % di.dataArray = di.dataArray(:, 1, :, :); % pick out only the mrna
 % di.measuredNames = di.measuredNames(1);
@@ -152,12 +148,6 @@ end
 % marray = mcmc_get_walkers(prevtstamp, {simID}, projdir);
 % mtemp = marray(:,:);
 
-
-
-
-
-
-
 if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
     if ~p.temperatureLadder % if p.temperatureLadder is false
         %% initialize the directory where things are stored.
@@ -166,7 +156,6 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                 'stepLadder', p.stepLadder,...
-                'pausemode', p.pausemode,...
                 'literalStepLadder', p.literalStepLadder);
         else
             specificprojdir = [projdir '/simdata_' p.prevtstamp];
@@ -199,8 +188,7 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             
             mi = mcmc_runsim_v2(tstamp, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 2,...
-                'pausemode', p.pausemode,...
-                'stepLadder', p.stepLadder,...
+                'pausemode', false, 'stepLadder', p.stepLadder,...
                 'prevtstamp', p.prevtstamp,...
                 'literalStepLadder', p.literalStepLadder);
         end
@@ -230,7 +218,6 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                         'stepLadder', p.stepLadder,...
-                        'pausemode', p.pausemode,...
                         'literalStepLadder', p.literalStepLadder);
                 else
                     specificprojdir = [projdir '/simdata_' p.prevtstamp];
@@ -261,7 +248,6 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     % now run the simulation.
                     mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                         'UserInitialize', minit, 'multiplier', 1, ...
-                        'pausemode', p.pausemode,...
                         'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
                         'literalStepLadder', p.literalStepLadder);
                 end
@@ -282,7 +268,6 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'pausemode', p.pausemode,...
                     'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
                     'literalStepLadder', p.literalStepLadder);
             end
@@ -324,7 +309,6 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'InitialDistribution', 'LHS', 'multiplier', p.multiplier,...
                     'stepLadder', p.stepLadder,...
-                    'pausemode', p.pausemode,...
                     'literalStepLadder', p.literalStepLadder);
             else
                 % a previous time stamp IS provided, use it as a starting
@@ -359,7 +343,6 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 % now run the simulation.
                 mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                     'UserInitialize', minit, 'multiplier', 1,...
-                    'pausemode', p.pausemode,...
                     'stepLadder', p.stepLadder, 'prevtstamp', p.prevtstamp,...
                     'literalStepLadder', p.literalStepLadder);
             end
@@ -379,7 +362,6 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
             % now run the simulation.
             mi = mcmc_runsim_v2(tstamp_appended, projdir, di, mcmc_info,...
                 'UserInitialize', minit, 'multiplier', 1,...
-                'pausemode', p.pausemode,...
                 'stepLadder', p.stepLadder, 'prevtstamp', prevtstamp,...
                 'literalStepLadder', p.literalStepLadder);
         end

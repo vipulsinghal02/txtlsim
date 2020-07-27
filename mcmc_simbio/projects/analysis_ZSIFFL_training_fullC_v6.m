@@ -2,16 +2,15 @@
 
 clear all
 close all
-saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\May_2020'
-
+saveFinalFigs = 'D:\Dropbox\Documents\a_Journal_Papers\Drafts\txtl_bmc_bioinformatics\figs\trainingC_v6\'
 finafigmode = true
 % Set working directory to the txtlsim toolbox directory.
-projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingF'];
+projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingC_v6'];
 addpath(projdir)
 sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
-jpgsave = false;
-figsave = false;
+jpgsave = true;
+figsave = true;
 
 % Load model, mcmc_info, and data_info.
 % construct simbiology model object(s)
@@ -19,61 +18,127 @@ mtet = model_txtl_ptetdeGFP_pLactetR_aTc;
 mlas = model_txtl_pLacLasR_pLasdeGFP;
 mlac = model_txtl_pLacdeGFP;
 % setup the mcmc_info struct
-mcmc_info = mcmc_info_ZSIFFL_training_fullF(mtet, mlac, mlas);
+mcmc_info = mcmc_info_ZSIFFL_training_fullC_v6(mtet, mlac, mlas);
 di = data_ZSIFFL;
 mi = mcmc_info.model_info;
 ri = mcmc_info.runsim_info;
 mai = mcmc_info.master_info;
 % plot data from existing simulations.
+
+
+% 
+% ts1 = '20200518_175057_1_7381';
+% nIterID1 = {1:3};
+% marray1 = mcmc_get_walkers({ts1},nIterID1, projdir);
+% marray1 = marray1(:,1:1000, :);
+
 tsIDtouse = 1;
 plotflag = true;
+
 switch tsIDtouse
     case 1 % this is after including the termination parameters.
-        ts1 = '20200510_082735_1_1476';
-        ts2 = '20200511_052714_1_1476';
-        ts3 = '20200511_052714_2_738';
-        ts4 = '20200511_052714_3_369';
-        ts5 = '20200511_052714_4_148';
-        ts6 = '20200513_222442_1_738';
-        ts7 = '20200514_165204_1_738';
-        ts8 = '20200514_183027_1_738';
-        ts9 = '20200515_023833_1_738';
-        ts10 = '20200515_052639_1_738';
-        ts11 = '20200515_184104_1_738';
-        ts12 = '20200516_062411_1_738';
-        ts13 = '20200516_175823_1_738';
-        ts14 = '20200516_183508_1_738';
-        ts15 = '20200517_054605_1_738';
-        ts16 = '20200517_072406_1_738';
-        ts17 = '20200517_172041_1_738';
-        ts18 = '20200518_002303_1_738';
-        tstamp = {ts1 ts2 ts3 ts4 ts5 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16};
-        tstamp = {ts1 ts2 ts3 ts6 ts7 ts8 ts9 ts10 ts11 ...
-            ts12 ts13 ts14 ts15 ts16 ts17 ts18};
-        nIterID = {1:2 1:10 1:10 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15};
-        nIterID = {1:2 1:10 1:10 1:10 1:2 1:5 1:4 1:20 1:5 ...
-            1:12 1 1 1:2 1:15 1:7 1:25};        
-        load([projdir '\simdata_' ts18 '\full_variable_set_' ts18 '.mat'], ...
+        
+        ts2 = '20200521_154748_1_73814';%100, 100
+        ts3 = '20200521_154748_2_36907'; %100, 200 % mostly random walking until here
+        ts4 = '20200521_154748_3_14763'; %80, 280, % here things slowly start to converge
+        ts5 = '20200522_224032_1_7381'; %50, 330
+        ts6='20200523_044512_1_7381';%50, 380
+        ts7 = '20200523_044512_2_5536'; %30, 410
+        ts8 = '20200523_135237_1_5536'; %50, 460
+        ts9 = '20200523_200855_1_3691'; %100, 560
+        ts10 = '20200523_200855_2_2214';%30 , 590
+        ts11 = '20200524_123605_1_2214';%10, 600
+        ts12 = '20200524_140951_1_2214';%20, 620
+        ts13 = '20200524_163232_1_2214';%20, 640
+        ts14 = '20200524_185508_1_2214';%40, 680
+        ts15 = '20200524_233515_1_2214';%100, 780
+        ts16 = '20200525_114752_1_1329'; %20, 800
+        ts17 = '20200603_044203_1_2214'; %200, changed to 500 walkers. %%cumulativefrom17 200
+        ts18 = '20200603_044203_2_1845';%70 %%cumulativefrom17 270
+        ts19 = '20200604_073858_1_1845'; %200 %%cumulativefrom17 470
+        ts20 = '20200604_073858_2_1476'; % 50  %%cumulativefrom17 520
+        ts21 = '20200605_045501_1_1476';% 200  %%cumulativefrom17 720
+        ts22 = '20200605_045501_2_1181';% 200 %%cumulativefrom17 920
+        ts23 = '20200605_045501_3_1033';% 200 %%cumulativefrom17 1120
+        ts24 = '20200605_045501_4_886';% 200 %%cumulativefrom17 1320
+        ts25 = '20200605_045501_5_738';% 200 %%cumulativefrom17 1520
+        ts26 = '20200605_045501_6_591';% 200  %%cumulativefrom17 1590 + 130
+        ts27 = '20200605_045501_7_443';% 200  %%cumulativefrom17 1790 + 130
+        ts28 = '20200609_190458_1_1033'; %50  %%cumulativefrom17 1840 + 130
+        ts29 = '20200610_000545_1_1033'; %400  %%cumulativefrom17 2240 + 130
+        ts30 = '20200610_000545_2_738'; %280  %%cumulativefrom17 2520 + 130
+        ts31 = '20200612_214710_1_1476'; % 30   %%cumulativefrom17 2550 + 130, windows update after 3 iters
+        ts32 = '20200614_005043_1_1476';%100  %%cumulativefrom17 2650 + 130
+        ts33 = '20200614_005043_2_2214';%100  %%cumulativefrom17 2750 + 130
+        ts34 = '20200614_005043_3_2953';%100  %%cumulativefrom17 2850 + 130
+        ts35 = '20200614_005043_4_3691';%100  %%cumulativefrom17 2950 + 130
+        ts36 = '20200614_005043_5_2953';%50  %%cumulativefrom17 3000 + 130
+        ts37 ='20200615_233435_1_2953';%220  %%cumulativefrom17 3220 + 130
+        ts38 = '20200616_183409_1_2953';%400  %%cumulativefrom17 3620 + 130
+        ts39 = '20200616_183409_2_2214';%390  %%cumulativefrom17 4010 + 130
+        ts40 = '20200619_213706_1_2214';%370  %%cumulativefrom17 4380 + 130
+        ts41 = '20200619_213706_2_1476';
+        ts42 = '20200621_100025_1_4429';
+        ts43 = '20200622_121135_1_4429';
+        ts44 = '20200623_175503_1_4429';
+        ts45 = '20200627_132326_1_3691';
+        ts46 = '20200627_132326_2_2953';
+        ts47 = '20200627_132326_3_2583';
+        ts48 = '20200627_132326_4_2214';
+        ts49 = '20200703_000710_1_2030';
+        ts50 = '20200703_000710_2_1845';
+        ts51 = '20200703_000710_3_1661';
+        ts52 = '20200703_000710_4_1476';
+        ts53 = '20200710_230144_1_1476';
+        ts54 = '20200710_230144_2_1292';
+        ts55 = '20200716_111111_1_1292';
+        ts56 = '20200716_111111_2_1107';
+        ts57 = '20200723_011054_1_1107';
+        tstamp = ...
+            {ts17 ts18 ts19 ts20 ts21 ts22 ts23 ts24 ts25 ts26...
+             ts27 ts28 ts29 ts30 ts31 ts32 ts33 ts34 ts35 ts36...
+             ts37 ts38 ts39 ts40 ts41 ts42 ts43 ts44 ts45 ts46 ...
+             ts47 ts48 ts49 ts50 ts51 ts52 ts53 ts54 ts55 ts56 ...
+             ts57};
+        nIterID = ...
+            {1:20 1:7 1:20 1:5 1:20 1:20 1:20 1:20 1:20 1:20 ...
+             1:20 1:5 1:40 1:28 1:3 1:10 1:10 1:10 1:10 1:5 ...
+             1:22 1:40 1:39 1:40 1:2 1:10 1:36 1:100 1:40 1:40 ...
+             1:40 1:29 1:40 1:40 1:40 1:40 1:100 1:21 1:100 1:60 ...
+             1:43};
+        
+        load([projdir '\simdata_' tstamp{end} '\full_variable_set_'...
+            tstamp{end} '.mat'], ...
             'mi',...
             'mcmc_info', 'data_info',  'ri');
 end
 tsToSave = tstamp{end};
 mai.masterVector
 marray_full = mcmc_get_walkers(tstamp,nIterID, projdir);
-marray = marray_full(:,:,1:end);
+marray =  marray_full;%cat(3, marray1, marray_full(:,:,1:end));
+
 clear marray_full
 parnames = [...
+    {'TX_{cat}'}
+    {'TL_{cat}'}
+    {'\tau_{atp}'}
     {'pol_{Kd, tet}'}
+    {'rep_{Kd, tet}'}
+    {'aTc_{Kd}'}
     {'pol_{Kd, lac}'}
     {'pol_{term}'}
     {'Ribo_{term}'}
     {'pol'}
     {'Ribo'}
+    {'3OC12_{Kd}'}
     {'pol_{Kd,las}'}
     {'plas_{tf, Kd}'}
     {'plas-pol_{tf, Kd}'}    ];
+
+mcmc_plot(marray(:, 1:end,1:end), parnames(:),...
+    'savematlabfig', false,'plotDistribution', false,...
+    'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave);    
 
 %  [activeNames(estParamsIX,1) mat2cell(log(cell2mat(activeNames(estParamsIX,3))), ones(14,1), ones(1, 2))]
 %
@@ -105,24 +170,65 @@ parnames = [...
 % % % % %%
 %
 %%
-close all
-mcmc_plot(marray(:, 1:end,300:250:end), parnames(:),...
+mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
+    'savematlabfig', false, 'savejpeg', false,...
+    'projdir', projdir, 'tstamp', tsToSave);
+%%
+mcmc_plot(marray(:, 1:end,end-600:100:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in');
+    'plotChains', false,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in_oversampled');
+%%
+mcmc_plot(marray(:, 1:end,end), parnames(:),...
+    'ess', 100, 'scatter', false, 'savematlabfig', figsave, 'savejpeg', jpgsave,...
+    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'Burned_in_ess100');
+% %%
+% mcmc_plot(marray(:, 1:20:end,15:end), parnames(:),...
+%     'savematlabfig', figsave, 'savejpeg', jpgsave,...
+%     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters_');
 
 %%
-mcmc_plot(marray(:, 1:20:end,1:end), parnames(:),...
+mcmc_plot(marray(:, 1:50:end,1:end), parnames(:),...
     'savematlabfig', figsave, 'savejpeg', jpgsave,...
     'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'fewChains_all_iters');
-
-%%
-mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
-    'savematlabfig', figsave, 'savejpeg', jpgsave,...
-    'projdir', projdir, 'tstamp', tsToSave, 'extrafignamestring', 'notsofewChains_all_iters');
 
 % % % % %
 %%
 %
+%%
+
+
+marray_thin = marray(:, :, end-600:60:end);
+marray_flat = marray_thin(:,:)';
+
+
+parslices = [...
+    {'TX_{cat}'}        {[0 6]}
+    {'TL_{cat}'}        {[0 6]}
+    {'\tau_{atp}'}      {[9.6 9.9]}
+    {'pol_{Kd, tet}'}   {[17 23]}
+    {'rep_{Kd, tet}'}   {[-4 1]}
+    {'aTc_{Kd}'}        {[-10 5]}
+    {'pol_{Kd, lac}'}   {[16 23]}
+    {'pol_{term}'}      {[2 10.5]}
+    {'Ribo_{term}'}     {[2 10]}
+    {'pol'}             {[4 8]}
+    {'Ribo'}            {[2 12]}
+    {'3OC12_{Kd}'}      {[5 16]}
+    {'pol_{Kd,las}'}    {[25 40]}
+    {'plas_{tf, Kd}'}   {[4 8]}
+    {'plas-pol_{tf, Kd}'}    {[3 10]}];
+% pol kd is cartesian with pol term, rnaseKd, rnase cat. BUT NOT POL. 
+% cartesian with  rnaseKd, rnase cat and POL
+cutted_marray = mcmc_cut(marray_flat, 1:15, flipud(cell2mat(parslices(:, 2))'));
+size(cutted_marray)
+
+%
+% mcmc_plot(cutted_marray(:,:), parnames(:))
+
+
+
+
 %
 % parIDs = [4 5 11];
 % %     parRanges(parIDs, :) = [-1 0 ;
@@ -222,7 +328,7 @@ mcmc_plot(marray(:, 1:10:end,1:end), parnames(:),...
 
 % rebuild the master vector array, either via mcmc_cut or just using
 % all estimated points.
-
+%%
 %
 %         mvarray = masterVecArray(marray_gauss, mai);
 %          mvarray = masterVecArray(marray_cut, mai);
@@ -268,7 +374,7 @@ for miID = 1:length(mi)%1:
         end
     end
     titls_array
-    samplePoints = ceil(size(mvarray, 3) * [.95, 1]);
+    samplePoints = ceil(size(mvarray, 3) * [1]);
     
     marrayOrd = mvarray(currmi.paramMaps(currmi.orderingIx),:,samplePoints);
     
@@ -319,7 +425,7 @@ end
 
 
 %% here
-close all
+
 
 ylims = {[7.5, 2, 2, 5, 7.5];
     [7.5, 2, 2, 5, 7.5];
@@ -329,10 +435,10 @@ ylims = {[7.5, 2, 2, 5, 7.5];
 lengthToPlotArray = [24, 31, 61]; % 180 min = 24
 for outercount = 1:length(lengthToPlotArray)
     lengthToPlot = lengthToPlotArray(outercount)
-    
+    set(0,'Units','normalized')
     figure
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/3.5 ss(4)/1.1]);
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.05, 0.2, 0.9])
     miToUse = [1 2 3 4 5];
     
     titleArray = {'pTet-deGFP DNA';
@@ -405,10 +511,14 @@ for outercount = 1:length(lengthToPlotArray)
         ax.FontSize = 14;
     end
     
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
-    
-    print([saveFinalFigs 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+
+%     print([saveFinalFigs tsToSave 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
+%     print([saveFinalFigs tsToSave 'fitting_traj_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+%     print([saveFinalFigs tsToSave '_lowres_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r200')
+%     print([saveFinalFigs tsToSave '_medres_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r300')    
+%     print([saveFinalFigs tsToSave '_hires_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r400')
+%      
+%     print([saveFinalFigs tsToSave '_hires_traj_' num2str((lengthToPlot-1)*8) 'min'],'-dpdf')
     % create the endpoint plots
     % The first location is empty, for the IFFL schematic.
     figure
@@ -450,25 +560,37 @@ for outercount = 1:length(lengthToPlotArray)
     % close all
     
     %
-    ss = get(0, 'screensize');
-    set(gcf, 'Position', [ss(3)*(1-1/1.3) ss(4)*(1-1/1.3) ss(3)/2.5 ss(4)/2]);
-    
+    set(0,'Units','normalized')
+    figure
+    set(gcf,'Units', 'normalized')
+    set(gcf, 'Position', [0.05, 0.1, 0.35, 0.5])
     
     xTickLabels = [{'4', '1', '2^{-2}',  '2^{-4}'};
         {'2', '.02',  '.0002',  '0'};
         {'10', '10^{-1}', '10^{-3}', '0'};
         {'2', '0.5', '0.125', '0'};
         {'10',  '10^{-1}',  '10^{-3}',  '0'}];
-    titleArray = {'pTet deGFP DNA';
-        'tetR DNA';
-        'aTc';
-        'pLac deGFP DNA';
-        '3OC12'};
-    xLab = {'pTet deGFP DNA';
-        'tetR DNA';
-        'aTc';
-        'pLac deGFP DNA';
-        '3OC12'};
+    titleArray = {'pTet-deGFP DNA (nM)';
+        'pLac-tetR DNA (nM)';
+        'aTc (uM)';
+        'pLac-deGFP DNA (nM)';
+        '3OC12 (uM)'};
+    xLab = {'pTet-deGFP DNA (nM)';
+        'pLac-tetR DNA (nM)';
+        'aTc (uM)';
+        'pLac-deGFP DNA (nM)';
+        '3OC12 (uM)'};
+    xLims = [0.0625            4
+        2e-06 2
+        0.01 10000
+        0.03125 2
+        0.01 10000];
+    doseArray =...
+        [   4            2            1          0.5         0.25        0.125       0.0625
+            2          0.2         0.02        0.002       0.0002        2e-05            2e-06
+        10000         1000          100           10            1          0.1            0.01
+            2            1          0.5         0.25        0.125       0.0625      0.03125
+        10000         1000          100           10            1          0.1            0.01];
     
     for count = 1:length(miToUse)
         subplot(2, 3, (count+1))
@@ -487,6 +609,7 @@ for outercount = 1:length(lengthToPlotArray)
             'LineWidth', 2)
         ax = gca
         ax.XScale = 'log';
+        ax.XLim = xLims(count, :);
         hold on
         ax = gca
         ax.XTick = fliplr(doseArray(count, 1:2:end));
@@ -498,10 +621,20 @@ for outercount = 1:length(lengthToPlotArray)
         xlabel(xLab{count});
         
     end
-    
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-depsc')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
-    print([saveFinalFigs 'fitting_end_' num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+%     print([saveFinalFigs tsToSave 'fitting_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-depsc')
+%     print([saveFinalFigs tsToSave 'fitting_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-djpeg')
+%     print([saveFinalFigs tsToSave 'fitting_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-dpng')
+%     print([saveFinalFigs tsToSave '_lowres_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r200')
+%     print([saveFinalFigs tsToSave '_medres_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r300')
+%     print([saveFinalFigs tsToSave '_hires_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-dpng', '-r400')
+%     print([saveFinalFigs tsToSave '_hires_end_' ...
+%         num2str((lengthToPlot-1)*8) 'min'],'-dpdf')
     
 end
 %
