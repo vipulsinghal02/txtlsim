@@ -340,10 +340,6 @@ Project directory already exists, using this to store data
  (in a subdirectory named 'simdata_20200612_214710_1_1476'). 
 
 ############################################ 
-OkNewAmazonPWAsOf2017
-
-OkNewAmazonPWAsOf2017
-
 
 
 
