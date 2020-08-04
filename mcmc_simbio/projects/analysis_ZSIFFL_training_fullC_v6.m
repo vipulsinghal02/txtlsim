@@ -9,8 +9,8 @@ projdir = [pwd '\mcmc_simbio\projects\proj_ZSIFFL_trainingC_v6'];
 addpath(projdir)
 sls = regexp(projdir, '\', 'split');
 extrastring = sls{end};
-jpgsave = true;
-figsave = true;
+jpgsave = false;
+figsave = false;
 
 % Load model, mcmc_info, and data_info.
 % construct simbiology model object(s)
@@ -67,6 +67,7 @@ switch tsIDtouse
         ts28 = '20200609_190458_1_1033'; %50  %%cumulativefrom17 1840 + 130
         ts29 = '20200610_000545_1_1033'; %400  %%cumulativefrom17 2240 + 130
         ts30 = '20200610_000545_2_738'; %280  %%cumulativefrom17 2520 + 130
+        % v6 starts here. 
         ts31 = '20200612_214710_1_1476'; % 30   %%cumulativefrom17 2550 + 130, windows update after 3 iters
         ts32 = '20200614_005043_1_1476';%100  %%cumulativefrom17 2650 + 130
         ts33 = '20200614_005043_2_2214';%100  %%cumulativefrom17 2750 + 130
@@ -94,19 +95,32 @@ switch tsIDtouse
         ts55 = '20200716_111111_1_1292';
         ts56 = '20200716_111111_2_1107';
         ts57 = '20200723_011054_1_1107';
+        ts58 = '20200723_011054_2_923';
+        ts59 = '20200723_011054_3_738';
         tstamp = ...
             {ts17 ts18 ts19 ts20 ts21 ts22 ts23 ts24 ts25 ts26...
              ts27 ts28 ts29 ts30 ts31 ts32 ts33 ts34 ts35 ts36...
              ts37 ts38 ts39 ts40 ts41 ts42 ts43 ts44 ts45 ts46 ...
              ts47 ts48 ts49 ts50 ts51 ts52 ts53 ts54 ts55 ts56 ...
-             ts57};
+             ts57 ts58 ts59};
         nIterID = ...
             {1:20 1:7 1:20 1:5 1:20 1:20 1:20 1:20 1:20 1:20 ...
              1:20 1:5 1:40 1:28 1:3 1:10 1:10 1:10 1:10 1:5 ...
              1:22 1:40 1:39 1:40 1:2 1:10 1:36 1:100 1:40 1:40 ...
              1:40 1:29 1:40 1:40 1:40 1:40 1:100 1:21 1:100 1:60 ...
-             1:43};
-        
+             1:100 1:100 1:3};
+         % Just plot v6. if you want to plot everything from ts 17, use the
+         % list above. 
+        tstamp = ...
+            {ts31 ts32 ts33 ts34 ts35 ts36...
+             ts37 ts38 ts39 ts40 ts41 ts42 ts43 ts44 ts45 ts46 ...
+             ts47 ts48 ts49 ts50 ts51 ts52 ts53 ts54 ts55 ts56 ...
+             ts57 ts58 ts59};
+        nIterID = ...
+            {1:3 1:10 1:10 1:10 1:10 1:5 ...
+             1:22 1:40 1:39 1:40 1:2 1:10 1:36 1:100 1:40 1:40 ...
+             1:40 1:29 1:40 1:40 1:40 1:40 1:100 1:21 1:100 1:60 ...
+             1:100 1:100 1:3};        
         load([projdir '\simdata_' tstamp{end} '\full_variable_set_'...
             tstamp{end} '.mat'], ...
             'mi',...
@@ -198,30 +212,30 @@ mcmc_plot(marray(:, 1:50:end,1:end), parnames(:),...
 %%
 
 
-marray_thin = marray(:, :, end-600:60:end);
-marray_flat = marray_thin(:,:)';
-
-
-parslices = [...
-    {'TX_{cat}'}        {[0 6]}
-    {'TL_{cat}'}        {[0 6]}
-    {'\tau_{atp}'}      {[9.6 9.9]}
-    {'pol_{Kd, tet}'}   {[17 23]}
-    {'rep_{Kd, tet}'}   {[-4 1]}
-    {'aTc_{Kd}'}        {[-10 5]}
-    {'pol_{Kd, lac}'}   {[16 23]}
-    {'pol_{term}'}      {[2 10.5]}
-    {'Ribo_{term}'}     {[2 10]}
-    {'pol'}             {[4 8]}
-    {'Ribo'}            {[2 12]}
-    {'3OC12_{Kd}'}      {[5 16]}
-    {'pol_{Kd,las}'}    {[25 40]}
-    {'plas_{tf, Kd}'}   {[4 8]}
-    {'plas-pol_{tf, Kd}'}    {[3 10]}];
-% pol kd is cartesian with pol term, rnaseKd, rnase cat. BUT NOT POL. 
-% cartesian with  rnaseKd, rnase cat and POL
-cutted_marray = mcmc_cut(marray_flat, 1:15, flipud(cell2mat(parslices(:, 2))'));
-size(cutted_marray)
+% marray_thin = marray(:, :, end-600:60:end);
+% marray_flat = marray_thin(:,:)';
+% 
+% 
+% parslices = [...
+%     {'TX_{cat}'}        {[0 6]}
+%     {'TL_{cat}'}        {[0 6]}
+%     {'\tau_{atp}'}      {[9.6 9.9]}
+%     {'pol_{Kd, tet}'}   {[17 23]}
+%     {'rep_{Kd, tet}'}   {[-4 1]}
+%     {'aTc_{Kd}'}        {[-10 5]}
+%     {'pol_{Kd, lac}'}   {[16 23]}
+%     {'pol_{term}'}      {[2 10.5]}
+%     {'Ribo_{term}'}     {[2 10]}
+%     {'pol'}             {[4 8]}
+%     {'Ribo'}            {[2 12]}
+%     {'3OC12_{Kd}'}      {[5 16]}
+%     {'pol_{Kd,las}'}    {[25 40]}
+%     {'plas_{tf, Kd}'}   {[4 8]}
+%     {'plas-pol_{tf, Kd}'}    {[3 10]}];
+% % pol kd is cartesian with pol term, rnaseKd, rnase cat. BUT NOT POL. 
+% % cartesian with  rnaseKd, rnase cat and POL
+% cutted_marray = mcmc_cut(marray_flat, 1:15, flipud(cell2mat(parslices(:, 2))'));
+% size(cutted_marray)
 
 %
 % mcmc_plot(cutted_marray(:,:), parnames(:))

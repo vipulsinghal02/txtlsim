@@ -1,33 +1,54 @@
-% Plotting the core mechanism characterization results
-% Purpose: Fit models to the DSG ACS 2014 data and to the composite data.
+% Plotting the core mechanism characterization results for the paper:
+% 
+% A MATLAB Toolbox for Modeling Genetic Circuits in Cell-Free Systems
+% by Vipul Singhal, Zoltan A. Tuza, Zachary S. Sun, and Richard M. Murray
+% 
 %
-% Author:
-% Vipul Singhal
-% California Institute of Technology
-%
-% 1. Gene Circuit Performance Characterization
-% and Resource Usage in a Cell-Free ?Breadboard?
-% Siegal-Gaskins, et. al
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Instructions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 1. Check that the working directory is the one where folders like core,
+% components, mcmc_simbio, config etc are. This is the trunk directory. 
+% 2. Download datasets, and place in the mcmc_simbio/projects directory. 
+% You need around 8 GB
+% of free hard disk space to download the full dataset. Download at: 
+% https://www.dropbox.com/s/alx379b65ga40mh/core_characterization_files.zip?dl=0
+% Extract the project folders and place them in the projects directory. 
+% See lines 55, 85, 117, etc for examples of what the final path should
+% look like. 
+% 3. Make sure you have 8 GB of free ram. Otherwise, just run each case 
+% (the for loop around line 41 below) separately, and the RAM usage should 
+% never go over 3GB or so. 
+% 4. The plots should be saved in the a subdirectory of the respective 
+% project directory. The subdirectory is given by the final timestamp of that
+% case. So for example, for the runN = 0 case, 
+% the project directory is 
+% ./mcmc_simbio/projects/proj_vnprl (line 55)
+% and the subdirectory is 
+% simdata_20200513_063545_4_19 (line 66)
+
+close all 
+clear all
+figsave = false;
+jpgsave = true;
 txtldir = txtl_init;
 mcmc_init;
 % ----------------------------------------------------------------------- %
-% Select Run number
+% Select Run number 
+% Change [0 1 2 3 4 5] to [0] to run a single run (run 0 in this case) at a time
+% This way, instead of 8GB of RAM, you only need 3 GB of RAM.
 % ----------------------------------------------------------------------- %
-for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
+for runN = [0 1 2 3 4 5] % or 0 1 2 3 4 5
     % note that run 0 is a special run that has the same parameters as run 3,
     % but uses composite data.
     % ----------------------------------------------------------------------- %
     % Load the models and the data
     % ----------------------------------------------------------------------- %
-
-    
     % H = run 1
     % I = run 2
     % F = run 3
     % D = run 4
     % G = run 5
-    
     % set the run specific information.
     switch runN
         case 0
@@ -130,8 +151,8 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
             ts4 = '20190211_140024_1_20';
             ts5 = '20190212_053457_1_20';
             ts6 = '20190212_114314_1_20';
-            tstamp = {ts1 ts2 ts3 ts4 ts5 ts6};
-            nIterID = {1:10 1:10 1:15 1:27 1:11 1:22};
+            tstamp = {ts6};%ts1 ts2 ts3 ts4 ts5 
+            nIterID = {1:22};%1:10 1:10 1:15 1:27 1:11 
             parnames = ...
                 [{'TX_{cat}'    }
                 {'\tau_{atp}'   }
@@ -147,8 +168,6 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
                 {'Ribo_{term}'  }
                 {'Ribo'         }];
             parorder= [2 3 1 4 5 8 10 11 12 13 7 6 9];
-            
-            
         case 4% D
             projdir = './mcmc_simbio/projects/proj_acs_dsg2014_regen_D';
             mobj = model_dsg2014_regen;
@@ -196,9 +215,6 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
     
     
     addpath(projdir)
-    figsave = false;
-    jpgsave = true;
-    
     mi = mcmc_info.model_info;
     ri = mcmc_info.runsim_info;
     mai = mcmc_info.master_info;
@@ -309,27 +325,20 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
     % Plot the trajectories.
     % ----------------------------------------------------------------------- %
     if runN ~= 5
-        
-        
         workingDir = [pwd '/mcmc_simbio/exp_data/public_data/'];
         % run merger
         %all_data_merger;
         load([workingDir 'mergedExperimentFiles.mat'])
-        
         colorCodes = {'r','b','g','c','m','k',[1 1 .5],[.7 .5 .2],[0 1 .2],[.35 .8 .8],[.9 0 .4],[1 .2 .2]};
         
         RFUumConvert = 1.723;   % (1.723 a.u. = 1 nM)
         RFUumConvertMG = 7.75;  % (7.75 a.u. = 1 nM)
-        
         if runN == 0
             ylims = [1000 50 12000];
         else
             ylims = [1000 50 12000].*[1 10 1.8];
         end
-        
         lengthToPlotArray = [21, 76, 76];
-        
-        %
         miToUse = [1 2 2]; % mi 1 has one plot (RNA) and mi 2 has 2 plots (RNA and protein)
         msToPlot = [1 1 2];
         timeinterval = [6 8 8];
@@ -350,12 +359,7 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
         yLab = {'RNA, nM', 'RNA, nM', 'deGFP, nM'}
         %
         mvarray = masterVecArray(marray(:,:,(end-300):100:end), mai);
-        
-        
         samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
-        
-        % resimulate,
-        % ms = {{'protein deGFP*'}};
         for miID = 1:length(mi)
             
             currmi = mi(miID);
@@ -368,11 +372,6 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
             for i = 1:length(vi)
                 vi(i)
             end
-            currmi.dosedNames
-            currmi.dosedVals
-            
-            dose
-            
             [da{miID}, idxnotused{miID}] = ...
                 simulatecurves(currmi.emo,marrayOrd(:,:)', 50, dose, tv, currmi.measuredSpecies);
         end
@@ -409,16 +408,11 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
                 ax = gca;
                 ax.FontSize = 14;
                 
-                
-                
             elseif count == 2 % for the MG aptamer and the deGFP, use the scripts provided by Zoltan.
                 %%%%%  MG KINETICS WITH CORRECT BACKGROUNDS SUBTRACTED
                 plotSelect=[ 5, 7, 8, 10];
                 mgBackground = mergedExpFile(1).Data_mean(:,1:11,1);
                 mgNoBgMean=mergedExpFile(1).Data_mean(:,12:22,1)-mgBackground;
-                
-                
-                
                 
                 if runN == 0
                     for i=1:11
@@ -521,11 +515,6 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
                     'Color', colorz(dID+2, :),...
                     'LineWidth', 1.5);
                 
-                %
-                %         plot(tv(1:lengthToPlot)/60,...
-                %             mean(da{miToUse(count)}(1:lengthToPlot, msToPlot(count), :, dID), 3),...
-                %             'LineWidth', 1.5,...
-                %             'Color', colorz(dID+2, :))
                 hold on
             end
             grid on
@@ -546,18 +535,7 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
         print(gcf, '-djpeg', '-r200', [specificproj '/traj_lowres_' tsToSave])
         print(gcf, '-dpng', '-r200', [specificproj '/traj_lowres_' tsToSave])        
         
-        
-        
-        
-        
-        
-        % ----------------------------------------------------------------------- %
-        
-        % ---------------------
-        
     else
-        
-        
         
         workingDir = [pwd '/mcmc_simbio/exp_data/public_data/'];
         % run merger
@@ -572,8 +550,6 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
         ylims = [50 12000].*[10 1.8];
         
         lengthToPlotArray = [76, 76];
-        
-        %
         miToUse = [1 1]; % mi 1 has one plot (RNA) and mi 2 has 2 plots (RNA and protein)
         msToPlot = [1 2];
         timeinterval = [8 8];
@@ -589,12 +565,8 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
         
         %     clear marray
         yLab = {'RNA, nM', 'deGFP, nM'}
-        %
         mvarray = masterVecArray(marray(:,:,(end-300):100:end), mai);
-        
-        
         samplePoints = ceil(size(mvarray, 3) * [.9, 1]);
-        
         % resimulate,
         % ms = {{'protein deGFP*'}};
         for miID = 1:length(mi)
@@ -628,28 +600,7 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
             tv = currdi.timeVector;
             lengthToPlot = lengthToPlotArray(count);
             % experimental data
-            
-            
             subplot(2, 2, (count-1)*2+1)
-            %             if count == 1 % for the RNA use the data info.
-            %
-            %                 for dID = dosesToPlot{count}{:}
-            %                     plot(tv(1:lengthToPlot)/60,...
-            %                         mean(currdi.dataArray(1:lengthToPlot, msToPlot(count), 1, dID),3),...
-            %                         'LineWidth', 1.5,...
-            %                         'Color', colorz(dID+2, :))
-            %                     hold on
-            %                 end
-            %                 grid on
-            %                 title([titleArray{count} ' (Exp)'])
-            %                 ylabel(yLab{count}, 'FontSize', 14)
-            %                 axis([0 (lengthToPlot-1)*timeinterval(count), 0 ylims(count)])
-            %                 ax = gca;
-            %                 ax.FontSize = 14;
-            %
-            %             end
-            
-            
             if count == 1 % for the MG aptamer and the deGFP, use the scripts provided by Zoltan.
                 %%%%%  MG KINETICS WITH CORRECT BACKGROUNDS SUBTRACTED
                 plotSelect=[ 5, 7, 8, 10];
@@ -768,40 +719,8 @@ for runN = [0 1 2 3 4 5] % or 2, 3, 4, 5.
 %         print(gcf, '-dpng', '-r600', [specificproj '/traj' tsToSave])
         print(gcf, '-djpeg', '-r200', [specificproj '/traj_lowres_' tsToSave])
         print(gcf, '-dpng', '-r200', [specificproj '/traj_lowres_' tsToSave])
-        print(gcf, '-depsc', [specificproj '/traj_eps_' tsToSave])    
+%         print(gcf, '-depsc', [specificproj '/traj_eps_' tsToSave])    
         
         
-        
-        
-        
-        % ----------------------------------------------------------------------- %
-        
-        % ---------------------
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-     end
-    
+    end
 end
